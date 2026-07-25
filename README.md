@@ -10,14 +10,20 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 
 ## Modded Features
 
+- **Settings UI Enhancements**: Dropdown presets (VID, PID, USB version, device info, WiFi modes, TFT text size), named color picker (15 colors + custom) for boot LED, unit selector (sec/min/hr) for agent polling – in both gold and Bootstrap themes
+- **Two Themes**: Gold/modern theme (default) and original Bootstrap theme (`/index_original.html`) – both with all settings enhancements
+- **Keyboard Layout at Runtime**: Keyboard layout is now a runtime setting (not just a DuckyScript command), decoupled from OS language switcher, with 23 layouts enabled
+- **Boot LED Fix**: Green boot LED properly turns off after startup
+- **Emergency Reset WiFi Fix**: Full WiFi deinit before reinit after Marauder attacks – AP restores reliably
 - **Crash LED**: Rear APA102 LED lights up solid red on ESP32 crash – instant visual feedback
-- **Modern Gold UI**: New gold-themed web interface with German/English i18n, setting presets (USB mode, LED color), SD card usage in %
-- **Original UI Crash Fix**: Switching between Modern and Original UI no longer crashes (OOM fix via `beginResponse_P`)
-- **Emergency Reset**: Long button press triggers a software reset
-- **Boot LED Color**: Configurable startup LED color via the web interface
-- **DuckyScript**: Multiple keyboard layouts selectable via `KEYBOARD_LAYOUT` command in your script (e.g. `win_de-DE`, `win_en-GB`, `win_fr`, etc.)
 - **SD Storage**: SD card usage displayed on the dashboard
 - **File Browser**: Built-in file browser with upload/download/delete
+- **MIT Licensed**: SPDX license headers on all source files
+- **English Only**: Full codebase translated from German to English
+
+## Upstream Contribution Branch
+
+C++ core changes (no UI) are maintained in a separate branch for potential upstream PR: [settings-pr-v2](https://github.com/Korbi0312/USBArmyKnife-modded/tree/settings-pr-v2)
 
 ## Flashing
 
