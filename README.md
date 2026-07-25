@@ -92,7 +92,7 @@ This project implements a variety of attacks based around an easily concealable 
 
 ## Getting Started
 
-Firstly please check the [wiki](https://github.com/Korbi0312/USBArmyKnife-modded/wiki) for a step by step guide and all manner of advice for getting started.
+Firstly please check the [wiki](https://github.com/i-am-shodan/USBArmyKnife/wiki) for a step by step guide and all manner of advice for getting started.
 
 ### Installation
 
