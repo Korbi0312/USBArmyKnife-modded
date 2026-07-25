@@ -982,6 +982,14 @@
     // ============================================================
     // SETTINGS
     // ============================================================
+    const COLOR_NAMES = {
+        '000000': 'Black', 'ffffff': 'White', 'ff0000': 'Red',
+        '00ff00': 'Green', '0000ff': 'Blue', 'ffff00': 'Yellow',
+        'ff00ff': 'Magenta', '00ffff': 'Cyan', 'ff8000': 'Orange',
+        '800080': 'Purple', '808080': 'Gray', 'c0c0c0': 'Silver',
+        'ffa500': 'Orange', 'ff6347': 'Tomato', '40e0d0': 'Turquoise'
+    };
+
     const SETTING_PRESETS = {
         'usbDeviceType': [['0','None (0)'],['1','Serial (1)'],['2','NCM (2)']],
         'usbClassType': [['0','None (0)'],['1','HID (1)'],['2','Storage (2)']],
@@ -1035,52 +1043,50 @@
         ],
         'agentPolling': [['0','Off'],['1','On']],
         'agentPollSec': [
-            ['1','1 sec'],
-            ['5','5 sec'],
-            ['10','10 sec'],
-            ['15','15 sec (Default)'],
-            ['30','30 sec'],
-            ['60','1 min'],
-            ['120','2 min']
+            ['1','1 sec'], ['5','5 sec'], ['10','10 sec'],
+            ['15','15 sec (Default)'], ['30','30 sec'],
+            ['60','1 min'], ['120','2 min'], ['300','5 min']
         ],
         'pcapNcmOnStart': [['0','Off'],['1','On']],
         'tftTextSize': [
-            ['5','5 (Small)'],
-            ['10','10 (Default)'],
-            ['15','15 (Medium)'],
-            ['20','20 (Large)'],
-            ['25','25 (X-Large)'],
-            ['30','30 (XX-Large)']
+            ['5','5 (Small)'], ['10','10 (Default)'], ['15','15 (Medium)'],
+            ['20','20 (Large)'], ['25','25 (X-Large)'], ['30','30 (XX-Large)']
         ],
         'wifi-ap-mode': [['0','Off (Station)'],['1','On (AP Mode)']],
         'wifi-bootstate': [['0','Off at boot'],['1','On at boot']],
+        'led-boot-color': Object.entries(COLOR_NAMES).map(e => [e[0], e[1]]),
         'keyboardLayout': [
             ['','Default (en-US)'],
-            ['win_be','Belgian (AZERTY)'],
-            ['win_ca','Canadian Multilingual'],
-            ['win_ca-FR','Canadian French'],
-            ['win_ch','Swiss'],
-            ['win_cs-CZ','Czech'],
-            ['win_da-DK','Danish'],
-            ['win_de-DE','German'],
-            ['win_en-GB','English (UK)'],
-            ['win_es','Spanish'],
-            ['win_es-MX','Spanish (Mexico)'],
-            ['win_fi','Finnish'],
-            ['win_fr','French (AZERTY)'],
-            ['win_hr-HR','Croatian'],
-            ['win_hu-HU','Hungarian'],
-            ['win_it','Italian'],
-            ['win_ja-JP','Japanese'],
-            ['win_no','Norwegian'],
-            ['win_pt-BR','Portuguese (Brazil)'],
-            ['win_pt-PT','Portuguese (Portugal)'],
-            ['win_se','Swedish'],
-            ['win_si','Slovenian'],
-            ['win_sk-SK','Slovak'],
+            ['win_be','Belgian (AZERTY)'], ['win_ca','Canadian Multilingual'],
+            ['win_ca-FR','Canadian French'], ['win_ch','Swiss'],
+            ['win_cs-CZ','Czech'], ['win_da-DK','Danish'],
+            ['win_de-DE','German'], ['win_en-GB','English (UK)'],
+            ['win_es','Spanish'], ['win_es-MX','Spanish (Mexico)'],
+            ['win_fi','Finnish'], ['win_fr','French (AZERTY)'],
+            ['win_hr-HR','Croatian'], ['win_hu-HU','Hungarian'],
+            ['win_it','Italian'], ['win_ja-JP','Japanese'],
+            ['win_no','Norwegian'], ['win_pt-BR','Portuguese (Brazil)'],
+            ['win_pt-PT','Portuguese (Portugal)'], ['win_se','Swedish'],
+            ['win_si','Slovenian'], ['win_sk-SK','Slovak'],
             ['win_tr-TR','Turkish']
         ]
     };
+
+    function getDisplayName(name, val) {
+        if (name === 'led-boot-color') {
+            const c = COLOR_NAMES[String(val).toLowerCase()];
+            return c ? c + ' (#' + val + ')' : '#' + val;
+        }
+        const presets = SETTING_PRESETS[name];
+        if (presets) {
+            const n = (x) => { const v = Number(x); return isNaN(v) ? String(x) : String(v); };
+            for (const p of presets) {
+                if (n(p[0]) === n(val)) return p[1];
+            }
+        }
+        return String(val);
+    }
+
     async function loadSettings() {
         try {
             const categories = await apiCall('/api/settings');
@@ -1099,25 +1105,32 @@
                     const name = setting.name;
                     const val = setting.value !== undefined ? setting.value : '';
                     const targetId = 'item-' + name.replace(/[^a-zA-Z0-9]/g, '-');
-                    const displayVal = typeof val === 'string' && val.startsWith('custom:') ? val.substring(7) : val;
+                    const rawVal = typeof val === 'string' && val.startsWith('custom:') ? val.substring(7) : val;
                     const isCustom = String(val).startsWith('custom:');
+                    const dispName = getDisplayName(name, rawVal);
                     html += '<div class="setting-row" style="cursor:pointer;display:block;" onclick="toggleSetting(\'' + targetId + '\')">';
-                    html += '<div style="display:flex;justify-content:space-between;align-items:center;"><span class="setting-label">' + name + '</span><span class="setting-value" id="current-' + targetId + '">' + String(displayVal) + '</span><span style="color:var(--text-secondary);font-size:12px;">&#9660;</span></div>';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;"><span class="setting-label">' + name + '</span><span class="setting-value" id="current-' + targetId + '">' + dispName + '</span><span style="color:var(--text-secondary);font-size:12px;">&#9660;</span></div>';
                     html += '<div id="body-' + targetId + '" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color);" onclick="event.stopPropagation()">';
                     html += '<div class="setting-row"><span class="setting-label">' + t.settingsCustom + '</span><label class="switch"><input type="checkbox" id="custom-' + targetId + '" ' + (isCustom ? 'checked' : '') + ' onchange="toggleCustom(\'' + targetId + '\')"><span class="slider round"></span></label></div>';
                     html += '<div class="form-group"><label class="form-label">' + t.settingsNew + '</label>';
                     const presets = SETTING_PRESETS[name];
-                    if (presets) {
+                    if (name === 'led-boot-color' && isCustom) {
+                        html += '<input class="form-control" type="color" id="value-' + targetId + '" value="#' + String(rawVal).replace(/^#/, '') + '">';
+                    } else if (name === 'agentPollSec' && isCustom) {
+                        const sec = parseInt(rawVal) || 15;
+                        let num = sec, unit = 1;
+                        if (sec % 3600 === 0) { num = sec / 3600; unit = 3600; }
+                        else if (sec % 60 === 0) { num = sec / 60; unit = 60; }
+                        html += '<div style="display:flex;gap:8px;"><input class="form-control" type="number" id="value-' + targetId + '" value="' + num + '" style="flex:1;"><select class="form-control" id="unit-' + targetId + '" style="width:auto;"><option value="1"' + (unit === 1 ? ' selected' : '') + '>sec</option><option value="60"' + (unit === 60 ? ' selected' : '') + '>min</option><option value="3600"' + (unit === 3600 ? ' selected' : '') + '>hr</option></select></div>';
+                    } else if (presets) {
                         const normVal = (x) => { const n = Number(x); return isNaN(n) ? String(x) : String(n); };
                         html += '<select class="form-control" id="value-' + targetId + '" ' + (!isCustom ? 'disabled' : '') + '>';
                         for (const p of presets) {
-                            html += '<option value="' + p[0] + '"' + (normVal(displayVal) === normVal(p[0]) ? ' selected' : '') + '>' + p[1] + '</option>';
+                            html += '<option value="' + p[0] + '"' + (normVal(rawVal) === normVal(p[0]) ? ' selected' : '') + '>' + p[1] + '</option>';
                         }
                         html += '</select>';
-                    } else if (name === 'led-boot-color') {
-                        html += '<input class="form-control" type="color" id="value-' + targetId + '" value="#' + String(displayVal).replace(/^#/, '') + '" ' + (!isCustom ? 'disabled' : '') + '>';
                     } else {
-                        html += '<input class="form-control" type="text" id="value-' + targetId + '" value="' + String(displayVal).replace(/"/g, '&quot;') + '" ' + (!isCustom ? 'disabled' : '') + '>';
+                        html += '<input class="form-control" type="text" id="value-' + targetId + '" value="' + String(rawVal).replace(/"/g, '&quot;') + '" ' + (!isCustom ? 'disabled' : '') + '>';
                     }
                     html += '</div>';
                     html += '<button class="btn btn-gold btn-sm" onclick="saveSetting(\'' + name.replace(/'/g, "\\'") + '\', \'' + targetId + '\')">' + t.settingsSave + '</button>';
@@ -1149,11 +1162,13 @@
         if (!el) return;
         let value = el.value;
         if (name === 'led-boot-color') value = value.replace(/^#/, '');
+        const unitEl = document.getElementById('unit-' + targetId);
+        if (unitEl) value = String(parseInt(value || '0') * parseInt(unitEl.value));
         try {
             const res = await fetch('/set?name=' + encodeURIComponent(name) + '&value=' + encodeURIComponent(value));
             if (res.ok) {
                 const cur = document.getElementById('current-' + targetId);
-                if (cur) cur.textContent = value;
+                if (cur) cur.textContent = getDisplayName(name, value);
                 el.style.borderColor = '#4caf50';
                 setTimeout(function() { el.style.borderColor = ''; }, 2000);
             }

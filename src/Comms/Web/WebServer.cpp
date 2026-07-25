@@ -115,6 +115,28 @@ const char INDEX_ORIGINAL_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html dat
 </script>
 
 <script>
+var COLOR_NAMES = {
+    '000000': 'Black', 'ffffff': 'White', 'ff0000': 'Red',
+    '00ff00': 'Green', '0000ff': 'Blue', 'ffff00': 'Yellow',
+    'ff00ff': 'Magenta', '00ffff': 'Cyan', 'ff8000': 'Orange',
+    '800080': 'Purple', '808080': 'Gray', 'c0c0c0': 'Silver',
+    'ffa500': 'Orange', 'ff6347': 'Tomato', '40e0d0': 'Turquoise'
+};
+var COLOR_PRESETS = [];
+for (var _k in COLOR_NAMES) COLOR_PRESETS.push([_k, COLOR_NAMES[_k]]);
+
+function _nv(x) { var n = Number(x); return isNaN(n) ? String(x) : String(n); }
+
+function _dn(name, val) {
+    if (name === 'led-boot-color') {
+        var c = COLOR_NAMES[String(val).toLowerCase()];
+        return c ? c + ' (#' + val + ')' : '#' + val;
+    }
+    var p = SETTING_PRESETS[name];
+    if (p) { for (var i = 0; i < p.length; i++) { if (_nv(p[i][0]) === _nv(val)) return p[i][1]; } }
+    return String(val);
+}
+
 const SETTING_PRESETS = {
     'usbDeviceType': [['0','None (0)'],['1','Serial (1)'],['2','NCM (2)']],
     'usbClassType': [['0','None (0)'],['1','HID (1)'],['2','Storage (2)']],
@@ -130,105 +152,98 @@ const SETTING_PRESETS = {
     ],
     'usbDevicePID': [
         ['0x403f','0x403f (USBArmyKnife Default)'],
-        ['0x0001','0x0001'],
-        ['0x1001','0x1001'],
-        ['0xea60','0xea60 (CH340)'],
-        ['0xea70','0xea70 (CH341)'],
-        ['0x6001','0x6001 (FT232)'],
-        ['0x0002','0x0002'],
-        ['0x0003','0x0003']
+        ['0x0001','0x0001'], ['0x1001','0x1001'],
+        ['0xea60','0xea60 (CH340)'], ['0xea70','0xea70 (CH341)'],
+        ['0x6001','0x6001 (FT232)'], ['0x0002','0x0002'], ['0x0003','0x0003']
     ],
     'usbVersion': [
-        ['0x0100','0x0100 (USB 1.0)'],
-        ['0x0110','0x0110 (USB 1.1)'],
-        ['0x0200','0x0200 (USB 2.0)'],
-        ['0x0210','0x0210 (USB 2.1)'],
+        ['0x0100','0x0100 (USB 1.0)'], ['0x0110','0x0110 (USB 1.1)'],
+        ['0x0200','0x0200 (USB 2.0)'], ['0x0210','0x0210 (USB 2.1)'],
         ['0x0300','0x0300 (USB 3.0)']
     ],
     'usbDevVersion': [
-        ['0x0100','0x0100 (v1.0)'],
-        ['0x0101','0x0101 (v1.01 Default)'],
-        ['0x0110','0x0110 (v1.1)'],
-        ['0x0200','0x0200 (v2.0)']
+        ['0x0100','0x0100 (v1.0)'], ['0x0101','0x0101 (v1.01 Default)'],
+        ['0x0110','0x0110 (v1.1)'], ['0x0200','0x0200 (v2.0)']
     ],
     'usbSerialRaw': [['0','Off (CDC Serial)'],['1','On (Raw USB)']],
     'usbDevMfr': [
         ['Espressif Systems','Espressif Systems (Default)'],
-        ['Arduino LLC','Arduino LLC'],
-        ['FTDI','FTDI'],
-        ['Generic','Generic'],
-        ['Microsoft','Microsoft']
+        ['Arduino LLC','Arduino LLC'], ['FTDI','FTDI'],
+        ['Generic','Generic'], ['Microsoft','Microsoft']
     ],
     'usbDevProdDesc': [
         ['TinyUSB Device','TinyUSB Device (Default)'],
-        ['USB Serial','USB Serial'],
-        ['USB Storage','USB Storage'],
-        ['HID Keyboard','HID Keyboard'],
-        ['HID Mouse','HID Mouse']
+        ['USB Serial','USB Serial'], ['USB Storage','USB Storage'],
+        ['HID Keyboard','HID Keyboard'], ['HID Mouse','HID Mouse']
     ],
     'agentPolling': [['0','Off'],['1','On']],
     'agentPollSec': [
-        ['1','1 sec'],
-        ['5','5 sec'],
-        ['10','10 sec'],
-        ['15','15 sec (Default)'],
-        ['30','30 sec'],
-        ['60','1 min'],
-        ['120','2 min']
+        ['1','1 sec'], ['5','5 sec'], ['10','10 sec'],
+        ['15','15 sec (Default)'], ['30','30 sec'],
+        ['60','1 min'], ['120','2 min'], ['300','5 min']
     ],
     'pcapNcmOnStart': [['0','Off'],['1','On']],
     'tftTextSize': [
-        ['5','5 (Small)'],
-        ['10','10 (Default)'],
-        ['15','15 (Medium)'],
-        ['20','20 (Large)'],
-        ['25','25 (X-Large)'],
-        ['30','30 (XX-Large)']
+        ['5','5 (Small)'], ['10','10 (Default)'], ['15','15 (Medium)'],
+        ['20','20 (Large)'], ['25','25 (X-Large)'], ['30','30 (XX-Large)']
     ],
     'wifi-ap-mode': [['0','Off (Station)'],['1','On (AP Mode)']],
     'wifi-bootstate': [['0','Off at boot'],['1','On at boot']],
+    'led-boot-color': COLOR_PRESETS,
     'keyboardLayout': [
-        ['','Default (en-US)'],
-        ['win_be','Belgian (AZERTY)'],
-        ['win_ca','Canadian Multilingual'],
-        ['win_ca-FR','Canadian French'],
-        ['win_ch','Swiss'],
-        ['win_cs-CZ','Czech'],
-        ['win_da-DK','Danish'],
-        ['win_de-DE','German'],
-        ['win_en-GB','English (UK)'],
-        ['win_es','Spanish'],
-        ['win_es-MX','Spanish (Mexico)'],
-        ['win_fi','Finnish'],
-        ['win_fr','French (AZERTY)'],
-        ['win_hr-HR','Croatian'],
-        ['win_hu-HU','Hungarian'],
-        ['win_it','Italian'],
-        ['win_ja-JP','Japanese'],
-        ['win_no','Norwegian'],
-        ['win_pt-BR','Portuguese (Brazil)'],
-        ['win_pt-PT','Portuguese (Portugal)'],
-        ['win_se','Swedish'],
-        ['win_si','Slovenian'],
-        ['win_sk-SK','Slovak'],
+        ['','Default (en-US)'], ['win_be','Belgian (AZERTY)'],
+        ['win_ca','Canadian Multilingual'], ['win_ca-FR','Canadian French'],
+        ['win_ch','Swiss'], ['win_cs-CZ','Czech'], ['win_da-DK','Danish'],
+        ['win_de-DE','German'], ['win_en-GB','English (UK)'],
+        ['win_es','Spanish'], ['win_es-MX','Spanish (Mexico)'],
+        ['win_fi','Finnish'], ['win_fr','French (AZERTY)'],
+        ['win_hr-HR','Croatian'], ['win_hu-HU','Hungarian'],
+        ['win_it','Italian'], ['win_ja-JP','Japanese'],
+        ['win_no','Norwegian'], ['win_pt-BR','Portuguese (Brazil)'],
+        ['win_pt-PT','Portuguese (Portugal)'], ['win_se','Swedish'],
+        ['win_si','Slovenian'], ['win_sk-SK','Slovak'],
         ['win_tr-TR','Turkish']
     ]
 };
 function renderSettingInput(name, val, targetId) {
-    const presets = SETTING_PRESETS[name];
+    var rawVal = (typeof val === 'string' && val.startsWith('custom:')) ? val.substring(7) : val;
+    if (name === 'led-boot-color') {
+        var opts = '<option value="">-- Named color --</option>';
+        for (var k in COLOR_NAMES) {
+            opts += '<option value="' + k + '"' + (_nv(k) === _nv(rawVal) ? ' selected' : '') + '>' + COLOR_NAMES[k] + '</option>';
+        }
+        opts += '<option value="__custom__"' + (COLOR_NAMES[String(rawVal).toLowerCase()] === undefined ? ' selected' : '') + '>Custom...</option>';
+        var html = '<select class="form-control" id="sel-' + targetId + '" onchange="onColorSelect(\'' + targetId + '\')">' + opts + '</select>';
+        html += '<input class="form-control" type="color" id="inp-' + targetId + '" value="#' + String(rawVal).replace(/^#/, '') + '" onchange="onColorPick(\'' + targetId + '\')" style="margin-top:4px;">';
+        return html;
+    }
+    if (name === 'agentPollSec' && typeof val === 'string' && val.startsWith('custom:')) {
+        var sec = parseInt(rawVal) || 15;
+        var num = sec, unit = 1;
+        if (sec % 3600 === 0) { num = sec / 3600; unit = 3600; }
+        else if (sec % 60 === 0) { num = sec / 60; unit = 60; }
+        return '<div style="display:flex;gap:4px;"><input class="form-control" type="number" id="inp-' + targetId + '" value="' + num + '" style="flex:1;"><select class="form-control" id="unit-' + targetId + '" style="width:auto;"><option value="1"' + (unit===1?' selected':'') + '>sec</option><option value="60"' + (unit===60?' selected':'') + '>min</option><option value="3600"' + (unit===3600?' selected':'') + '>hr</option></select></div>';
+    }
+    var presets = SETTING_PRESETS[name];
     if (presets) {
         var opts = '';
-        var normVal = function(x) { var n = Number(x); return isNaN(n) ? String(x) : String(n); };
         for (var i = 0; i < presets.length; i++) {
             var p = presets[i];
-            opts += '<option value="' + p[0] + '"' + (normVal(val) === normVal(p[0]) ? ' selected' : '') + '>' + p[1] + '</option>';
+            opts += '<option value="' + p[0] + '"' + (_nv(rawVal) === _nv(p[0]) ? ' selected' : '') + '>' + p[1] + '</option>';
         }
         return '<select class="form-control" id="inp-' + targetId + '">' + opts + '</select>';
     }
-    if (name === 'led-boot-color') {
-        return '<input class="form-control" type="color" id="inp-' + targetId + '" value="#' + String(val).replace(/^#/, '') + '">';
-    }
-    return '<input class="form-control" type="text" id="inp-' + targetId + '" value="' + String(val).replace(/"/g, '&quot;') + '">';
+    return '<input class="form-control" type="text" id="inp-' + targetId + '" value="' + String(rawVal).replace(/"/g, '&quot;') + '">';
+}
+function onColorSelect(targetId) {
+    var sel = document.getElementById('sel-' + targetId);
+    var inp = document.getElementById('inp-' + targetId);
+    if (sel.value === '__custom__') { inp.type = 'color'; inp.disabled = false; }
+    else { inp.type = 'text'; inp.disabled = true; inp.value = '#' + sel.value; }
+}
+function onColorPick(targetId) {
+    var sel = document.getElementById('sel-' + targetId);
+    if (sel) sel.value = COLOR_NAMES[String(inp.value.replace('#','')).toLowerCase()] ? inp.value.replace('#','') : '__custom__';
 }
 async function loadSettingsOrig() {
     try {
@@ -242,6 +257,7 @@ async function loadSettingsOrig() {
             for (const s of settings) {
                 const name = s.name || '';
                 const val = s.value !== undefined ? s.value : (s.default || '');
+                const rawVal = (typeof val === 'string' && val.startsWith('custom:')) ? val.substring(7) : val;
                 itemId++;
                 const targetId = 'setting-item-' + itemId;
                 html += '<div class="accordion-item">';
@@ -250,7 +266,7 @@ async function loadSettingsOrig() {
                 html += '</h2>';
                 html += '<div class="accordion-collapse collapse" id="' + targetId + '" role="tabpanel" data-bs-parent="#settings-accordion">';
                 html += '<div class="accordion-body">';
-                html += '<div class="row"><div class="col"><label class="col-form-label">Current value</label></div><div class="col"><label class="col-form-label" id="cur-' + targetId + '">' + String(val) + '</label></div></div>';
+                html += '<div class="row"><div class="col"><label class="col-form-label">Current value</label></div><div class="col"><label class="col-form-label" id="cur-' + targetId + '">' + _dn(name, rawVal) + '</label></div></div>';
                 html += '<hr>';
                 html += '<label class="form-label">New value</label>';
                 html += '<div class="input-group">';
@@ -270,10 +286,12 @@ async function saveSetting(name, targetId) {
     const inp = document.getElementById('inp-' + targetId);
     let val = inp.value;
     if (name === 'led-boot-color') val = val.replace(/^#/, '');
+    const unitEl = document.getElementById('unit-' + targetId);
+    if (unitEl) val = String(parseInt(val || '0') * parseInt(unitEl.value));
     try {
         const res = await fetch('/set?name=' + encodeURIComponent(name) + '&value=' + encodeURIComponent(val));
         if (res.ok) {
-            document.getElementById('cur-' + targetId).textContent = val;
+            document.getElementById('cur-' + targetId).textContent = _dn(name, val);
             inp.value = val;
         } else {
             alert('Save failed');
