@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifdef LILYGO_T_WATCH_S3
 #include "../HardwareButton.h"
 #include "../../../Debug/Logging.h"

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifdef WAVESHARE_ESP32_S3_ETH
 #include "../HardwareEthernet.h"
 #include "../../../Debug/Logging.h"

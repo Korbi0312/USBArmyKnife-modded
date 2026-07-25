@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #if !defined(NO_LED) && !(defined(LED_DI_PIN) && defined(LED_CI_PIN))
 #include "../HardwareLED.h"
 #include "../../../Debug/Logging.h"
@@ -35,7 +39,7 @@ void HardwareLED::begin(Preferences &prefs) {
 }
 
 void HardwareLED::loop(Preferences &prefs) {
-    // nichts zu tun
+    // nothing to do
 }
 
 void HardwareLED::setColor(uint8_t r, uint8_t g, uint8_t b) {

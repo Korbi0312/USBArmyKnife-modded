@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #include "Marauder.h"
 
 #define LOG_MARAUDER "ESP32M"

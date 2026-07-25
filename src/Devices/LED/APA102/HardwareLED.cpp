@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifndef NO_LED
 #if defined(LED_DI_PIN) && defined(LED_CI_PIN)
 #include "../HardwareLED.h"

@@ -1,4 +1,7 @@
-﻿using System.Collections.Concurrent;
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+using System.Collections.Concurrent;
 
 namespace Agent
 {

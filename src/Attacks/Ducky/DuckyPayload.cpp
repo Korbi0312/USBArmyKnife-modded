@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #include "DuckyPayload.h"
 
 #include <DuckyParse.h>
@@ -5,7 +9,7 @@
 
 #include "../../Debug/Logging.h"
 
-#define LOG_DUCKY "Ducky"   // ⬅️ Definiert den Log-Tag
+#define LOG_DUCKY "Ducky"   // ⬅️ Defines the log tag
 
 #include "../../Devices/Button/HardwareButton.h"
 #include "../../Devices/Storage/HardwareStorage.h"
@@ -303,7 +307,7 @@ void DuckyPayload::setPayloadCmdLine(const std::string &cmdLine)
     localCmdLineToExecute = std::string(cmdLine.c_str(), cmdLine.length());
 }
 
-// ⬇️ stop() – stoppt den aktuellen Payload sofort
+// ⬇️ stop() – stops the current payload immediately
 void DuckyPayload::stop() {
     if (currentlyExecutingFile.empty() && localCmdLineToExecute.empty()) {
         Debug::Log.info(LOG_DUCKY, "No payload running to stop");
@@ -359,7 +363,7 @@ void DuckyPayload::loop(Preferences &prefs)
             Debug::Log.info(LOG_DUCKY, "Executing cmdline: " + localCmdLineToExecute);
         }
 
-        // KEINE automatische LED-Steuerung – LED wird nur durch DuckyScript-Befehle gesteuert
+        // NO automatic LED control – LED is only controlled via DuckyScript commands
         lastExecutionResult = duckyFileParser.Execute(executeFile ? currentlyExecutingFile : "", extCommands, consts);
         const bool executionHasCompleted = lastExecutionResult == DuckyInterpreter::SCRIPT_ERROR || lastExecutionResult == DuckyInterpreter::END_OF_FILE;
 

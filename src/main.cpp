@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #if ARDUINO_USB_MODE
 #warning This sketch should be used when USB is in OTG mode
 void setup() {}
@@ -59,7 +63,7 @@ static void displayMessage(const char* heading, const char* value = nullptr, boo
 }
 
 // ============================================================
-// ⬇️ NOT-AUS / RESET-Funktion (Soft-Reset – mit WiFi-Anzeige)
+// ⬇️ Emergency Stop / Reset Function (Soft Reset – with WiFi display)
 // ============================================================
 void emergencyReset() {
     Debug::Log.info(TAG, "EMERGENCY RESET - Button long press detected!");
@@ -75,23 +79,23 @@ void emergencyReset() {
         Attacks::Marauder.stopEvilPortal();
     #endif
     
-    // 4. WLAN zurücksetzen
+    // 4. Reset WiFi
     Devices::WiFi.begin(prefs);
 
     // 5. Display leeren
     Devices::TFT.clearScreen();
 
-    // 6. "Complete Reset" für 1 Sekunde anzeigen
+    // 6. Show "Complete Reset" for 1 second
     Devices::TFT.setForegroundColor(Devices::TFT.convertStringToColor("GREEN"));
     Devices::TFT.display(0, 30, "Complete Reset");
     Devices::TFT.display(0, 50, "All processes stopped");
     delay(1000);
 
-    // 7. Startbildschirm (Dashboard) mit WiFi-Informationen
+    // 7. Show start screen (Dashboard) with WiFi info
     Devices::TFT.clearScreen();
     currentLine = 0;
     
-    // SSID aus Preferences lesen (oder Fallback auf Standard)
+    // Read SSID from Preferences (or fallback to default)
     String ssid = prefs.getString("wifi-ap", "iPhone14");
     
     displayMessage("Device now running");
@@ -165,7 +169,7 @@ void setup()
   }
 
   // ============================================================
-  // ⬇️ STARTBILDSCHIRM – wird beim Booten (Einstecken) angezeigt
+  // ⬇️ START SCREEN – displayed on boot (when plugged in)
   // ============================================================
   displayMessage("Device now running");
   Debug::Log.info(TAG, "Running!");

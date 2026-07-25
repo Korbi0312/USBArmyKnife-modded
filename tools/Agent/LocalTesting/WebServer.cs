@@ -1,4 +1,7 @@
-﻿#if DEBUG
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+#if DEBUG
 using Agent;
 using Agent.TLV;
 using System.Collections.Concurrent;

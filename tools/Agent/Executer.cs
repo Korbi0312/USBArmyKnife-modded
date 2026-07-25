@@ -1,4 +1,7 @@
-﻿using Agent.TLV;
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+using Agent.TLV;
 using Agent.VNC;
 using System.Collections.Concurrent;
 using System.Diagnostics;

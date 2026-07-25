@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #include "Auxiliary.h"
 #include "Sensors/Motion/LD2410/LD2410.h"
 

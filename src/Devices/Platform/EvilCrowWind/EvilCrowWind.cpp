@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifdef EVIL_CROW_CABLE_WIND
 
 #include <uptime.h>

@@ -1,4 +1,8 @@
-ÔªøAdd-Type @‚Äù
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Korbi0312
+# Copyright (c) 2024 i-am-shodan
+
+Add-Type @î
     using System;
     using System.Text;
     using System.Runtime.InteropServices;
@@ -13,5 +17,5 @@
             Open("vid=cafe pid=1001");
         }
     }
-‚Äú@
+ì@
 [Posh]::OpenMe()

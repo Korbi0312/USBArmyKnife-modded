@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifndef DUCKYDATA_H
 #define DUCKYDATA_H
 
@@ -5,7 +9,7 @@
 #include <Preferences.h>
 #include <functional>
 #include <unordered_map>
-#include <string>   // ⬅️ WICHTIG: Fehlt! Wurde hinzugefügt
+#include <string>   // ⬅️ IMPORTANT: Was missing! Added explicitly
 #include "../../USBArmyKnifeCapability.h"
 
 #define AUTORUN_FILENAME "/autorun.ds"
@@ -16,7 +20,7 @@ public:
     virtual void begin(Preferences &prefs);
     virtual void loop(Preferences &prefs);
     
-    // ⬇️ Stoppt den aktuellen Payload sofort (Not-Aus / Emergency Reset)
+    // ⬇️ Stops the current payload immediately (Emergency / Soft Reset)
     void stop();
 
     void registerExtension(const std::string& command, 

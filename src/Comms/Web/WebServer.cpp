@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifndef NO_WEB
 #include "WebServer.h"
 
@@ -76,10 +80,10 @@ const char INDEX_ORIGINAL_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html dat
   <input type="checkbox">
   <span class="slider round"></span>
 </label></div></div><div class="row" style="margin-bottom: 8px;"><div class="col"><span style="margin-right: 8px;">Download all captured audio as WAV</span></div><div class="col"><button class="btn btn-primary" type="button" onclick="onAudioSave()">Save</button></div></div><div class="row"><div class="col"><span style="margin-right: 8px;">Clear audio cache</span></div><div class="col"><button class="btn btn-primary" type="button" onclick="onAudioCacheClear()">Clear</button></div></div></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-5"><div></div></div><div class="tab-pane" role="tabpanel" id="tab-6"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><textarea id="logBox" rows="25" style="min-width: 99%;overflow: scroll;overflow-y: scroll;overflow-x: clip;" name="logBox"></textarea></li><li class="list-group-item" style="border-style: none;"><form method="get" action="/clearlogs"><input class="btn btn-primary" type="submit" value="Clear"></form></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-7"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><a href="https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference">DuckyScript quick start guide</a></li><li class="list-group-item" style="border-style: none;"><a href="#">Documentation</a></li><li class="list-group-item" style="border-style: none;"><a href="#">GitHub issue tracker</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/justcallmekoko/ESP32Marauder/wiki">ESP32 Marauder project</a></li><li class="list-group-item"><span>Version</span><p id="versionTag">0000000000000000000000000000000000000000</p></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-10"><p>To perform an over the air (OTA) firmware update&nbsp;<a href="/update">click here</a>. You will need a valid firmware.bin file for your hardware revision. <strong><span style="color: rgb(255, 15, 0);">WARNING </span></strong>- No checking is performed to ensure you're using the right version so beware!</p></div></div></div><footer class="text-center bg-dark"></footer><script src="assets/bootstrap/js/bootstrap.min.js"></script><script src="assets/js/script.min.js"></script>
-<!-- Zusätzlicher Script für Modern-Wechsel -->
+<!-- Additional script for Modern theme switch -->
 <script>
 (function() {
-    // Wenn der Modern-Button geklickt wird, zur index.html weiterleiten
+    // When the Modern button is clicked, redirect to index.html
     document.querySelectorAll('[data-bs-theme-value="modern"]').forEach(function(el) {
         el.addEventListener('click', function(e) {
             e.preventDefault();
@@ -89,20 +93,20 @@ const char INDEX_ORIGINAL_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html dat
         });
     });
 
-    // Beim Laden: URL-Parameter ?theme=light/dark zuerst auswerten (vor localStorage-Check)
+    // On load: evaluate URL parameter ?theme=light/dark first (before localStorage check)
     const urlParams = new URLSearchParams(window.location.search);
     const themeParam = urlParams.get('theme');
     if (themeParam === 'light' || themeParam === 'dark') {
         document.documentElement.setAttribute('data-bs-theme', themeParam);
         localStorage.setItem('theme', themeParam);
-        // URL-Parameter entfernen ohne Seite neu zu laden
+        // Remove URL parameter without reloading the page
         if (window.history.replaceState) {
             const cleanUrl = window.location.pathname + window.location.hash;
             window.history.replaceState({}, '', cleanUrl);
         }
     }
 
-    // Beim Laden: Wenn das gespeicherte Theme 'gold' oder 'modern' ist, zur index.html
+    // On load: if stored theme is 'gold' or 'modern', redirect to index.html
     var storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'gold' || storedTheme === 'modern') {
         window.location.href = 'index.html';
@@ -393,7 +397,7 @@ static void webRequestHandler(AsyncWebServerRequest *request)
     request->send(request->beginResponse_P(200, "text/html", INDEX_ORIGINAL_HTML));
   }
   // ============================================================
-  // API-Routen für die moderne Oberfläche
+  // API routes for the modern UI
   // ============================================================
   else if (url == "/api/status")
   {

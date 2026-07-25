@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifdef ARDUINO_ARCH_ESP32
 #include "USBNCM.h"
 #include "../../Debug/Logging.h"

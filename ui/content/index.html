@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>USB Army Knife</title>
     <style>
-        /* ===== CSS-Variablen für Themes ===== */
+        /* ===== CSS variables for themes ===== */
         :root {
             --bg-body: #0a0a0f;
             --bg-surface: rgba(255,255,255,0.03);
@@ -912,9 +912,9 @@
                     opt.textContent = f;
                     sel.appendChild(opt);
                 });
-            } catch(e) { console.error('Payload-Liste:', e); }
+            } catch(e) { console.error('Payload list:', e); }
         } catch (e) {
-            console.error('Dashboard-Fehler:', e);
+            console.error('Dashboard error:', e);
         }
     }
 
@@ -924,7 +924,7 @@
         try {
             await apiCall('/api/emergency_reset', 'POST');
             setTimeout(refreshDashboard, 2000);
-        } catch (e) { console.error('Reset-Fehler:', e); }
+        } catch (e) { console.error('Reset error:', e); }
     });
     document.getElementById('btnRefresh').addEventListener('click', refreshDashboard);
 
@@ -942,7 +942,7 @@
             }
             list.innerHTML = data.filter(f => f.endsWith('.ds')).map(file => '<div class="payload-item"><span class="name">📄 ' + file + '</span><div class="actions"><button class="btn btn-gold btn-sm" onclick="runPayload(\'' + file + '\')">' + t.btnExecute + '</button><button class="btn btn-sm" onclick="deletePayload(\'' + file + '\')">🗑</button></div></div>').join('');
         } catch (e) {
-            console.error('Payload-Fehler:', e);
+            console.error('Payload error:', e);
         }
     }
 
@@ -951,7 +951,7 @@
             await apiCall('/api/payload/run?file=' + encodeURIComponent(filename), 'POST');
             refreshDashboard();
             refreshPayloads();
-        } catch (e) { console.error('Start-Fehler:', e); }
+        } catch (e) { console.error('Start error:', e); }
     }
 
     async function deletePayload(filename) {
@@ -960,7 +960,7 @@
         try {
             await apiCall('/api/payload/delete?file=' + encodeURIComponent(filename), 'DELETE');
             refreshPayloads();
-        } catch (e) { console.error('Lösch-Fehler:', e); }
+        } catch (e) { console.error('Delete error:', e); }
     }
 
     document.getElementById('btnRefreshPayloads').addEventListener('click', refreshPayloads);
@@ -975,7 +975,7 @@
         try {
             const res = await fetch('/api/payload/upload', { method: 'POST', body: formData });
             if (res.ok) refreshPayloads();
-        } catch (e) { console.error('Upload-Fehler:', e); }
+        } catch (e) { console.error('Upload error:', e); }
         this.value = '';
     });
 
@@ -1033,7 +1033,7 @@
         } catch (e) {
             const t = i18n[currentLang] || i18n.de;
             document.getElementById('settingsContainer').innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding:20px;">' + t.errorLoadingSettings + '</div>';
-            console.error('Settings-Fehler:', e);
+            console.error('Settings error:', e);
         }
     }
 
@@ -1084,7 +1084,7 @@
                     document.getElementById('fileDeleteBtn').disabled = isDir;
                 });
             });
-        } catch (e) { console.error('Baum-Fehler:', e); }
+        } catch (e) { console.error('Tree error:', e); }
     }
 
     document.getElementById('fileActionBtn').addEventListener('click', function() {
@@ -1105,7 +1105,7 @@
             loadFileTree();
             document.getElementById('fileSelectionBox').value = '';
             this.disabled = true;
-        } catch (e) { console.error('Lösch-Fehler:', e); }
+        } catch (e) { console.error('Delete error:', e); }
     });
 
     document.getElementById('uploadFileBtn').addEventListener('click', function() {
@@ -1142,7 +1142,7 @@
             const res = await fetch('/logs');
             const text = await res.text();
             document.getElementById('logBox').value = text;
-        } catch (e) { console.error('Log-Fehler:', e); }
+        } catch (e) { console.error('Log error:', e); }
     }
     document.getElementById('refreshLogsBtn').addEventListener('click', refreshLogs);
     document.getElementById('clearLogsBtn').addEventListener('click', async function() {
@@ -1151,14 +1151,14 @@
         try {
             await fetch('/clearlogs', { method: 'GET' });
             refreshLogs();
-        } catch (e) { console.error('Clear-Fehler:', e); }
+        } catch (e) { console.error('Clear error:', e); }
     });
 
     // ============================================================
     // MIKROFON
     // ============================================================
     document.getElementById('micToggle').addEventListener('change', function() {
-        console.log('Mikrofon umgeschaltet:', this.checked);
+        console.log('Microphone toggled:', this.checked);
     });
     document.getElementById('micSaveBtn').addEventListener('click', function() {
         window.location.href = '/audio/save';
@@ -1166,7 +1166,7 @@
     document.getElementById('micClearBtn').addEventListener('click', async function() {
         try {
             await fetch('/audio/clear', { method: 'POST' });
-        } catch (e) { console.error('Clear Audio-Fehler:', e); }
+        } catch (e) { console.error('Clear audio error:', e); }
     });
 
     // ============================================================
@@ -1177,7 +1177,7 @@
             const res = await fetch('/version');
             const version = await res.text();
             document.getElementById('versionTag').textContent = version.trim();
-        } catch (e) { console.error('Version-Fehler:', e); }
+        } catch (e) { console.error('Version error:', e); }
     }
 
     // ============================================================

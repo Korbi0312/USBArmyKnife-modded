@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+
 #ifdef WAVESHARE_RP2350_ETH
 #include "HardwareEthernet.h"
 #include "CH9120/CH9120.h"

@@ -1,4 +1,7 @@
-﻿using RemoteViewing.Vnc.Server;
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Korbi0312
+// Copyright (c) 2024 i-am-shodan
+using RemoteViewing.Vnc.Server;
 using RemoteViewing.Vnc;
 using Microsoft.Extensions.Logging;
 
