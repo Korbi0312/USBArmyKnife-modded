@@ -6,6 +6,7 @@
 #include "../../Debug/Logging.h"
 #include "../../Devices/USB/USBCDC.h"
 #include "../../Devices/TFT/HardwareTFT.h"
+#include "../../Devices/LED/CrashLED.h"
 #define TAG "BOARD"
 
 static unsigned long previousMillis = 0;
@@ -25,6 +26,7 @@ void ESP32BoardSupport::begin(Preferences &prefs)
 {
     BoardSupport::begin(prefs);
 
+    initCrashLedPins();
     backtrace_saver::init();
     const auto &resetReason = esp_reset_reason();
     hasHadCrash = resetReason != ESP_RST_UNKNOWN && resetReason != ESP_RST_POWERON && resetReason != ESP_RST_SW;
@@ -41,6 +43,7 @@ void ESP32BoardSupport::loop(Preferences &prefs)
 
     if (hasHadCrash && !emittedCrashDump)
     {
+        setCrashLedRed();
         const auto RED = Devices::TFT.convertStringToColor("RED");
         const auto BLACK = Devices::TFT.convertStringToColor("BLACK");
         const auto WHITE = Devices::TFT.convertStringToColor("WHITE");

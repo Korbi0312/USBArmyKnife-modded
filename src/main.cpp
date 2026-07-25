@@ -7,9 +7,9 @@ void loop() {}
 #include <uptime.h>
 #include <Adafruit_TinyUSB.h>
 
+#include "Devices/LED/HardwareLED.h"
 #include "Devices/Platform/BoardSupport.h"
 #include "Devices/Button/HardwareButton.h"
-#include "Devices/LED/HardwareLED.h"
 #include "Devices/TFT/HardwareTFT.h"
 #include "Devices/Storage/HardwareStorage.h"
 #include "Devices/USB/USBCore.h"
@@ -58,6 +58,52 @@ static void displayMessage(const char* heading, const char* value = nullptr, boo
   currentLine++;
 }
 
+// ============================================================
+// ⬇️ NOT-AUS / RESET-Funktion (Soft-Reset – mit WiFi-Anzeige)
+// ============================================================
+void emergencyReset() {
+    Debug::Log.info(TAG, "EMERGENCY RESET - Button long press detected!");
+
+    // 1. Payload sofort stoppen
+    Attacks::Ducky.stop();
+
+    // 2. LED ausschalten
+    Devices::LED.changeLEDState(false, 0, 0, 0, 0);
+
+    // 3. Evil Portal deaktivieren (falls aktiv)
+    #ifdef HAS_MARAUDER
+        Attacks::Marauder.stopEvilPortal();
+    #endif
+    
+    // 4. WLAN zurücksetzen
+    Devices::WiFi.begin(prefs);
+
+    // 5. Display leeren
+    Devices::TFT.clearScreen();
+
+    // 6. "Complete Reset" für 1 Sekunde anzeigen
+    Devices::TFT.setForegroundColor(Devices::TFT.convertStringToColor("GREEN"));
+    Devices::TFT.display(0, 30, "Complete Reset");
+    Devices::TFT.display(0, 50, "All processes stopped");
+    delay(1000);
+
+    // 7. Startbildschirm (Dashboard) mit WiFi-Informationen
+    Devices::TFT.clearScreen();
+    currentLine = 0;
+    
+    // SSID aus Preferences lesen (oder Fallback auf Standard)
+    String ssid = prefs.getString("wifi-ap", "iPhone14");
+    
+    displayMessage("Device now running");
+    displayMessage("USB MODE:", "Serial");
+    displayMessage("USB CLASS:", "HID");
+    displayMessage("WiFi:", ssid.c_str());
+    displayMessage("Version:", GIT_COMMIT_HASH);
+
+    Debug::Log.info(TAG, "Emergency reset completed (Soft-Reset)");
+}
+// ============================================================
+
 void setup()
 {
   // first thing, tear USB down. We don't know what state the
@@ -82,6 +128,10 @@ void setup()
 
   Devices::TFT.begin(prefs);
   Devices::LED.begin(prefs);
+  
+  // LED beim Booten AUS
+  Devices::LED.changeLEDState(false, 0, 0, 0, 0);
+
   Devices::Button.begin(prefs);
   Devices::Mic.begin(prefs);
   
@@ -105,10 +155,11 @@ void setup()
     Devices::TFT.display(0, 0, "Error FlashFS invalid");
     for (int x = 0; x < 5; x++)
     {
-      // They might see/report some debug output
-      Devices::LED.changeLEDState(true, 0, 100, 100, x % 2 == 0 ? 255 : 0); // flash RED led
-      Debug::Log.error(TAG, "Flash filesystem is invalid, upload new FS image");
+      Devices::LED.changeLEDState(true, 0, 100, 100, 255); // Rot
       delay(1000);
+      Devices::LED.changeLEDState(false, 0, 0, 0, 0);     // Aus
+      delay(1000);
+      Debug::Log.error(TAG, "Flash filesystem is invalid, upload new FS image");
     }
 #ifdef ARDUINO_ARCH_ESP32
     // Other platforms don't implement ESP32 Marauder so we don't have to worry about a pi
@@ -116,6 +167,9 @@ void setup()
 #endif
   }
 
+  // ============================================================
+  // ⬇️ STARTBILDSCHIRM – wird beim Booten (Einstecken) angezeigt
+  // ============================================================
   displayMessage("Device now running");
   Debug::Log.info(TAG, "Running!");
 
@@ -147,8 +201,12 @@ void setup()
 
   Debug::Log.info(TAG, DEVICE_MAKE_MODEL);
 
+  String ssid = prefs.getString("wifi-ap", "iPhone14");
+  displayMessage("WiFi:", ssid.c_str());
+
   displayMessage("Version:", GIT_COMMIT_HASH);
   Debug::Log.info(TAG, std::string("Version: ")+GIT_COMMIT_HASH);
+  // ============================================================
 
   aux.begin(prefs);
 }

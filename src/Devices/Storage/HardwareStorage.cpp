@@ -37,6 +37,8 @@
 #define LOG_MMC "MMC"
 
 static uint8_t cachedCapacity = 0;
+static uint64_t cachedTotal = 0;
+static uint64_t cachedUsed = 0;
 static std::vector<std::string> filesCache;
 
 namespace Devices
@@ -240,16 +242,54 @@ uint8_t HardwareStorage::usedPercentage()
     fs::FSInfo info;
     if (FILE_INTERFACE.info(info))
     {
-        cachedCapacity = (info.usedBytes / info.totalBytes)* 100;
+        cachedUsed = info.usedBytes;
+        cachedTotal = info.totalBytes;
+        cachedCapacity = (cachedUsed / cachedTotal) * 100;
     }
     else
     {
         cachedCapacity = 0;
     }
 #else
-    cachedCapacity = (FILE_INTERFACE.usedBytes() / FILE_INTERFACE.totalBytes()) * 100;
+    uint64_t total = FILE_INTERFACE.totalBytes();
+    if (total > 0) {
+        uint64_t used = FILE_INTERFACE.usedBytes();
+        cachedUsed = used;
+        cachedTotal = total;
+        cachedCapacity = (uint8_t)((used * 100ULL) / total);
+    } else {
+        cachedCapacity = 0;
+    }
 #endif
     return cachedCapacity;
+}
+
+uint64_t HardwareStorage::usedBytes()
+{
+    if (cachedTotal > 0)
+        return cachedUsed;
+#if defined(NO_SD) && defined(ARDUINO_ARCH_RP2040)
+    fs::FSInfo info;
+    if (FILE_INTERFACE.info(info))
+        return info.usedBytes;
+    return 0;
+#else
+    return FILE_INTERFACE.usedBytes();
+#endif
+}
+
+uint64_t HardwareStorage::totalBytes()
+{
+    if (cachedTotal > 0)
+        return cachedTotal;
+#if defined(NO_SD) && defined(ARDUINO_ARCH_RP2040)
+    fs::FSInfo info;
+    if (FILE_INTERFACE.info(info))
+        return info.totalBytes;
+    return 0;
+#else
+    return FILE_INTERFACE.totalBytes();
+#endif
 }
 
 bool HardwareStorage::createEmptyFile(const std::string &filename)
@@ -303,14 +343,14 @@ size_t HardwareStorage::sectorSize()
 #endif
 }
 
-size_t HardwareStorage::deviceCapacity()
+uint64_t HardwareStorage::deviceCapacity()
 {
 #if defined(USE_SD_INTERFACE)
     return FILE_INTERFACE.cardSize();
 #elif defined (USE_SD_MMC_INTERFACE)
-    return FILE_INTERFACE.getCard()->csd.capacity;
+    return FILE_INTERFACE.cardSize();
 #else
-    return 0;
+    return FILE_INTERFACE.totalBytes();
 #endif
 }
 

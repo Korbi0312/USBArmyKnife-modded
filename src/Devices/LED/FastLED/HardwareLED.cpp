@@ -1,61 +1,79 @@
-#ifndef NO_LED
-#if defined(LED_DI_PIN) && !defined(LED_CI_PIN)
+#if !defined(NO_LED) && !(defined(LED_DI_PIN) && defined(LED_CI_PIN))
 #include "../HardwareLED.h"
+#include "../../../Debug/Logging.h"
 #include <FastLED.h>
 
-namespace Devices
-{
+#define LOG_LED "LED"
+#define LED_PIN 39
+#define NUM_LEDS 1
+
+namespace Devices {
     HardwareLED LED;
 }
 
 static CRGB leds[NUM_LEDS];
 
-void HardwareLED::changeLEDState(bool on, uint8_t hue, uint8_t saturation, uint8_t lum, uint8_t brightness)
-{
-  if (on == true)
-  {
-    // For some reason I need to do colour correction here. I wonder if the CRGB is the wrong byte order?
-    if (hue == 0 && saturation == 100 && lum == 100) // red
-    {
-      hue = 100;
+HardwareLED::HardwareLED() {}
+
+void HardwareLED::begin(Preferences &prefs) {
+    FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUM_LEDS);
+    FastLED.setBrightness(64);
+    registerUserConfigurableSetting(CATEGORY_USB, "led-boot-color", USBArmyKnifeCapability::SettingType::String, "000000");
+    String bootColor = prefs.getString("led-boot-color", "000000");
+    if (bootColor.length() == 6) {
+        long hex = strtol(bootColor.c_str(), NULL, 16);
+        uint8_t r = (hex >> 16) & 0xFF;
+        uint8_t g = (hex >> 8) & 0xFF;
+        uint8_t b = hex & 0xFF;
+        setColor(r, g, b);
+        Debug::Log.info(LOG_LED, std::string("LED Boot-Farbe: #") + bootColor.c_str());
+    } else {
+        off();
+        Debug::Log.info(LOG_LED, "LED initialisiert (AUS)");
     }
-    else if (hue == 100 && saturation == 100 && lum == 100) // green
-    {
-      hue = 0;
-    }
-    else if (hue == 240 && saturation == 100 && lum == 100) // blue
-    {
-      hue = 160;
+    _initialized = true;
+}
+
+void HardwareLED::loop(Preferences &prefs) {
+    // nichts zu tun
+}
+
+void HardwareLED::setColor(uint8_t r, uint8_t g, uint8_t b) {
+    if (!_initialized) return;
+    leds[0] = CRGB(r, g, b);
+    FastLED.show();
+}
+
+void HardwareLED::off() {
+    setColor(0, 0, 0);
+}
+
+void HardwareLED::on() {
+    setColor(255, 255, 255);
+}
+
+void HardwareLED::green() {
+    setColor(0, 255, 0);
+}
+
+void HardwareLED::red() {
+    setColor(255, 0, 0);
+}
+
+void HardwareLED::blue() {
+    setColor(0, 0, 255);
+}
+
+void HardwareLED::changeLEDState(bool on, uint8_t hue, uint8_t saturation, uint8_t lum, uint8_t brightness) {
+    if (!_initialized) return;
+
+    if (!on) {
+        off();
+        return;
     }
 
-    saturation = map(saturation, 0, 100, 30, 255);
-    lum = map(lum, 0, 100, 100, 255);
-        
-    leds[0] = CHSV(hue, saturation, lum);
-    
     FastLED.setBrightness(brightness);
-  }
-  else
-  {
-	  leds[0] = CRGB::Black;
-    FastLED.setBrightness(0);
-  }
-  FastLED.show();
+    leds[0] = CHSV(hue, saturation, lum);
+    FastLED.show();
 }
-
-HardwareLED::HardwareLED()
-{
-}
-
-void HardwareLED::loop(Preferences& prefs)
-{
-}
-
-void HardwareLED::begin(Preferences &prefs)
-{
-  FastLED.addLeds<WS2812, LED_DI_PIN>(leds, NUM_LEDS);
-  FastLED.setBrightness(0);
-  FastLED.show();
-}
-#endif
 #endif

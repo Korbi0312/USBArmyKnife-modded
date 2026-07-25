@@ -48,3 +48,11 @@ packages/
 examples/covertstorage/disk.img
 /tools/Agent/mic.pcm
 /src/version.h
+
+.fake
+DeviceCleanup/
+LILYGO-T-Dongle-S3.Firmware.binaries/
+SCHTASKS
+agent.img
+flash_download_tool/
+ui/content/mock-server.ps1

@@ -13,6 +13,8 @@ public:
 
   bool isRunning() { return running; }
   virtual uint8_t usedPercentage();
+  virtual uint64_t usedBytes();
+  virtual uint64_t totalBytes();
   virtual std::vector<std::string> listFiles();
   virtual size_t getFileSize(const std::string& filename);
   virtual bool doesFileExist(const std::string& filename);
@@ -25,7 +27,7 @@ public:
   virtual File openFile(const std::string& filename, const char* mode);
   virtual bool isRawAccessSupported();
   virtual size_t sectorSize();
-  virtual size_t deviceCapacity();
+  virtual uint64_t deviceCapacity();
   virtual int32_t readRawSectors(uint8_t* buffer, uint32_t lba, uint32_t sectors);
   virtual int32_t writeRawSectors(uint8_t* buffer, uint32_t lba, uint32_t sectors);
   virtual void flush();

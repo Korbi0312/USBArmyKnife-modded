@@ -5,6 +5,8 @@
 
 #include "../../Debug/Logging.h"
 
+#define LOG_DUCKY "Ducky"   // ⬅️ Definiert den Log-Tag
+
 #include "../../Devices/Button/HardwareButton.h"
 #include "../../Devices/Storage/HardwareStorage.h"
 #include "../../Devices/USB/USBCore.h"
@@ -301,6 +303,23 @@ void DuckyPayload::setPayloadCmdLine(const std::string &cmdLine)
     localCmdLineToExecute = std::string(cmdLine.c_str(), cmdLine.length());
 }
 
+// ⬇️ stop() – stoppt den aktuellen Payload sofort
+void DuckyPayload::stop() {
+    if (currentlyExecutingFile.empty() && localCmdLineToExecute.empty()) {
+        Debug::Log.info(LOG_DUCKY, "No payload running to stop");
+        return;
+    }
+
+    Debug::Log.info(LOG_DUCKY, "Stopping payload immediately");
+    currentlyExecutingFile.clear();
+    localCmdLineToExecute.clear();
+    lastSuccessfullyEvaluatedLine = 0;
+    duckyFileParser.Restart();
+    totalErrors = 0;
+    lastExecutionResult = 0;
+    Debug::Log.info(LOG_DUCKY, "Payload stopped and interpreter reset");
+}
+
 DuckyPayload::DuckyPayload()
 {
 }
@@ -340,13 +359,14 @@ void DuckyPayload::loop(Preferences &prefs)
             Debug::Log.info(LOG_DUCKY, "Executing cmdline: " + localCmdLineToExecute);
         }
 
+        // KEINE automatische LED-Steuerung – LED wird nur durch DuckyScript-Befehle gesteuert
         lastExecutionResult = duckyFileParser.Execute(executeFile ? currentlyExecutingFile : "", extCommands, consts);
         const bool executionHasCompleted = lastExecutionResult == DuckyInterpreter::SCRIPT_ERROR || lastExecutionResult == DuckyInterpreter::END_OF_FILE;
 
         if (lastExecutionResult == DuckyInterpreter::SCRIPT_ERROR)
         {
             Debug::Log.error(LOG_DUCKY, executeFile ? ("Script error near line " + std::to_string(lastSuccessfullyEvaluatedLine + 1)) : "Error executing command");
-            totalErrors++;      
+            totalErrors++;
         }
         else if (lastExecutionResult == DuckyInterpreter::END_OF_FILE)
         {
@@ -356,7 +376,7 @@ void DuckyPayload::loop(Preferences &prefs)
         if (executionHasCompleted)
         {
             // we are safe to clear both of these in whatever mode we are running in
-            currentlyExecutingFile.clear(); 
+            currentlyExecutingFile.clear();
             localCmdLineToExecute.clear();
             lastSuccessfullyEvaluatedLine = 0;
             duckyFileParser.Restart();

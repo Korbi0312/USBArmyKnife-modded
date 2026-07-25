@@ -2,6 +2,10 @@
 #if defined(LED_DI_PIN) && defined(LED_CI_PIN)
 #include "../HardwareLED.h"
 #include <APA102.h>
+#include "../../../Debug/Logging.h"
+#include "../../../Utilities/Settings.h"
+
+#define LOG_LED "LED"
 
 namespace Devices
 {
@@ -36,6 +40,34 @@ static rgb_color hsvToRgb(uint16_t h, uint8_t s, uint8_t v)
     return rgb_color(r, g, b);
 }
 
+void HardwareLED::setColor(uint8_t r, uint8_t g, uint8_t b) {
+  colors[0] = rgb_color(r, g, b);
+  ledStrip.write(colors, 1, brightness);
+}
+
+void HardwareLED::off() {
+  ledStrip.write(colors, 1, 0);
+}
+
+void HardwareLED::on() {
+  changeLEDState(true, 0, 0, 100, 255);
+}
+
+void HardwareLED::green() {
+  colors[0] = rgb_color(0, 255, 0);
+  ledStrip.write(colors, 1, brightness);
+}
+
+void HardwareLED::red() {
+  colors[0] = rgb_color(255, 0, 0);
+  ledStrip.write(colors, 1, brightness);
+}
+
+void HardwareLED::blue() {
+  colors[0] = rgb_color(0, 0, 255);
+  ledStrip.write(colors, 1, brightness);
+}
+
 void HardwareLED::changeLEDState(bool on, uint8_t hue, uint8_t saturation, uint8_t lum, uint8_t brightness)
 {
   if (!on)
@@ -68,7 +100,20 @@ void HardwareLED::loop(Preferences& prefs)
 
 void HardwareLED::begin(Preferences &prefs)
 {
-  changeLEDState(true, 100, 100, 100, 200);
+  registerUserConfigurableSetting(CATEGORY_USB, "led-boot-color", USBArmyKnifeCapability::SettingType::String, "000000");
+  String bootColor = prefs.getString("led-boot-color", "000000");
+  if (bootColor.length() == 6) {
+    long hex = strtol(bootColor.c_str(), NULL, 16);
+    uint8_t r = (hex >> 16) & 0xFF;
+    uint8_t g = (hex >> 8) & 0xFF;
+    uint8_t b = hex & 0xFF;
+    colors[0] = rgb_color(r, g, b);
+    ledStrip.write(colors, 1, brightness);
+    Debug::Log.info(LOG_LED, std::string("LED Boot-Farbe: #") + bootColor.c_str());
+  } else {
+    changeLEDState(true, 100, 100, 100, 200);
+  }
+  _initialized = true;
 }
 #endif
 #endif
