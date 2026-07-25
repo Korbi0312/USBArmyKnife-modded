@@ -791,13 +791,11 @@
         currentLang = 'de';
         localStorage.setItem('lang', 'de');
         applyLang();
-        setKeyboardLayout('win_de-DE');
     });
     document.getElementById('langEn').addEventListener('click', function() {
         currentLang = 'en';
         localStorage.setItem('lang', 'en');
         applyLang();
-        setKeyboardLayout('win_en-GB');
     });
 
     // ============================================================
@@ -1186,7 +1184,6 @@
     // INIT
     // ============================================================
     applyLang();
-    setKeyboardLayout('win_en-GB');
     refreshDashboard();
     refreshPayloads();
     loadFileTree();

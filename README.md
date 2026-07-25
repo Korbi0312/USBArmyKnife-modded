@@ -15,7 +15,7 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 - **Original UI Crash Fix**: Switching between Modern and Original UI no longer crashes (OOM fix via `beginResponse_P`)
 - **Emergency Reset**: Long button press triggers a software reset
 - **Boot LED Color**: Configurable startup LED color via the web interface
-- **DuckyScript**: German keyboard layout `win_de-DE` enabled by default
+- **DuckyScript**: Multiple keyboard layouts selectable via `KEYBOARD_LAYOUT` command in your script (e.g. `win_de-DE`, `win_en-GB`, `win_fr`, etc.)
 - **SD Storage**: SD card usage displayed on the dashboard
 - **File Browser**: Built-in file browser with upload/download/delete
 

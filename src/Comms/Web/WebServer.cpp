@@ -248,7 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
         d.innerHTML='<button class="btn btn-sm btn-outline-light me-1 lb'+(lang==='de'?' active':'')+'" data-l="de">DE</button><button class="btn btn-sm btn-outline-light lb'+(lang==='en'?' active':'')+'" data-l="en">EN</button>';
         nav.appendChild(d);
     }
-    setKB(lang==='de'?'win_de-DE':'win_en-GB');
     var s=document.createElement('style');
     s.textContent='.lb.active{background:rgba(255,255,255,0.2);font-weight:700}.lb{cursor:pointer}';
     document.head.appendChild(s);
@@ -260,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var l=b.getAttribute('data-l');
             lang=l;localStorage.setItem('lang',l);
             document.querySelectorAll('.lb').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-l')===l);});
-            setKB(l==='de'?'win_de-DE':'win_en-GB');
             tr(l);
         }
     });
