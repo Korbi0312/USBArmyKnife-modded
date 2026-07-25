@@ -4,11 +4,60 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 
 > 🚀 **v1.0.0** — Full release with settings UI enhancements, keyboard layout runtime switching, emergency reset WiFi fix, and more.
 
-## Modded Features
+## Testimonials
+
+"Your device is evil. You are doing evil." - Mr. Peoples via X
+
+## Intro
+
+There is a problem with physical access/USB attacks today. On their own, each attack doesn't provide enough of a solution to meet most objectives.
+
+- USB keyboard attacks (Ducky, HID&Run) require a logged on machine and even the best tools don't provide a solution to this.
+- Networking attacks (poison tap and alike) might get you a password hash but often require something complex hanging out of an Ethernet port to get this back for offline cracking.
+- When you get on a box, what options do you still have for exfiltrating data when anything that opens a socket is getting sent to VT.
+
+What was needed is a physical access platform that enables a suitable rogue to take the best bits of each attack and workaround their respective problems with another attack. Ideally this platform would be so cheap and covert that losing one wouldn't be an issue.
+
+This is why I decided to create the USB Army Knife.
+
+- Want to become a USB Ethernet adapter PCAP the interface and egress it over WiFI? USB Army Knife.
+- Want to wrap your attacks in custom UI or just show a Hollywood interface when your attack has worked? USB Army Knife
+- Want a covert storage device? USB Army Knife
+- Want to deauth everyone on the WiFi, PCAP the renegotiation and email this to yourself when the machine has been left unlocked for offline cracking? USB Army Knife
+- Want your attack to destroy itself when it's been found? USB Army Knife
+- What to connect to other bits of hardware, motion sensors and alike? USB Army Knife.
+- Want to view what's on the victim's screen over WiFi? USB Army Knife.
+- Want to record what your victim is saying? USB Army Knife.
+
+## Video
+
+This video shows how the ultimate rick roll works (now with emergency reset WiFi fix):
+
+rickroll.mp4
+
+This video shows how the USB PCAP functionality and has a brief peak at the web interface:
+
+USBPcapExample.mp4
+
+This video shows how to pull the victims machine once the agent has been installed:
+
+VNCExample.mp4
+
+## Features
+
+This project implements a variety of attacks based around an easily concealable USB/WiFi/BT dongle. The attacks include sending BadUSB (USB HID commands using DuckyScript), appearing as mass storage devices, appearing as USB network devices, and performing WiFi and Bluetooth attacks with ESP32 Marauder. Attacks are deployed using a Ducky-like language you probably already know and love. This language has been augmented with a raft of custom commands and even the entire ESP32 Marauder capability (improved). Attacks include:
+
+- **USB HID Attacks**: Send custom HID commands using DuckyScript, supports BadUSB & USB HID and run style attacks. Supports multiple keyboard layouts/languages.
+- **Mass Storage Device**: Emulate a USB mass storage device (USB drive and CDROM).
+- **USB Network Device**: Appear as a USB network device.
+- **WiFi and Bluetooth Attacks**: Utilize ESP32 Marauder for WiFi and Bluetooth attacks. Include EvilAP, Deauth and pcap.
+- **Hot Mic**: Plug in a USB device and stream audio over WiFi.
+
+### Modded Features
 
 | Feature | Description |
 | ------- | ----------- |
-| **Settings UI Enhancements** | Dropdown presets (VID, PID, USB version, device info, WiFi modes, TFT text size), named color picker (15 colors + custom) for boot LED, unit selector (sec/min/hr) for agent polling |
+| **Settings UI Enhancements** | Dropdown presets (VID, PID, USB version, device info, WiFi modes, TFT text size), named color picker (15 colors + custom) for boot LED, unit selector (sec/min/hr) for agent polling – in both gold and Bootstrap themes |
 | **Two Themes** | Gold/modern theme (default) and original Bootstrap theme (`/index_original.html`) – both with all settings enhancements |
 | **Keyboard Layout at Runtime** | Keyboard layout is now a runtime setting decoupled from the OS language switcher, with 23 layouts enabled |
 | **Boot LED Fix** | Green boot LED properly turns off after startup |
@@ -19,31 +68,38 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 | **MIT Licensed** | SPDX license headers on all 81+ source files |
 | **English Only** | Full codebase translated from German to English |
 
-## Video
+## Examples
 
-This video shows how the ultimate rick roll works with the emergency reset WiFi fix:
-
-rickroll.mp4
-
-## Upstream Contribution Branch
-
-C++ core changes (no UI) are maintained in a separate branch for potential upstream PR:  
-[settings-pr-v2](https://github.com/Korbi0312/USBArmyKnife-modded/tree/settings-pr-v2)
+| Name | Description |
+| ---- | ----------- |
+| Covert Storage | Example showing how to masquerade as two different USB mass storage devices. The first time the device is plugged in the devices appears with the full contents of the micro SD card. In all subsequence attempts a different 'benign' drive appears. |
+| Progress Bar | Images are displayed on the devices LCD screen showing a progress bar. Great for those Hollywood style attacks or if you want a visual indicator to show an attack has deployed. |
+| Ultimate RickRoll | Inject keystrokes to display the famous rickroll video but also uses ESP32 Marauder to blast the lyrics over WiFi. |
+| USB Ethernet PCAP | Turns the device into a USB network adapter and collects a PCAP of the first few seconds of network traffic. |
+| Deploy the serial agent | Deploys the agent if it isn't already installed and sends commands over the serial port. Command output can be seen in the web interface |
+| Pull the screen | Deploys the agent, the agent includes a tiny VNC server. Now the screen can be viewed via the web interface |
+| Simple UI | A simple yet powerful UI to select scripts/images and run these using the hardware button. Shows how you can build complex UI interactions simply. |
+| Stream Mic audio over WiFi | The M5Stack AtomS3U has a microphone that you can stream over WiFi. |
+| Instantly crash Linux boxes | Deploy a bad filesystem which cause Linux machines which automount to panic. |
+| Evil USB CDROM/NIC | Pretend to be a USB NICs which requires a driver from a CDROM device that appears when you plug the NIC in. |
+| Use different keyboard layouts | Automatically support different keyboard layouts without rewriting your payloads |
 
 ## Supported Hardware
 
 | Hardware | Description | Purchase Links |
 | -------- | ----------- | -------------- |
-| **LilyGo T-Dongle S3** (Recommended) ![screenshot](./docs/images/t-dongle-s3.png) | The LilyGo T-Dongle S3 is a USB pen drive shaped ESP32-S3 development board with color LCD screen, physical button, hidden micro SD card slot (inside the USB-A connector) and SPI adapter. 16MB flash, WiFi station + Bluetooth attacks. Fully supported and tested. | [AliExpress](https://www.aliexpress.com) · [Amazon UK](https://www.amazon.co.uk) · [Amazon US](https://www.amazon.com) |
+| **LilyGo T-Dongle S3** (Recommended) ![screenshot](./docs/images/t-dongle-s3.png) | The LilyGo T-Dongle S3 is a USB pen drive shaped ESP32-S3 development board. It features a colour LCD screen, physical button, hidden/covert micro SD card adapter (inside the USB-A connector) as well as a SPI adapter. It has 16MB of flash. It is based on the ESP32-S3 chipset which enables it to host a WiFi station as well as support a range of WiFi and Bluetooth attacks. It is incredibly cheap! There are two versions of this device with and without the screen. Only the version with the screen has been tested. | [AliExpress](https://www.aliexpress.com) · [Amazon UK](https://www.amazon.co.uk) · [Amazon US](https://www.amazon.com) · [eBay UK](https://www.ebay.co.uk) |
 
 ## Getting Started
 
-### Flashing Pre-Built Firmware
+Firstly please check the [wiki](https://github.com/Korbi0312/USBArmyKnife-modded/wiki) for a step by step guide and all manner of advice for getting started.
 
-1. Download the latest firmware from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page
-2. Extract `LILYGO-T-Dongle-S3.Firmware.binaries.zip`
-3. Put the T-Dongle S3 into flash mode (hold BOOT + RESET, release RESET, then release BOOT)
-4. Flash using [esptool](https://github.com/espressif/esptool) or the [web installer](https://esp.huhn.me/)
+### Installation
+
+There are two options for getting the USB Army Knife firmware onto your device:
+
+1. **Flashing pre-built firmware using your web browser** (easiest route) – download from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page and use the [web installer](https://esp.huhn.me/)
+2. **Building and flashing the source** using PlatformIO (more powerful) – see [Building from Source](#building-from-source)
 
 ### Building from Source
 
@@ -57,18 +113,47 @@ platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 ## Usage
 
 1. Plug the T-Dongle S3 into a USB port
-2. Connect to WiFi `iPhone14` (password: `password`)
-3. Open http://4.3.2.1:8080 in your browser
-4. Done – dashboard, payloads, settings and more are ready
+2. Connect to the WiFi access point `iPhone14` with the password `password`
+3. Access the web interface at http://4.3.2.1:8080
+4. Ensure the web interface has correctly loaded. You should see the currently running status and uptime. If not refresh the page.
+5. Use the web interface to create and manage your attacks using DuckyScript.
+
+ESP-S2 based devices have WiFi support but do not have a web interface. Attacks are managed via DuckyScript files. RP2040 devices do not have ESP32 Marauder capability.
 
 ## How to Get Help
 
-- **Questions about DuckyScript?** — See the [DuckyScript quick reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/DuckyScript-Quick-Reference) and the [USB Army Knife command reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/Command-Reference)
-- **Found a bug?** — Create an issue on this repository
+- **Questions about DuckyScript?**
+  - [DuckyScript quick reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/DuckyScript-Quick-Reference)
+  - [The USB Army Knife command reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/Command-Reference)
+- **Problem getting started?**
+  - Check out the [examples](https://github.com/i-am-shodan/USBArmyKnife/tree/master/examples)
+  - The [discussions pages](https://github.com/i-am-shodan/USBArmyKnife/discussions)
+- **Found a bug?**
+  - Create an [issue](https://github.com/Korbi0312/USBArmyKnife-modded/issues)
+
+## Upstream Contribution Branch
+
+C++ core changes (no UI) are maintained in a separate branch for potential upstream PR:
+[settings-pr-v2](https://github.com/Korbi0312/USBArmyKnife-modded/tree/settings-pr-v2)
+
+## Future plans
+
+### USB Host Mode / Mobile device support
+
+There is no reason the USB Army Knife can't also operate in USB host mode. That is the same mode a computer works in. In this way the USB Army Knife can issue commands as if it was a computer. With most smart phones supporting PTP (picture transfer protocol) this means you could in theory plug in a USB Army Knife (with a USB adapter) into a phone and have it pull the photos off.
+
+Espressif have documentation for USB host mode and also example code. They do not have an example for the PTP protocol. You can collect a PCAP of your phone using PTP using USB PCAP there is even a WireShark dissector.
 
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request.
+
+## Contact
+
+If you have any questions or suggestions, feel free to reach out:
+
+- Raise an issue on the repository: [GitHub Repository](https://github.com/Korbi0312/USBArmyKnife-modded/issues)
+- Original project on Twitter: [@therealshodan](https://twitter.com/therealshodan)
 
 ## License
 
@@ -78,5 +163,9 @@ Original project: https://github.com/i-am-shodan/USBArmyKnife
 
 ## Acknowledgments
 
-- Inspired by various BadUSB projects and the ESP32 Marauder project
-- Based on the excellent [USB Army Knife](https://github.com/i-am-shodan/USBArmyKnife) by i-am-shodan
+- Inspired by various BadUSB projects and the ESP32 Marauder project.
+- Based on the excellent [USB Army Knife](https://github.com/i-am-shodan/USBArmyKnife) by i-am-shodan.
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Korbi0312/USBArmyKnife-modded&type=Date)](https://star-history.com/#Korbi0312/USBArmyKnife-modded&Date)
