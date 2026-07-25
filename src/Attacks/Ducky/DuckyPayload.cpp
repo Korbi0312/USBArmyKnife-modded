@@ -299,12 +299,14 @@ void DuckyPayload::setPayload(const std::string &path)
     currentlyExecutingFile = newFileToExecute;
     lastSuccessfullyEvaluatedLine = 0;
     duckyFileParser.Restart();
+    if (preferences != nullptr) applyKeyboardLayoutFromPrefs(*preferences);
     Debug::Log.info(LOG_DUCKY, "Setting payload to - '" + currentlyExecutingFile + "'");
 }
 
 void DuckyPayload::setPayloadCmdLine(const std::string &cmdLine)
 {
     localCmdLineToExecute = std::string(cmdLine.c_str(), cmdLine.length());
+    if (preferences != nullptr) applyKeyboardLayoutFromPrefs(*preferences);
 }
 
 // ⬇️ stop() – stops the current payload immediately
@@ -328,10 +330,23 @@ DuckyPayload::DuckyPayload()
 {
 }
 
+void DuckyPayload::applyKeyboardLayoutFromPrefs(Preferences &prefs)
+{
+    String layout = prefs.getString("keyboardLayout", "");
+    if (layout.length() > 0)
+    {
+        duckyFileParser.SetKeyboardLayout(layout.c_str());
+        Debug::Log.info(LOG_DUCKY, "Keyboard layout loaded: " + std::string(layout.c_str()));
+    }
+}
+
 void DuckyPayload::begin(Preferences &prefs)
 {
     preferences = &prefs;
+    registerUserConfigurableSetting(CATEGORY_DUCKY, "keyboardLayout",
+        USBArmyKnifeCapability::SettingType::String, "");
     addDuckyScriptExtensions(extCommands, consts);
+    applyKeyboardLayoutFromPrefs(prefs);
 }
 
 void DuckyPayload::loop(Preferences &prefs)

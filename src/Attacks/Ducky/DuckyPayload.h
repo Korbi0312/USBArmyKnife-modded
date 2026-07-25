@@ -22,6 +22,7 @@ public:
     
     // ⬇️ Stops the current payload immediately (Emergency / Soft Reset)
     void stop();
+    void applyKeyboardLayoutFromPrefs(Preferences &prefs);
 
     void registerExtension(const std::string& command, 
                           std::function<int(const std::string&, 
