@@ -985,6 +985,75 @@
     const SETTING_PRESETS = {
         'usbDeviceType': [['0','None (0)'],['1','Serial (1)'],['2','NCM (2)']],
         'usbClassType': [['0','None (0)'],['1','HID (1)'],['2','Storage (2)']],
+        'usbDeviceVID': [
+            ['0xcafe','0xcafe (USBArmyKnife Default)'],
+            ['0x303a','0x303a (Espressif)'],
+            ['0x1a86','0x1a86 (QinHeng CH340)'],
+            ['0x10c4','0x10c4 (Silicon Labs CP210x)'],
+            ['0x0403','0x0403 (FTDI)'],
+            ['0x2341','0x2341 (Arduino)'],
+            ['0x2e8a','0x2e8a (Raspberry Pi)'],
+            ['0x1209','0x1209 (pid.codes)']
+        ],
+        'usbDevicePID': [
+            ['0x403f','0x403f (USBArmyKnife Default)'],
+            ['0x0001','0x0001'],
+            ['0x1001','0x1001'],
+            ['0xea60','0xea60 (CH340)'],
+            ['0xea70','0xea70 (CH341)'],
+            ['0x6001','0x6001 (FT232)'],
+            ['0x0002','0x0002'],
+            ['0x0003','0x0003']
+        ],
+        'usbVersion': [
+            ['0x0100','0x0100 (USB 1.0)'],
+            ['0x0110','0x0110 (USB 1.1)'],
+            ['0x0200','0x0200 (USB 2.0)'],
+            ['0x0210','0x0210 (USB 2.1)'],
+            ['0x0300','0x0300 (USB 3.0)']
+        ],
+        'usbDevVersion': [
+            ['0x0100','0x0100 (v1.0)'],
+            ['0x0101','0x0101 (v1.01 Default)'],
+            ['0x0110','0x0110 (v1.1)'],
+            ['0x0200','0x0200 (v2.0)']
+        ],
+        'usbSerialRaw': [['0','Off (CDC Serial)'],['1','On (Raw USB)']],
+        'usbDevMfr': [
+            ['Espressif Systems','Espressif Systems (Default)'],
+            ['Arduino LLC','Arduino LLC'],
+            ['FTDI','FTDI'],
+            ['Generic','Generic'],
+            ['Microsoft','Microsoft']
+        ],
+        'usbDevProdDesc': [
+            ['TinyUSB Device','TinyUSB Device (Default)'],
+            ['USB Serial','USB Serial'],
+            ['USB Storage','USB Storage'],
+            ['HID Keyboard','HID Keyboard'],
+            ['HID Mouse','HID Mouse']
+        ],
+        'agentPolling': [['0','Off'],['1','On']],
+        'agentPollSec': [
+            ['1','1 sec'],
+            ['5','5 sec'],
+            ['10','10 sec'],
+            ['15','15 sec (Default)'],
+            ['30','30 sec'],
+            ['60','1 min'],
+            ['120','2 min']
+        ],
+        'pcapNcmOnStart': [['0','Off'],['1','On']],
+        'tftTextSize': [
+            ['5','5 (Small)'],
+            ['10','10 (Default)'],
+            ['15','15 (Medium)'],
+            ['20','20 (Large)'],
+            ['25','25 (X-Large)'],
+            ['30','30 (XX-Large)']
+        ],
+        'wifi-ap-mode': [['0','Off (Station)'],['1','On (AP Mode)']],
+        'wifi-bootstate': [['0','Off at boot'],['1','On at boot']],
         'keyboardLayout': [
             ['','Default (en-US)'],
             ['win_be','Belgian (AZERTY)'],
@@ -1039,9 +1108,10 @@
                     html += '<div class="form-group"><label class="form-label">' + t.settingsNew + '</label>';
                     const presets = SETTING_PRESETS[name];
                     if (presets) {
+                        const normVal = (x) => { const n = Number(x); return isNaN(n) ? String(x) : String(n); };
                         html += '<select class="form-control" id="value-' + targetId + '" ' + (!isCustom ? 'disabled' : '') + '>';
                         for (const p of presets) {
-                            html += '<option value="' + p[0] + '"' + (String(displayVal) === p[0] ? ' selected' : '') + '>' + p[1] + '</option>';
+                            html += '<option value="' + p[0] + '"' + (normVal(displayVal) === normVal(p[0]) ? ' selected' : '') + '>' + p[1] + '</option>';
                         }
                         html += '</select>';
                     } else if (name === 'led-boot-color') {
