@@ -11,6 +11,8 @@
 class DuckyPayload : USBArmyKnifeCapability {
 public:
   DuckyPayload();
+  void stop();
+  void applyKeyboardLayoutFromPrefs(Preferences& prefs);
 
   virtual void begin(Preferences& prefs);
   virtual void loop(Preferences& prefs);

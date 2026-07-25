@@ -288,6 +288,11 @@ void DuckyPayload::setPayload(const std::string &path)
         Debug::Log.warning(LOG_DUCKY, "A payload is already running, attempting reset");
     }
 
+    if (preferences != nullptr)
+    {
+        applyKeyboardLayoutFromPrefs(*preferences);
+    }
+
     // Convert to std::string
     std::string newFileToExecute(path.c_str(), path.length());
     currentlyExecutingFile = newFileToExecute;
@@ -298,6 +303,11 @@ void DuckyPayload::setPayload(const std::string &path)
 
 void DuckyPayload::setPayloadCmdLine(const std::string &cmdLine)
 {
+    if (preferences != nullptr)
+    {
+        applyKeyboardLayoutFromPrefs(*preferences);
+    }
+
     localCmdLineToExecute = std::string(cmdLine.c_str(), cmdLine.length());
 }
 
@@ -308,7 +318,23 @@ DuckyPayload::DuckyPayload()
 void DuckyPayload::begin(Preferences &prefs)
 {
     preferences = &prefs;
+    registerUserConfigurableSetting(CATEGORY_DUCKY, "keyboardLayout", USBArmyKnifeCapability::SettingType::String, "");
     addDuckyScriptExtensions(extCommands, consts);
+}
+
+void DuckyPayload::applyKeyboardLayoutFromPrefs(Preferences &prefs)
+{
+    std::string layout = prefs.getString("keyboardLayout", "");
+    if (!layout.empty())
+    {
+        duckyFileParser.SetKeyboardLayout(layout);
+        Debug::Log.info(LOG_DUCKY, "Applied keyboard layout from prefs: " + layout);
+    }
+}
+
+void DuckyPayload::stop()
+{
+    reset();
 }
 
 void DuckyPayload::loop(Preferences &prefs)

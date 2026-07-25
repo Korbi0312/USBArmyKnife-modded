@@ -199,6 +199,9 @@ void enumerateSettingsAsJson(Preferences &prefs, JsonArray array)
         case CATEGORY_TFT:
             categoryObj["name"] = "TFT";
             break;
+        case CATEGORY_DUCKY:
+            categoryObj["name"] = "DUCKY";
+            break;
         default:
             categoryObj["name"] = "UNKNOWN";
             break;

@@ -703,6 +703,10 @@ static int handleKeyboardLayout(const std::string &str, const std::unordered_map
         else
         {
             Debug::Log.info(LOG_DUCKY, "Keyboard layout set to " + entries[0]);
+            if (preferences != nullptr)
+            {
+                preferences->putString("keyboardLayout", entries[0].c_str());
+            }
             return true;
         }
     }
