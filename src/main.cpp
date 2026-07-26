@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Korbi0312
-// Copyright (c) 2024 i-am-shodan
-
 #if ARDUINO_USB_MODE
 #warning This sketch should be used when USB is in OTG mode
 void setup() {}
@@ -10,6 +6,8 @@ void loop() {}
 
 #include <uptime.h>
 #include <Adafruit_TinyUSB.h>
+#include <WiFi.h>
+#include <esp_task_wdt.h>
 
 #include "Devices/LED/HardwareLED.h"
 #include "Devices/Platform/BoardSupport.h"
@@ -63,7 +61,7 @@ static void displayMessage(const char* heading, const char* value = nullptr, boo
 }
 
 // ============================================================
-// ⬇️ Emergency Stop / Reset Function (Soft Reset – with WiFi display)
+// ⬇️ NOT-AUS / RESET-Funktion (Soft-Reset – mit WiFi-Anzeige)
 // ============================================================
 void emergencyReset() {
     Debug::Log.info(TAG, "EMERGENCY RESET - Button long press detected!");
@@ -79,23 +77,26 @@ void emergencyReset() {
         Attacks::Marauder.stopEvilPortal();
     #endif
     
-    // 4. Reset WiFi
+    // 4. WLAN komplett ausschalten und Reset
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+    delay(200);
     Devices::WiFi.begin(prefs);
 
     // 5. Display leeren
     Devices::TFT.clearScreen();
 
-    // 6. Show "Complete Reset" for 1 second
+    // 6. "Complete Reset" für 1 Sekunde anzeigen
     Devices::TFT.setForegroundColor(Devices::TFT.convertStringToColor("GREEN"));
     Devices::TFT.display(0, 30, "Complete Reset");
     Devices::TFT.display(0, 50, "All processes stopped");
     delay(1000);
 
-    // 7. Show start screen (Dashboard) with WiFi info
+    // 7. Startbildschirm (Dashboard) mit WiFi-Informationen
     Devices::TFT.clearScreen();
     currentLine = 0;
     
-    // Read SSID from Preferences (or fallback to default)
+    // SSID aus Preferences lesen (oder Fallback auf Standard)
     String ssid = prefs.getString("wifi-ap", "iPhone14");
     
     displayMessage("Device now running");
@@ -115,6 +116,8 @@ void setup()
   // forget about us and tear down
   tud_disconnect();
 
+  disableLoopWDT(); // prevent watchdog reboot during long WHILE loops
+
   prefs.begin("usbarmyknife");
 
   // First set up our core components / hw
@@ -132,6 +135,9 @@ void setup()
 
   Devices::TFT.begin(prefs);
   Devices::LED.begin(prefs);
+  
+  // LED beim Booten AUS
+  Devices::LED.changeLEDState(false, 0, 0, 0, 0);
 
   Devices::Button.begin(prefs);
   Devices::Mic.begin(prefs);
@@ -169,7 +175,7 @@ void setup()
   }
 
   // ============================================================
-  // ⬇️ START SCREEN – displayed on boot (when plugged in)
+  // ⬇️ STARTBILDSCHIRM – wird beim Booten (Einstecken) angezeigt
   // ============================================================
   displayMessage("Device now running");
   Debug::Log.info(TAG, "Running!");
@@ -202,6 +208,7 @@ void setup()
 
   Debug::Log.info(TAG, DEVICE_MAKE_MODEL);
 
+  // ⬇️ WiFi-Name (SSID) anzeigen (ohne IP)
   String ssid = prefs.getString("wifi-ap", "iPhone14");
   displayMessage("WiFi:", ssid.c_str());
 
@@ -229,11 +236,14 @@ void loop()
   Devices::IR.loop(prefs);
   Devices::Touch.loop(prefs);
 
+  esp_task_wdt_reset();
   Attacks::Ducky.loop(prefs);
   Attacks::Marauder.loop(prefs);
   Attacks::Agent.loop(prefs);
 
   aux.loop(prefs);
+
+  delay(1);
 }
 
 #endif /* ARDUINO_USB_MODE */

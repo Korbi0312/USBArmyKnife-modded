@@ -103,24 +103,16 @@ bool setSettingValue(Preferences &prefs, const std::string &name, const std::str
                     }
                     break;
                 case USBArmyKnifeCapability::SettingType::UInt16:
-                    if (value.rfind("0x", 0) == 0)
+                    tempInt = std::stoi(value);
+                    if (tempInt >= 0 && tempInt <= UINT16_MAX)
                     {
-                        tempInt = std::stoi(value, nullptr, 16);
-                        if (tempInt <= static_cast<int>(INT16_MAX) && tempInt >= 0)
-                        {
-                            uint16_t uint16Value = 0;
-                            uint16Value = static_cast<uint16_t>(tempInt);
-                            prefs.putUShort(name.c_str(), uint16Value);
-                            ret = true;
-                        }
-                        else
-                        {
-                            Debug::Log.info(LOG_SETTINGS, "Invalid setting value, invalid value");
-                        }
+                        uint16_t uint16Value = static_cast<uint16_t>(tempInt);
+                        prefs.putUShort(name.c_str(), uint16Value);
+                        ret = true;
                     }
                     else
                     {
-                        Debug::Log.info(LOG_SETTINGS, "Invalid setting value, must start with 0x");
+                        Debug::Log.info(LOG_SETTINGS, "Invalid setting value");
                     }
                     break;
                 default:

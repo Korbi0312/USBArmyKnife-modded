@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Korbi0312
-// Copyright (c) 2024 i-am-shodan
-
 #ifndef NO_TFT
 #include "HardwareTFT.h"
 
@@ -9,6 +5,7 @@
 #include "../../Attacks/Ducky/DuckyPayload.h"
 
 #include <LovyanGFX.hpp>
+#include <esp_task_wdt.h>
 
 #include <unordered_map>
 
@@ -209,6 +206,7 @@ void HardwareTFT::powerOn()
 
 void HardwareTFT::displayPng(HardwareStorage &storage, const std::string &filename)
 {
+    yield();
     xpos = 0;
     ypos = 0;
     size_t size = storage.getFileSize(filename);
@@ -216,6 +214,8 @@ void HardwareTFT::displayPng(HardwareStorage &storage, const std::string &filena
     if (size == 0)
     {
         Debug::Log.info(LOG_TFT, "invalid file size");
+        yield();
+        return;
     }
 
     uint8_t *data = storage.readFileAsBinary(filename);
@@ -223,12 +223,15 @@ void HardwareTFT::displayPng(HardwareStorage &storage, const std::string &filena
     if (data == NULL)
     {
         Debug::Log.info(LOG_TFT, "invalid data");
+        yield();
         return;
     }
 
+    esp_task_wdt_reset();
     lcd.drawPng((uint8_t *)data, size);
 
     free(data);
+    yield();
 }
 
 void HardwareTFT::displayRectangle(const int &x, const int &y, const int &width, const int &height)

@@ -1,7 +1,3 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Korbi0312
-// Copyright (c) 2024 i-am-shodan
-
 #pragma once
 
 #include <Arduino.h>
@@ -11,7 +7,6 @@
 #define CRASH_LED_DI_PIN 40
 #define CRASH_LED_CI_PIN 39
 
-// GPIO 32+ use the "out1" / "enable1" registers
 #define CRASH_DI_BIT (1 << (CRASH_LED_DI_PIN - 32))
 #define CRASH_CI_BIT (1 << (CRASH_LED_CI_PIN - 32))
 
@@ -22,7 +17,6 @@ static inline void IRAM_ATTR initCrashLedPins() {
 static inline void IRAM_ATTR setCrashLedRed() {
     initCrashLedPins();
 
-    // APA102 protocol: start frame (32 zeros), LED frame, end frame (32 ones)
     auto sendBit = [](bool bit) {
         if (bit) GPIO.out1_w1ts.val = CRASH_DI_BIT;
         else     GPIO.out1_w1tc.val = CRASH_DI_BIT;

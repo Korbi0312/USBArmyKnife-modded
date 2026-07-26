@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Korbi0312
-// Copyright (c) 2024 i-am-shodan
-
 #include "DuckyPayload.h"
 
 #include <DuckyParse.h>
 #include <uptime.h>
+#include <esp_task_wdt.h>
 
 #include "../../Debug/Logging.h"
 
-#define LOG_DUCKY "Ducky"   // ⬅️ Defines the log tag
+#define LOG_DUCKY "Ducky"   // ⬅️ Definiert den Log-Tag
 
 #include "../../Devices/Button/HardwareButton.h"
 #include "../../Devices/Storage/HardwareStorage.h"
@@ -299,17 +296,15 @@ void DuckyPayload::setPayload(const std::string &path)
     currentlyExecutingFile = newFileToExecute;
     lastSuccessfullyEvaluatedLine = 0;
     duckyFileParser.Restart();
-    if (preferences != nullptr) applyKeyboardLayoutFromPrefs(*preferences);
     Debug::Log.info(LOG_DUCKY, "Setting payload to - '" + currentlyExecutingFile + "'");
 }
 
 void DuckyPayload::setPayloadCmdLine(const std::string &cmdLine)
 {
     localCmdLineToExecute = std::string(cmdLine.c_str(), cmdLine.length());
-    if (preferences != nullptr) applyKeyboardLayoutFromPrefs(*preferences);
 }
 
-// ⬇️ stop() – stops the current payload immediately
+// ⬇️ stop() – stoppt den aktuellen Payload sofort
 void DuckyPayload::stop() {
     if (currentlyExecutingFile.empty() && localCmdLineToExecute.empty()) {
         Debug::Log.info(LOG_DUCKY, "No payload running to stop");
@@ -330,27 +325,22 @@ DuckyPayload::DuckyPayload()
 {
 }
 
-void DuckyPayload::applyKeyboardLayoutFromPrefs(Preferences &prefs)
+void DuckyPayload::begin(Preferences &prefs)
 {
+    preferences = &prefs;
+    registerUserConfigurableSetting(4, "keyboardLayout",
+        USBArmyKnifeCapability::SettingType::String, "");
+    addDuckyScriptExtensions(extCommands, consts);
     String layout = prefs.getString("keyboardLayout", "");
     if (layout.length() > 0)
     {
         duckyFileParser.SetKeyboardLayout(layout.c_str());
-        Debug::Log.info(LOG_DUCKY, "Keyboard layout loaded: " + std::string(layout.c_str()));
     }
-}
-
-void DuckyPayload::begin(Preferences &prefs)
-{
-    preferences = &prefs;
-    registerUserConfigurableSetting(CATEGORY_DUCKY, "keyboardLayout",
-        USBArmyKnifeCapability::SettingType::String, "");
-    addDuckyScriptExtensions(extCommands, consts);
-    applyKeyboardLayoutFromPrefs(prefs);
 }
 
 void DuckyPayload::loop(Preferences &prefs)
 {
+    yield();
     if (timeToWait != 0)
     {
         // we are waiting for the wait task to complete
@@ -378,7 +368,8 @@ void DuckyPayload::loop(Preferences &prefs)
             Debug::Log.info(LOG_DUCKY, "Executing cmdline: " + localCmdLineToExecute);
         }
 
-        // NO automatic LED control – LED is only controlled via DuckyScript commands
+        esp_task_wdt_reset();
+        // KEINE automatische LED-Steuerung – LED wird nur durch DuckyScript-Befehle gesteuert
         lastExecutionResult = duckyFileParser.Execute(executeFile ? currentlyExecutingFile : "", extCommands, consts);
         const bool executionHasCompleted = lastExecutionResult == DuckyInterpreter::SCRIPT_ERROR || lastExecutionResult == DuckyInterpreter::END_OF_FILE;
 

@@ -649,9 +649,9 @@ void WiFiScan::startWiFiAttacks(uint8_t scan_mode, uint16_t color, String title_
   //esp_wifi_set_mode(WIFI_AP_STA);
   //esp_wifi_start();
   //esp_wifi_set_promiscuous_filter(NULL);
-  esp_wifi_set_promiscuous(true);
-  esp_wifi_set_max_tx_power(82);
-  this->wifi_initialized = true;
+   esp_wifi_set_promiscuous(true);
+   esp_wifi_set_max_tx_power(40);
+   this->wifi_initialized = true;
   initTime = millis();
 }
 
@@ -4817,17 +4817,17 @@ void WiFiScan::main(uint32_t currentTime)
       packets_sent = 0;
     }
   }
-  else if ((currentScanMode == WIFI_ATTACK_RICK_ROLL))
-  {
-    // Need this for loop because getTouch causes ~10ms delay
-    // which makes beacon spam less effective
-    for (int i = 0; i < 7; i++)
-    {
-      for (int x = 0; x < (sizeof(rick_roll)/sizeof(char *)); x++)
-      {
-        broadcastSetSSID(currentTime, rick_roll[x]);
-      }
-    }
+   else if ((currentScanMode == WIFI_ATTACK_RICK_ROLL))
+   {
+     for (int i = 0; i < 3; i++)
+     {
+       for (int x = 0; x < (sizeof(rick_roll)/sizeof(char *)); x++)
+       {
+         broadcastSetSSID(currentTime, rick_roll[x]);
+         delay(20);
+       }
+       delay(50);
+     }
 
     if (currentTime - initTime >= 1000)
     {
