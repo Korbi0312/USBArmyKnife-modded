@@ -135,9 +135,6 @@ void setup()
 
   Devices::TFT.begin(prefs);
   Devices::LED.begin(prefs);
-  
-  // LED beim Booten AUS
-  Devices::LED.changeLEDState(false, 0, 0, 0, 0);
 
   Devices::Button.begin(prefs);
   Devices::Mic.begin(prefs);
