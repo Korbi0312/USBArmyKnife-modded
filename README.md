@@ -1,8 +1,8 @@
 # USB Army Knife - modded
 
-Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3). This fork adds a fully translated 18-language web interface (both themes), rock-solid file storage with byte-exact save verification, live microphone streaming, PNG display and many quality-of-life improvements over the upstream project.
+Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3). This fork adds a fully translated 18-language web interface (both themes), rock-solid file storage with byte-exact save verification, PNG display and many quality-of-life improvements over the upstream project.
 
-> 🚀 **v1.1.7** — Full release: 18-language UI in both themes, reliable byte-exact file saving, streaming file reads, PNG display button, live microphone toggle, new-file modal with keyboard layout & typing speed, and more.
+> 🚀 **v1.1.7** — Full release: 18-language UI in both themes, reliable byte-exact file saving, streaming file reads, PNG display button, microphone streaming (on boards with a mic), new-file modal with keyboard layout & typing speed, and more.
 
 ## Testimonials
 
@@ -69,7 +69,7 @@ This project implements a variety of attacks based around an easily concealable 
 | **Byte-Exact File Saving** | Saves are verified by the server (byte count check per 4 KB chunk, 3 retries, HTTP 507 disk-full detection with free-space display) — no more truncated/corrupt files, even on large payloads |
 | **Streaming File Reads** | Large files open correctly and instantly in the editor (streamed response instead of memory-buffered) |
 | **PNG Display Button** | Display `.png` images on the LCD directly from the file browser in both UIs |
-| **Live Microphone Toggle** | Stream microphone audio over WiFi with a live on/off toggle (WebSocket audio + `/mic` endpoint) |
+| **Live Microphone Toggle** | Stream microphone audio over WiFi with a live on/off toggle (WebSocket audio + `/mic` endpoint) — only shown on boards that actually have a microphone (e.g. M5Stack AtomS3U); automatically hidden on the T-Dongle S3 (no mic hardware) |
 | **New-File Modal** | Create files with type, keyboard layout and typing speed presets in one dialog — in both UIs, fully translated |
 | **MIT Licensed** | SPDX license headers on all 81+ source files |
 | **English Only** | Full codebase translated from German to English |

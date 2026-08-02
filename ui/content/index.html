@@ -2256,6 +2256,19 @@
                 sdBar.style.width = '0%';
                 sdBar.textContent = t.noSdCard;
             }
+            if (data.micAvailable !== undefined) {
+                const mt = document.querySelector('[data-tab="mic"]');
+                const mp = document.getElementById('panel-mic');
+                const show = data.micAvailable === true;
+                if (mt) mt.style.display = show ? '' : 'none';
+                if (mp) {
+                    if (!show && mp.classList.contains('active')) {
+                        const firstTab = document.querySelector('.tab[data-tab]');
+                        if (firstTab) firstTab.click();
+                    }
+                    mp.style.display = show ? '' : 'none';
+                }
+            }
             const heapBar = document.querySelector('#heapProgress .progress-bar');
             if (data.heap_used !== undefined && data.heap_total !== undefined) {
                 const pct = Math.round((data.heap_used / data.heap_total) * 100);

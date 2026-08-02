@@ -1461,6 +1461,12 @@ static void webRequestHandler(AsyncWebServerRequest *request)
     root["heap_total"] = ESP.getHeapSize();
     root["heap_used"] = ESP.getHeapSize() - ESP.getFreeHeap();
 
+#ifdef NO_MIC
+    root["micAvailable"] = false;
+#else
+    root["micAvailable"] = true;
+#endif
+
     response->setLength();
     request->send(response);
   }
