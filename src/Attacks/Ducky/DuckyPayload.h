@@ -32,6 +32,8 @@ public:
     void setPayload(const std::string &path);
     void setPayloadCmdLine(const std::string &cmdLine);
     std::string getPayloadRunningStatus();
+    void setTypingDelay(uint32_t ms);
+    void setKeyboardLayout(const std::string &layout);
 };
 
 namespace Attacks {

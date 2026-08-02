@@ -1,0 +1,22 @@
+GUI r
+DELAY 500
+STRING notepad
+DELAY 500
+ENTER
+DELAY 1000
+STRING   _   _ ____  ____    _                         _  __      _  __                                _     _          _ 
+ENTER
+STRING  | | | / ___|| __ )  / \   _ __ _ __ ___  _   _| |/ /_ __ (_)/ _| ___       _ __ ___   ___   __| | __| | ___  __| |
+ENTER
+STRING  | | | \___ \|  _ \ / _ \ | '__| '_ ` _ \| | | | ' /| '_ \| | |_ / _ \_____| '_ ` _ \ / _ \ / _` |/ _` |/ _ \/ _` |
+ENTER
+STRING  | |_| |___) | |_) / ___ \| |  | | | | | | |_| | . \| | | | |  _|  __/_____| | | | | | (_) | (_| | (_| |  __/ (_| |
+ENTER
+STRING    \___/|____/|____/_/   \_\_|  |_| |_| |_|\__, |_|\_\_| |_|_|_|  \___|     |_| |_| |_|\___/ \__,_|\__,_|\___|\__,_|
+ENTER
+STRING                                           |___/
+ENTER
+ENTER
+STRING USBArmyKnife modded v1.1.6 - T-Dongle S3
+ENTER
+STRING https://github.com/Korbi0312/USBArmyKnife-modded

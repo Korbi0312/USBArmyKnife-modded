@@ -82,6 +82,8 @@ compress_to_c_array(
     lambda data: data.decode('utf-8').replace("<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap\">", "").encode('utf-8')
     )
 
+compress_to_c_array("ui/content/index_original.html", "src/html/indexOriginalHtml.h", "indexOriginalHtmlGz")
+
 # Define the directory path
 directory_path = "ui/vnc"
 

@@ -57,6 +57,7 @@ static std::string currentlyExecutingFile;
 static uint8_t totalErrors = 0;
 static int lastExecutionResult = 0;
 static volatile uint32_t timeToWait = 0; // volatile to try and prevent dirty reads
+static uint32_t duckyTypingDelayMs = 0;  // per-payload typing speed (DEFAULTDELAY)
 static bool firstRun = true;
 static bool requiresReset = false;
 static ExtensionCommands extCommands;
@@ -102,6 +103,14 @@ static std::string readLineFromFileOrCmdLine(const std::string &filename, const 
 static void keyboard_press(const uint8_t modifiers, const uint8_t key1, const uint8_t key2, const uint8_t key3, const uint8_t key4, const uint8_t key5, const uint8_t key6)
 {
     Devices::USB::HID.keyboard_press(modifiers, key1, key2, key3, key4, key5, key6);
+    if (duckyTypingDelayMs > 0)
+    {
+#ifdef ARDUINO_ARCH_ESP32
+        vTaskDelay(pdMS_TO_TICKS(duckyTypingDelayMs));
+#else
+        delay(duckyTypingDelayMs);
+#endif
+    }
 }
 
 static void keyboard_release()
@@ -295,6 +304,7 @@ void DuckyPayload::setPayload(const std::string &path)
     std::string newFileToExecute(path.c_str(), path.length());
     currentlyExecutingFile = newFileToExecute;
     lastSuccessfullyEvaluatedLine = 0;
+    duckyTypingDelayMs = 0;
     duckyFileParser.Restart();
     Debug::Log.info(LOG_DUCKY, "Setting payload to - '" + currentlyExecutingFile + "'");
 }
@@ -315,6 +325,7 @@ void DuckyPayload::stop() {
     currentlyExecutingFile.clear();
     localCmdLineToExecute.clear();
     lastSuccessfullyEvaluatedLine = 0;
+    duckyTypingDelayMs = 0;
     duckyFileParser.Restart();
     totalErrors = 0;
     lastExecutionResult = 0;
@@ -323,6 +334,16 @@ void DuckyPayload::stop() {
 
 DuckyPayload::DuckyPayload()
 {
+}
+
+void DuckyPayload::setTypingDelay(uint32_t ms)
+{
+    duckyTypingDelayMs = ms;
+}
+
+void DuckyPayload::setKeyboardLayout(const std::string &layout)
+{
+    duckyFileParser.SetKeyboardLayout(layout);
 }
 
 void DuckyPayload::begin(Preferences &prefs)
@@ -389,6 +410,7 @@ void DuckyPayload::loop(Preferences &prefs)
             currentlyExecutingFile.clear();
             localCmdLineToExecute.clear();
             lastSuccessfullyEvaluatedLine = 0;
+            duckyTypingDelayMs = 0;
             duckyFileParser.Restart();
         }
     }

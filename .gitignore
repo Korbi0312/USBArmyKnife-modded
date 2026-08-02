@@ -56,3 +56,18 @@ SCHTASKS
 agent.img
 flash_download_tool/
 ui/content/mock-server.ps1
+# Build output dirs (not .pio)
+.pio-build-downloads/
+.pio-build-original/
+boot_app0.bin
+
+# Local test/debug files
+ui/content/mock-root/
+ui/content/index_orig_dbg.html
+ui/content/index_original_full.txt
+ui/content/index_original_raw.txt
+ui/content/test_dbg.html
+ui/content/test_errors.html
+ui/content/test_fetch.html
+ui/content/test_wrapper.html
+src/Devices/TFT/HardwareTFT.cpp.modded

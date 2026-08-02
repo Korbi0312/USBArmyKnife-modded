@@ -314,6 +314,12 @@ bool HardwareStorage::deleteFile(const std::string& filename)
     return FILE_INTERFACE.remove(filename.c_str());
 }
 
+bool HardwareStorage::renameFile(const std::string& oldName, const std::string& newName)
+{
+    refreshCache();
+    return FILE_INTERFACE.rename(oldName.c_str(), newName.c_str());
+}
+
 HardwareStorage::HardwareStorage()
 {
 #ifndef NO_SD

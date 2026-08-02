@@ -1,8 +1,8 @@
 # USB Army Knife - modded
 
-Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3), with enhanced settings UI and quality-of-life improvements.
+Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3). This fork adds a fully translated 18-language web interface (both themes), rock-solid file storage with byte-exact save verification, live microphone streaming, PNG display and many quality-of-life improvements over the upstream project.
 
-> 🚀 **v1.0.0** — Full release with settings UI enhancements, keyboard layout runtime switching, emergency reset WiFi fix, and more.
+> 🚀 **v1.1.7** — Full release: 18-language UI in both themes, reliable byte-exact file saving, streaming file reads, PNG display button, live microphone toggle, new-file modal with keyboard layout & typing speed, and more.
 
 ## Testimonials
 
@@ -65,6 +65,12 @@ This project implements a variety of attacks based around an easily concealable 
 | **Crash LED** | Rear APA102 LED lights up solid red on ESP32 crash – instant visual feedback |
 | **SD Storage** | SD card usage displayed on the dashboard |
 | **File Browser** | Built-in file browser with upload/download/delete |
+| **18-Language UI (i18n)** | Both web themes fully translated in 18 languages (de, en, fr, es, it, pt, nl, ja, cs, da, fi, hr, hu, no, sv, sl, sk, tr) — every button, label, placeholder, modal and status message, including language-aware keyboard layout switching |
+| **Byte-Exact File Saving** | Saves are verified by the server (byte count check per 4 KB chunk, 3 retries, HTTP 507 disk-full detection with free-space display) — no more truncated/corrupt files, even on large payloads |
+| **Streaming File Reads** | Large files open correctly and instantly in the editor (streamed response instead of memory-buffered) |
+| **PNG Display Button** | Display `.png` images on the LCD directly from the file browser in both UIs |
+| **Live Microphone Toggle** | Stream microphone audio over WiFi with a live on/off toggle (WebSocket audio + `/mic` endpoint) |
+| **New-File Modal** | Create files with type, keyboard layout and typing speed presets in one dialog — in both UIs, fully translated |
 | **MIT Licensed** | SPDX license headers on all 81+ source files |
 | **English Only** | Full codebase translated from German to English |
 

@@ -161,6 +161,24 @@ static int handleUSBMode(const std::string &str, const std::unordered_map<std::s
     return false;
 }
 
+static int handleDefaultDelay(const std::string &str, const std::unordered_map<std::string, std::string> &constants, const std::unordered_map<std::string, int> &variables)
+{
+    std::string arg = str.substr(str.find(' ') + 1);
+    int ms = asciiOrVariableToInt(arg, variables);
+    if (ms < 0) ms = 0;
+    Attacks::Ducky.setTypingDelay(static_cast<uint32_t>(ms));
+    return true;
+}
+
+static int handleLayout(const std::string &str, const std::unordered_map<std::string, std::string> &constants, const std::unordered_map<std::string, int> &variables)
+{
+    std::string arg = str.substr(str.find(' ') + 1);
+    if (arg.empty()) return true;
+    if (!startsWith(arg, "win_")) arg = "win_" + arg;
+    Attacks::Ducky.setKeyboardLayout(arg);
+    return true;
+}
+
 static int handleLED(const std::string &str, const std::unordered_map<std::string, std::string> &constants, const std::unordered_map<std::string, int> &variables)
 {
     std::string arg = str.substr(str.find(' ') + 1);
@@ -885,6 +903,8 @@ void addDuckyScriptExtensions(
     // Utilities
     extCommands["LOG"] = handleLog;
     extCommands["PARTITION_SWAP"] = partitionSwap;
+    extCommands["DEFAULTDELAY"] = handleDefaultDelay;
+    extCommands["LAYOUT"] = handleLayout;
 
     // Device related
     extCommands["WEB_OFF"] = handleWebOff;

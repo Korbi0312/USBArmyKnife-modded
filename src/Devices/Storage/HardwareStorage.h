@@ -28,6 +28,7 @@ public:
   virtual void writeFileData(const std::string& filename, const uint8_t *buffer, const size_t size);
   virtual std::string readFile(fs::FS &fs, const char *path);
   virtual bool deleteFile(const std::string& filename);
+  virtual bool renameFile(const std::string& oldName, const std::string& newName);
   virtual File openFile(const std::string& filename, const char* mode);
   virtual bool isRawAccessSupported();
   virtual size_t sectorSize();
