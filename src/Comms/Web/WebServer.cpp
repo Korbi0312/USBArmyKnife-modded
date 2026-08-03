@@ -159,7 +159,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         fr: {
         'Drop files here':'Déposez les fichiers ici',
         'Search...':'Rechercher...','e.g. test':'p. ex. test','New file':'Nouveau fichier','Name:':'Nom :','Type:':'Type :',
-        'Keyboard Layout:':'Disposition du clavier :','Typing Speed:':'Vitesse de frappe :','Create':'CrÃ©er','Name missing':'Nom manquant',
+        'Keyboard Layout:':'Disposition du clavier :','Typing Speed:':'Vitesse de frappe :','Create':'Créer','Name missing':'Nom manquant',
         'Status':'Statut','Settings':'Paramètres','Commands':'Commandes','File Browser':'Fichiers','VNC':'VNC',
         'Microphone':'Microphone','Editor':'Éditeur','Logs':'Journaux','Update':'Mise à jour','Help':'Aide',
         'Connection Error':'Erreur de connexion','Unknown':'Inconnu','Uptime':'Disponibilité','USB Mode':'Mode USB',
@@ -198,7 +198,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         es: {
         'Drop files here':'Suelta los archivos aquí',
         'Search...':'Buscar...','e.g. test':'p. ej. test','New file':'Nuevo archivo','Name:':'Nombre:','Type:':'Tipo:',
-        'Keyboard Layout:':'DistribuciÃ³n del teclado:','Typing Speed:':'Velocidad de escritura:','Create':'Crear','Name missing':'Falta el nombre',
+        'Keyboard Layout:':'Distribución del teclado:','Typing Speed:':'Velocidad de escritura:','Create':'Crear','Name missing':'Falta el nombre',
         'Status':'Estado','Settings':'Ajustes','Commands':'Comandos','File Browser':'Archivos','VNC':'VNC',
         'Microphone':'Micrófono','Editor':'Editor','Logs':'Registros','Update':'Actualizar','Help':'Ayuda',
         'Connection Error':'Error de conexión','Unknown':'Desconocido','Uptime':'Actividad','USB Mode':'Modo USB',
@@ -236,7 +236,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         it: {
         'Drop files here':'Rilascia i file qui',
         'Search...':'Cerca...','e.g. test':'es. test','New file':'Nuovo file','Name:':'Nome:','Type:':'Tipo:',
-        'Keyboard Layout:':'Layout tastiera:','Typing Speed:':'VelocitÃ  di digitazione:','Create':'Crea','Name missing':'Nome mancante',
+        'Keyboard Layout:':'Layout tastiera:','Typing Speed:':'Velocità di digitazione:','Create':'Crea','Name missing':'Nome mancante',
         'Status':'Stato','Settings':'Impostazioni','Commands':'Comandi','File Browser':'File','VNC':'VNC',
         'Microphone':'Microfono','Editor':'Editor','Logs':'Registri','Update':'Aggiorna','Help':'Aiuto',
         'Connection Error':'Errore di connessione','Unknown':'Sconosciuto','Uptime':'Attività','USB Mode':'Modalità USB',
@@ -274,7 +274,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         pt: {
         'Drop files here':'Solte os arquivos aqui',
         'Search...':'Pesquisar...','e.g. test':'ex.: test','New file':'Novo arquivo','Name:':'Nome:','Type:':'Tipo:',
-        'Keyboard Layout:':'Layout do teclado:','Typing Speed:':'Velocidade de digitaÃ§Ã£o:','Create':'Criar','Name missing':'Nome em falta',
+        'Keyboard Layout:':'Layout do teclado:','Typing Speed:':'Velocidade de digitação:','Create':'Criar','Name missing':'Nome em falta',
         'Status':'Status','Settings':'Configurações','Commands':'Comandos','File Browser':'Arquivos','VNC':'VNC',
         'Microphone':'Microfone','Editor':'Editor','Logs':'Registros','Update':'Atualizar','Help':'Ajuda',
         'Connection Error':'Erro de conexão','Unknown':'Desconhecido','Uptime':'Atividade','USB Mode':'Modo USB',
@@ -347,8 +347,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         ja: {
         'Drop files here':'ここにファイルをドロップ',
-        'Search...':'æ¤œç´¢...','e.g. test':'ä¾‹: test','New file':'æ–°è¦ãƒ•ã‚¡ã‚¤ãƒ«','Name:':'åå‰:','Type:':'ç¨®é¡ž:',
-        'Keyboard Layout:':'ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ:','Typing Speed:':'å…¥åŠ›é€Ÿåº¦:','Create':'ä½œæˆ','Name missing':'åå‰ãŒã‚ã‚Šã¾ã›ã‚“',
+        'Search...':'検索...','e.g. test':'例: test','New file':'新規ファイル','Name:':'名前:','Type:':'種類:',
+        'Keyboard Layout:':'キーボードレイアウト:','Typing Speed:':'入力速度:','Create':'作成','Name missing':'名前がありません',
         'Status':'ステータス','Settings':'設定','Commands':'コマンド','File Browser':'ファイル','VNC':'VNC','Microphone':'マイク',
         'Editor':'エディター','Logs':'ログ','Update':'更新','Help':'ヘルプ','Connection Error':'接続エラー','Unknown':'不明','Uptime':'稼働時間',
         'USB Mode':'USBモード','Loading settings...':'設定を読み込み中...','Loading...':'読み込み中...','Run script':'スクリプト実行','Execute':'実行',
@@ -377,8 +377,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         cs: {
         'Drop files here':'Sem přetáhněte soubory',
-        'Search...':'Hledat...','e.g. test':'napÅ™. test','New file':'NovÃ½ soubor','Name:':'NÃ¡zev:','Type:':'Typ:',
-        'Keyboard Layout:':'RozloÅ¾enÃ­ klÃ¡vesnice:','Typing Speed:':'Rychlost psanÃ­:','Create':'VytvoÅ™it','Name missing':'ChybÃ­ nÃ¡zev',
+        'Search...':'Hledat...','e.g. test':'např. test','New file':'Nový soubor','Name:':'Název:','Type:':'Typ:',
+        'Keyboard Layout:':'Rozložení klávesnice:','Typing Speed:':'Rychlost psaní:','Create':'Vytvořit','Name missing':'Chybí název',
         'Status':'Stav','Settings':'Nastavení','Commands':'Příkazy','File Browser':'Soubory','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Editor','Logs':'Protokoly','Update':'Aktualizace','Help':'Nápověda',
         'Connection Error':'Chyba připojení','Unknown':'Neznámý','Uptime':'Doba běhu','USB Mode':'Režim USB',
@@ -413,7 +413,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         da: {
         'Drop files here':'Smid filerne her',
-        'Search...':'SÃ¸g...','e.g. test':'f.eks. test','New file':'Ny fil','Name:':'Navn:','Type:':'Type:',
+        'Search...':'Søg...','e.g. test':'f.eks. test','New file':'Ny fil','Name:':'Navn:','Type:':'Type:',
         'Keyboard Layout:':'Tastaturlayout:','Typing Speed:':'Skrivehastighed:','Create':'Opret','Name missing':'Navn mangler',
         'Status':'Status','Settings':'Indstillinger','Commands':'Kommandoer','File Browser':'Filer','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Editor','Logs':'Logfiler','Update':'Opdater','Help':'Hjælp',
@@ -451,7 +451,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         fi: {
         'Drop files here':'Pudota tiedostot tähän',
         'Search...':'Haku...','e.g. test':'esim. test','New file':'Uusi tiedosto','Name:':'Nimi:','Type:':'Tyyppi:',
-        'Keyboard Layout:':'NÃ¤ppÃ¤imistÃ¶asettelu:','Typing Speed:':'Kirjoitusnopeus:','Create':'Luo','Name missing':'Nimi puuttuu',
+        'Keyboard Layout:':'Näppäimistöasettelu:','Typing Speed:':'Kirjoitusnopeus:','Create':'Luo','Name missing':'Nimi puuttuu',
         'Status':'Tila','Settings':'Asetukset','Commands':'Komennot','File Browser':'Tiedostot','VNC':'VNC',
         'Microphone':'Mikrofoni','Editor':'Editori','Logs':'Lokit','Update':'Päivitys','Help':'Ohje',
         'Connection Error':'Yhteysvirhe','Unknown':'Tuntematon','Uptime':'Käyntiaika','USB Mode':'USB-tila',
@@ -487,7 +487,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         hr: {
         'Drop files here':'Ovdje ispustite datoteke',
-        'Search...':'PretraÅ¾i...','e.g. test':'npr. test','New file':'Nova datoteka','Name:':'Naziv:','Type:':'Tip:',
+        'Search...':'Pretraži...','e.g. test':'npr. test','New file':'Nova datoteka','Name:':'Naziv:','Type:':'Tip:',
         'Keyboard Layout:':'Raspored tipkovnice:','Typing Speed:':'Brzina tipkanja:','Create':'Stvori','Name missing':'Naziv nedostaje',
         'Status':'Status','Settings':'Postavke','Commands':'Naredbe','File Browser':'Datoteke','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Uređivač','Logs':'Dnevnici','Update':'Ažuriranje','Help':'Pomoć',
@@ -525,8 +525,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         hu: {
         'Drop files here':'Húzza ide a fájlokat',
-        'Search...':'KeresÃ©s...','e.g. test':'pl. test','New file':'Ãšj fÃ¡jl','Name:':'NÃ©v:','Type:':'TÃ­pus:',
-        'Keyboard Layout:':'BillentyÅ±zetkiosztÃ¡s:','Typing Speed:':'GÃ©pelÃ©si sebessÃ©g:','Create':'LÃ©trehozÃ¡s','Name missing':'HiÃ¡nyzÃ³ nÃ©v',
+        'Search...':'Keresés...','e.g. test':'pl. test','New file':'Új fájl','Name:':'Név:','Type:':'Típus:',
+        'Keyboard Layout:':'Billentyűzetkiosztás:','Typing Speed:':'Gépelési sebesség:','Create':'Létrehozás','Name missing':'Hiányzó név',
         'Status':'Állapot','Settings':'Beállítások','Commands':'Parancsok','File Browser':'Fájlok','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Szerkesztő','Logs':'Naplók','Update':'Frissítés','Help':'Súgó',
         'Connection Error':'Kapcsolódási hiba','Unknown':'Ismeretlen','Uptime':'Üzemidő','USB Mode':'USB mód',
@@ -562,7 +562,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         no: {
         'Drop files here':'Slipp filene her',
-        'Search...':'SÃ¸k...','e.g. test':'f.eks. test','New file':'Ny fil','Name:':'Navn:','Type:':'Type:',
+        'Search...':'Søk...','e.g. test':'f.eks. test','New file':'Ny fil','Name:':'Navn:','Type:':'Type:',
         'Keyboard Layout:':'Tastaturoppsett:','Typing Speed:':'Skrivehastighet:','Create':'Opprett','Name missing':'Navn mangler',
         'Status':'Status','Settings':'Innstillinger','Commands':'Kommandoer','File Browser':'Filer','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Editor','Logs':'Logger','Update':'Oppdater','Help':'Hjelp',
@@ -598,7 +598,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         sv: {
         'Drop files here':'Släpp filerna här',
-        'Search...':'SÃ¶k...','e.g. test':'t.ex. test','New file':'Ny fil','Name:':'Namn:','Type:':'Typ:',
+        'Search...':'Sök...','e.g. test':'t.ex. test','New file':'Ny fil','Name:':'Namn:','Type:':'Typ:',
         'Keyboard Layout:':'Tangentbordslayout:','Typing Speed:':'Skrivhastighet:','Create':'Skapa','Name missing':'Namn saknas',
         'Status':'Status','Settings':'Inställningar','Commands':'Kommandon','File Browser':'Filer','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Editor','Logs':'Loggar','Update':'Uppdatera','Help':'Hjälp',
@@ -634,7 +634,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         sl: {
         'Drop files here':'Spusti datoteke tukaj',
-        'Search...':'IÅ¡Äi...','e.g. test':'npr. test','New file':'Nova datoteka','Name:':'Ime:','Type:':'Vrsta:',
+        'Search...':'Išči...','e.g. test':'npr. test','New file':'Nova datoteka','Name:':'Ime:','Type:':'Vrsta:',
         'Keyboard Layout:':'Razporeditev tipkovnice:','Typing Speed:':'Hitrost tipkanja:','Create':'Ustvari','Name missing':'Ime manjka',
         'Status':'Stanje','Settings':'Nastavitve','Commands':'Ukazi','File Browser':'Datoteke','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Urejevalnik','Logs':'Dnevniki','Update':'Posodobitev','Help':'Pomoč',
@@ -674,8 +674,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         sk: {
         'Drop files here':'Sem presuňte súbor',
-        'Search...':'HÄ¾adaÅ¥...','e.g. test':'napr. test','New file':'NovÃ½ sÃºbor','Name:':'NÃ¡zov:','Type:':'Typ:',
-        'Keyboard Layout:':'RozloÅ¾enie klÃ¡vesnice:','Typing Speed:':'RÃ½chlosÅ¥ pÃ­sania:','Create':'VytvoriÅ¥','Name missing':'ChÃ½ba nÃ¡zov',
+        'Search...':'Hľadať...','e.g. test':'napr. test','New file':'Nový súbor','Name:':'Názov:','Type:':'Typ:',
+        'Keyboard Layout:':'Rozloženie klávesnice:','Typing Speed:':'Rýchlosť písania:','Create':'Vytvoriť','Name missing':'Chýba názov',
         'Status':'Stav','Settings':'Nastavenia','Commands':'Príkazy','File Browser':'Súbory','VNC':'VNC',
         'Microphone':'Mikrofón','Editor':'Editor','Logs':'Protokoly','Update':'Aktualizácia','Help':'Pomocník',
         'Connection Error':'Chyba pripojenia','Unknown':'Neznámy','Uptime':'Doba behu','USB Mode':'Režim USB',
@@ -710,8 +710,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         },
         tr: {
         'Drop files here':'Dosyaları buraya bırakın',
-        'Search...':'Ara...','e.g. test':'Ã¶rn. test','New file':'Yeni dosya','Name:':'Ad:','Type:':'TÃ¼r:',
-        'Keyboard Layout:':'Klavye dÃ¼zeni:','Typing Speed:':'Yazma hÄ±zÄ±:','Create':'OluÅŸtur','Name missing':'Ad eksik',
+        'Search...':'Ara...','e.g. test':'örn. test','New file':'Yeni dosya','Name:':'Ad:','Type:':'Tür:',
+        'Keyboard Layout:':'Klavye düzeni:','Typing Speed:':'Yazma hızı:','Create':'Oluştur','Name missing':'Ad eksik',
         'Status':'Durum','Settings':'Ayarlar','Commands':'Komutlar','File Browser':'Dosyalar','VNC':'VNC',
         'Microphone':'Mikrofon','Editor':'Düzenleyici','Logs':'Günlükler','Update':'Güncelle','Help':'Yardım',
         'Connection Error':'Bağlantı hatası','Unknown':'Bilinmiyor','Uptime':'Çalışma Süresi','USB Mode':'USB Modu',
