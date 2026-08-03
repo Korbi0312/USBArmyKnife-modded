@@ -732,7 +732,7 @@
     <div class="panel" id="panel-update">
         <div class="card">
             <p data-i18n="updateText">Führen Sie ein Over‑The‑Air (OTA) Firmware‑Update durch.</p>
-            <a href="/update" class="btn btn-gold" data-i18n="updateBtn">🔧 Zum Update</a>
+            <a href="/update" class="btn btn-gold" data-i18n="updateBtn" style="margin-top:10px; display:inline-block;">🔧 Zum Update</a>
             <p style="margin-top:12px; color:var(--text-secondary); font-size:14px;" data-i18n="updateWarn">
                 <strong>Warnung:</strong> Es wird keine Prüfung durchgeführt, ob die Firmware zur Hardware passt.
             </p>
@@ -746,13 +746,12 @@
         <div class="card">
             <ul style="list-style:none; padding-left:0;">
                 <li style="padding:6px 0;"><a href="https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference" target="_blank" data-i18n="helpDucky">📘 DuckyScript Quick Reference</a></li>
-                <li style="padding:6px 0;"><a href="https://github.com/i-am-shodan/USBArmyKnife" target="_blank" data-i18n="helpDocs">📚 Dokumentation</a></li>
                 <li style="padding:6px 0;"><a href="https://github.com/i-am-shodan/USBArmyKnife/issues" target="_blank" data-i18n="helpIssues">🐛 GitHub Issue Tracker</a></li>
                 <li style="padding:6px 0;"><a href="https://github.com/justcallmekoko/ESP32Marauder/wiki" target="_blank" data-i18n="helpMarauder">🛡 ESP32 Marauder Wiki</a></li>
                 <li style="padding:6px 0;"><a href="https://github.com/Korbi0312/USBArmyKnife-modded" target="_blank" data-i18n="helpModded">🚀 USBArmyKnife-modded</a></li>
             </ul>
             <hr>
-            <p><span class="card-title" data-i18n="helpVersion">Version</span><br><span id="versionTag">0000000000000000000000000000000000000000</span></p>
+            <p><span class="card-title" data-i18n="helpVersion">Version</span><br><span id="versionTag">0000000000000000000000000000000000000000</span><br><span id="versionTagText" style="font-weight:bold;"></span></p>
         </div>
     </div>
 
@@ -930,7 +929,7 @@
             micClearLabel: 'Audio-Cache leeren',
             updateText: 'Führen Sie ein Over‑The‑Air (OTA) Firmware‑Update durch.',
             updateBtn: '🔧 Zum Update', updateWarn: 'Warnung: Es wird keine Prüfung durchgeführt, ob die Firmware zur Hardware passt.',
-            helpDucky: '📘 DuckyScript Quick Reference', helpDocs: '📚 Dokumentation',
+            helpDucky: '📘 DuckyScript Quick Reference', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Version',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder Befehl',
@@ -996,7 +995,7 @@
             micClearLabel: 'Clear audio cache',
             updateText: 'Perform an Over‑The‑Air (OTA) firmware update.',
             updateBtn: '🔧 Go to Update', updateWarn: 'Warning: No checking is performed to ensure you\'re using the right firmware version.',
-            helpDucky: '📘 DuckyScript Quick Reference', helpDocs: '📚 Documentation',
+            helpDucky: '📘 DuckyScript Quick Reference', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Version',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder command',
@@ -1062,7 +1061,7 @@
             micClearLabel: 'Vider le cache audio',
             updateText: 'Effectuer une mise à jour OTA (Over-The-Air) du firmware.',
             updateBtn: '🔧 Aller à la mise à jour', updateWarn: 'Attention : Aucune vérification n\'est effectuée pour garantir la compatibilité de la version.',
-            helpDucky: '📘 Référence rapide DuckyScript', helpDocs: '📚 Documentation',
+            helpDucky: '📘 Référence rapide DuckyScript', 
             helpIssues: '🐛 Suivi des problèmes GitHub', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki ESP32 Marauder',
             helpVersion: 'Version',
             marauderTitle: 'Marauder', marauderLabel: 'Commande ESP32 Marauder',
@@ -1128,7 +1127,7 @@
             micClearLabel: 'Limpiar caché de audio',
             updateText: 'Realizar una actualización OTA del firmware.',
             updateBtn: '🔧 Ir a actualizar', updateWarn: 'Advertencia: No se realiza ninguna verificación de compatibilidad de la versión.',
-            helpDucky: '📘 Referencia rápida de DuckyScript', helpDocs: '📚 Documentación',
+            helpDucky: '📘 Referencia rápida de DuckyScript', 
             helpIssues: '🐛 Seguimiento de incidencias GitHub', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki de ESP32 Marauder',
             helpVersion: 'Versión',
             marauderTitle: 'Marauder', marauderLabel: 'Comando ESP32 Marauder',
@@ -1194,7 +1193,7 @@
             micClearLabel: 'Pulisci cache audio',
             updateText: 'Esegui un aggiornamento OTA del firmware.',
             updateBtn: '🔧 Vai all\'aggiornamento', updateWarn: 'Attenzione: non viene eseguita alcuna verifica di compatibilità della versione.',
-            helpDucky: '📘 Riferimento rapido DuckyScript', helpDocs: '📚 Documentazione',
+            helpDucky: '📘 Riferimento rapido DuckyScript', 
             helpIssues: '🐛 Tracker problemi GitHub', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki ESP32 Marauder',
             helpVersion: 'Versione',
             marauderTitle: 'Marauder', marauderLabel: 'Comando ESP32 Marauder',
@@ -1260,7 +1259,7 @@
             micClearLabel: 'Limpar cache de áudio',
             updateText: 'Realizar uma atualização OTA do firmware.',
             updateBtn: '🔧 Ir para atualização', updateWarn: 'Aviso: Nenhuma verificação de compatibilidade de versão é realizada.',
-            helpDucky: '📘 Referência rápida DuckyScript', helpDocs: '📚 Documentação',
+            helpDucky: '📘 Referência rápida DuckyScript', 
             helpIssues: '🐛 Rastreador de problemas GitHub', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki ESP32 Marauder',
             helpVersion: 'Versão',
             marauderTitle: 'Marauder', marauderLabel: 'Comando ESP32 Marauder',
@@ -1326,7 +1325,7 @@
             micClearLabel: 'Audio-cache wissen',
             updateText: 'Voer een OTA-firmware-update uit.',
             updateBtn: '🔧 Ga naar update', updateWarn: 'Waarschuwing: Er wordt geen controle uitgevoerd op versiecompatibiliteit.',
-            helpDucky: '📘 DuckyScript-snelreferentie', helpDocs: '📚 Documentatie',
+            helpDucky: '📘 DuckyScript-snelreferentie', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Versie',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder-opdracht',
@@ -1392,7 +1391,7 @@
             micClearLabel: '音声キャッシュをクリア',
             updateText: 'OTAファームウェアアップデートを実行します。',
             updateBtn: '🔧 アップデートへ', updateWarn: '警告: バージョンの互換性チェックは行われません。',
-            helpDucky: '📘 DuckyScriptクイックリファレンス', helpDocs: '📚 ドキュメント',
+            helpDucky: '📘 DuckyScriptクイックリファレンス', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'バージョン',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder コマンド',
@@ -1458,7 +1457,7 @@
             micClearLabel: 'Vymazat audio cache',
             updateText: 'Proveďte OTA aktualizaci firmwaru.',
             updateBtn: '🔧 Přejít na aktualizaci', updateWarn: 'Varování: Není prováděna žádná kontrola kompatibility verze.',
-            helpDucky: '📘 Rychlý přehled DuckyScript', helpDocs: '📚 Dokumentace',
+            helpDucky: '📘 Rychlý přehled DuckyScript', 
             helpIssues: '🐛 Sledování problémů GitHub', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki ESP32 Marauder',
             helpVersion: 'Verze',
             marauderTitle: 'Marauder', marauderLabel: 'Příkaz ESP32 Marauder',
@@ -1524,7 +1523,7 @@
             micClearLabel: 'Ryd lydcache',
             updateText: 'Udfør en OTA firmwareopdatering.',
             updateBtn: '🔧 Gå til opdatering', updateWarn: 'Advarsel: Der udføres ingen versionskompatibilitetskontrol.',
-            helpDucky: '📘 DuckyScript-hurtigreference', helpDocs: '📚 Dokumentation',
+            helpDucky: '📘 DuckyScript-hurtigreference', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Version',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder-kommando',
@@ -1590,7 +1589,7 @@
             micClearLabel: 'Tyhjennä äänivälimuisti',
             updateText: 'Suorita OTA-laiteohjelmistopäivitys.',
             updateBtn: '🔧 Siirry päivitykseen', updateWarn: 'Varoitus: Version yhteensopivuutta ei tarkisteta.',
-            helpDucky: '📘 DuckyScript-pikaopas', helpDocs: '📚 Dokumentaatio',
+            helpDucky: '📘 DuckyScript-pikaopas', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Versio',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder -komento',
@@ -1656,7 +1655,7 @@
             micClearLabel: 'Očisti audio predmemoriju',
             updateText: 'Izvršite OTA ažuriranje firmvera.',
             updateBtn: '🔧 Idi na ažuriranje', updateWarn: 'Upozorenje: Ne provjerava se kompatibilnost verzije.',
-            helpDucky: '📘 DuckyScript brzi vodič', helpDocs: '📚 Dokumentacija',
+            helpDucky: '📘 DuckyScript brzi vodič', 
             helpIssues: '🐛 GitHub praćenje problema', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Verzija',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder naredba',
@@ -1722,7 +1721,7 @@
             micClearLabel: 'Hang gyorsítótár törlése',
             updateText: 'Végezzen OTA firmware-frissítést.',
             updateBtn: '🔧 Ugrás a frissítéshez', updateWarn: 'Figyelmeztetés: Nincs verziókompatibilitás-ellenőrzés.',
-            helpDucky: '📘 DuckyScript gyorsreferencia', helpDocs: '📚 Dokumentáció',
+            helpDucky: '📘 DuckyScript gyorsreferencia', 
             helpIssues: '🐛 GitHub probléma-követő', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Verzió',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder parancs',
@@ -1788,7 +1787,7 @@
             micClearLabel: 'Tøm lydbuffer',
             updateText: 'Utfør en OTA-fastvareoppdatering.',
             updateBtn: '🔧 Gå til oppdatering', updateWarn: 'Advarsel: Ingen kontroll av versjonskompatibilitet utføres.',
-            helpDucky: '📘 DuckyScript-hurtigreferanse', helpDocs: '📚 Dokumentasjon',
+            helpDucky: '📘 DuckyScript-hurtigreferanse', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Versjon',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder-kommando',
@@ -1854,7 +1853,7 @@
             micClearLabel: 'Rensa ljudcache',
             updateText: 'Utför en OTA-firmwareuppdatering.',
             updateBtn: '🔧 Gå till uppdatering', updateWarn: 'Varning: Ingen kontroll av versionskompatibilitet utförs.',
-            helpDucky: '📘 DuckyScript-snabbreferens', helpDocs: '📚 Dokumentation',
+            helpDucky: '📘 DuckyScript-snabbreferens', 
             helpIssues: '🐛 GitHub Issue Tracker', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Version',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder-kommando',
@@ -1920,7 +1919,7 @@
             micClearLabel: 'Počisti predpomnilnik zvoka',
             updateText: 'Izvedite OTA posodobitev vdelane programske opreme.',
             updateBtn: '🔗 Pojdi na posodobitev', updateWarn: 'Opozorilo: Ne izvaja se preverjanje združljivosti različic.',
-            helpDucky: '📘 DuckyScript hitri pregled', helpDocs: '📚 Dokumentacija',
+            helpDucky: '📘 DuckyScript hitri pregled', 
             helpIssues: '🐛 GitHub sledilnik težav', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki ESP32 Marauder',
             helpVersion: 'Različica',
             marauderTitle: 'Marauder', marauderLabel: 'Ukaz ESP32 Marauder',
@@ -1986,7 +1985,7 @@
             micClearLabel: 'Vymazať zvukovú vyrovnávaciu pamäť',
             updateText: 'Vykonajte OTA aktualizáciu firmvéru.',
             updateBtn: '🔗 Prejsť na aktualizáciu', updateWarn: 'Upozornenie: Nevykonáva sa žiadna kontrola kompatibility verzie.',
-            helpDucky: '📘 Rýchly prehľad DuckyScript', helpDocs: '📚 Dokumentácia',
+            helpDucky: '📘 Rýchly prehľad DuckyScript', 
             helpIssues: '🐛 GitHub sledovanie problémov', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 Wiki ESP32 Marauder',
             helpVersion: 'Verzia',
             marauderTitle: 'Marauder', marauderLabel: 'Príkaz ESP32 Marauder',
@@ -2052,7 +2051,7 @@
             micClearLabel: 'Ses önbelleğini temizle',
             updateText: 'Bir OTA firmware güncellemesi gerçekleştirin.',
             updateBtn: '🔧 Güncellemeye git', updateWarn: 'Uyarı: Sürüm uyumluluk kontrolü yapılmamaktadır.',
-            helpDucky: '📘 DuckyScript Hızlı Referans', helpDocs: '📚 Dokümantasyon',
+            helpDucky: '📘 DuckyScript Hızlı Referans', 
             helpIssues: '🐛 GitHub Sorun Takipçisi', helpModded: '🚀 USBArmyKnife-modded', helpMarauder: '🛡 ESP32 Marauder Wiki',
             helpVersion: 'Sürüm',
             marauderTitle: 'Marauder', marauderLabel: 'ESP32 Marauder komutu',
@@ -3027,7 +3026,9 @@
         try {
             const res = await fetch('/version');
             const version = await res.text();
-            document.getElementById('versionTag').textContent = version.trim();
+            const lines = version.split('\n');
+            document.getElementById('versionTag').textContent = lines[0].trim();
+            document.getElementById('versionTagText').textContent = lines[1] ? lines[1].trim() : '';
         } catch (e) { console.error('Version error:', e); }
     }
 

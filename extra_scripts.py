@@ -120,8 +120,14 @@ with open("src/html/htmlFiles.cpp", "w") as file:
 # Get the current git commit hash
 commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
+# Get the most recent reachable git tag as the firmware version
+try:
+    git_tag = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).strip().decode('utf-8')
+except subprocess.CalledProcessError:
+    git_tag = 'v0.0.0'
+
 # Define the content for the version.h file
-header_content = f'#pragma once\nconst char GIT_COMMIT_HASH[] = "{commit_hash}";\n'
+header_content = f'#pragma once\nconst char GIT_COMMIT_HASH[] = "{commit_hash}";\nconst char GIT_TAG[] = "{git_tag}";\n'
 
 # Write the content to version.h
 with open('src/version.h', 'w') as header_file:

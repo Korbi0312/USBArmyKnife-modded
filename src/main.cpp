@@ -103,7 +103,7 @@ void emergencyReset() {
     displayMessage("USB MODE:", "Serial");
     displayMessage("USB CLASS:", "HID");
     displayMessage("WiFi:", ssid.c_str());
-    displayMessage("Version:", GIT_COMMIT_HASH);
+    displayMessage("Version:", GIT_TAG);
 
     Debug::Log.info(TAG, "Emergency reset completed (Soft-Reset)");
 }
@@ -209,8 +209,8 @@ void setup()
   String ssid = prefs.getString("wifi-ap", "iPhone14");
   displayMessage("WiFi:", ssid.c_str());
 
-  displayMessage("Version:", GIT_COMMIT_HASH);
-  Debug::Log.info(TAG, std::string("Version: ")+GIT_COMMIT_HASH);
+  displayMessage("Version:", GIT_TAG);
+  Debug::Log.info(TAG, std::string("Version: ")+GIT_TAG);
   // ============================================================
 
   aux.begin(prefs);
