@@ -2593,6 +2593,7 @@
                     }
                     return;
                 }
+                if ((row.dataset.path || '').indexOf('.zip/') !== -1) return;
                 document.getElementById('fileSelectionBox').value = '/' + row.dataset.path;
                 tree.querySelectorAll('.mtree-selected').forEach(el => el.classList.remove('mtree-selected'));
                 row.classList.add('mtree-selected');
@@ -2607,7 +2608,9 @@
         const wrap = document.createElement('div');
         node.children.forEach(child => {
             const row = document.createElement('div');
-            row.className = 'mtree-row' + (child.isDir ? ' mtree-dir' : ' mtree-file');
+            const isZipDir = child.isDir && /\.zip$/i.test(child.name);
+            const isZipInner = !child.isDir && (child.path || '').indexOf('.zip/') !== -1;
+            row.className = 'mtree-row' + (child.isDir ? ' mtree-dir' : ' mtree-file') + (isZipDir ? ' mtree-zipdir' : '') + (isZipInner ? ' mtree-zipinner' : '');
             row.dataset.dir = child.isDir ? '1' : '0';
             row.dataset.path = child.path || '';
             row.style.paddingLeft = (8 + depth * 18) + 'px';
@@ -3145,6 +3148,9 @@
 #tree .mtree-row:hover{background:rgba(212,175,55,0.10);}
 #tree .mtree-icon{width:16px;flex:0 0 16px;text-align:center;color:#d4af37;font-size:10px;}
 #tree .mtree-selected{outline:2px solid #d4af37;outline-offset:1px;background:rgba(212,175,55,0.18);}
+#tree .mtree-zipdir .mtree-name{color:#d4af37;}
+#tree .mtree-zipdir .mtree-icon{color:#d4af37;}
+#tree .mtree-zipinner{opacity:0.55;}
 @keyframes mtreeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @keyframes mtreeOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-6px)}}
 </style>
