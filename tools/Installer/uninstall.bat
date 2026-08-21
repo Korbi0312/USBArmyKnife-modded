@@ -3,7 +3,6 @@ setlocal EnableExtensions
 title USBArmyKnife Uninstaller
 
 set "DEST=C:\AgentInstall"
-set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 set "SETTINGS=%DEST%\VncDirect\vnc-settings.json"
 
 REM --- Elevation check ---
@@ -73,22 +72,6 @@ timeout /t 1 /nobreak >nul
 echo [2/3] Removing autostart entries...
 set "found=0"
 
-if exist "%STARTUP%\VncDirect.vbs" (
-    del "%STARTUP%\VncDirect.vbs" >nul 2>&1
-    echo    [+] VncDirect.vbs removed.
-    set "found=1"
-) else (
-    echo    [-] VncDirect.vbs not found.
-)
-
-if exist "%STARTUP%\USBArmyKnifeAgent.vbs" (
-    del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1
-    echo    [+] USBArmyKnifeAgent.vbs removed.
-    set "found=1"
-) else (
-    echo    [-] USBArmyKnifeAgent.vbs not found.
-)
-
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if %errorlevel% equ 0 (
     schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
@@ -133,14 +116,6 @@ taskkill /F /IM VncDirect.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 echo [2/5] Removing autostart...
-if exist "%STARTUP%\VncDirect.vbs" (
-    del "%STARTUP%\VncDirect.vbs" >nul 2>&1
-    echo    [+] VncDirect.vbs removed.
-)
-if exist "%STARTUP%\USBArmyKnifeAgent.vbs" (
-    del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1
-    echo    [+] USBArmyKnifeAgent.vbs removed.
-)
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if %errorlevel% equ 0 (
     schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1

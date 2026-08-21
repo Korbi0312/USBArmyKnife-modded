@@ -10,7 +10,6 @@ REM  then deletes the downloaded files.
 REM ============================================================
 
 set "DEST=C:\AgentInstall"
-set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 set "BASE=https://raw.githubusercontent.com/Korbi0312/USBArmyKnife-modded/master/tools/Installer"
 set "DIR=%~dp0"
 
@@ -96,13 +95,6 @@ if not "%VNCPASSWD%"=="" (
 
 REM --- 4. Set up autostart ---
 echo [4/6] Setting up autostart...
-if not exist "%STARTUP%" mkdir "%STARTUP%"
-
-REM Write VncDirect.vbs (use VBScript string concatenation with &)
-powershell -NoProfile -Command "$lines = @('Set fso = CreateObject(\"Scripting.FileSystemObject\")', 'exe = \"C:\AgentInstall\VncDirect\VncDirect.exe\"', 'If fso.FileExists(exe) Then', '    CreateObject(\"WScript.Shell\").Run Chr(34) + exe + Chr(34) + \" port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0\", 0, False', 'End If'); Set-Content -Path '%STARTUP%\VncDirect.vbs' -Value ($lines -join \"`r`n\") -Encoding ASCII"
-
-REM Write USBArmyKnifeAgent.vbs
-powershell -NoProfile -Command "$lines = @('Set fso = CreateObject(\"Scripting.FileSystemObject\")', 'exe = \"C:\AgentInstall\AgentLauncher.exe\"', 'If fso.FileExists(exe) Then', '    CreateObject(\"WScript.Shell\").Run Chr(34) + exe + Chr(34) + \" vid=cafe pid=403f cwd=C:\AgentInstall\", 0, False', 'End If'); Set-Content -Path '%STARTUP%\USBArmyKnifeAgent.vbs' -Value ($lines -join \"`r`n\") -Encoding ASCII"
 
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if %errorlevel% neq 0 (
