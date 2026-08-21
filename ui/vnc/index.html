@@ -166,7 +166,6 @@
         #screen canvas {
             display: block;
             image-rendering: auto;
-            cursor: crosshair !important;
         }
         #resizeGrip {
             position: absolute;
@@ -266,19 +265,7 @@
 
         // ── UI Events ─────────────────────────────────────────────
         function applyScale() {
-            if (!rfb) return;
-            const screen = document.getElementById('screen');
-            const canvas = screen.querySelector('canvas');
-            if (!canvas) return;
-            const cw = canvas.width || 1;
-            const ch = canvas.height || 1;
-            const sw = screen.clientWidth;
-            const sh = screen.clientHeight;
-            const scale = Math.min(sw / cw, sh / ch);
-            canvas.style.transformOrigin = '0 0';
-            canvas.style.transform = 'scale(' + scale + ')';
-            canvas.style.marginLeft = ((sw - cw * scale) / 2) + 'px';
-            canvas.style.marginTop = ((sh - ch * scale) / 2) + 'px';
+            // noVNC handles scaling with scaleViewport: true
         }
 
         document.getElementById('btnRemote').addEventListener('click', () => {
@@ -341,7 +328,7 @@
             setStatus('Verbinde...', false);
             rfb = new RFB(document.getElementById('screen'), url, {
                 viewOnly: !remoteControl,
-                scaleViewport: false,
+                scaleViewport: true,
                 resizeSession: false,
                 showDotCursor: true
             });
@@ -357,10 +344,7 @@
 
         function reconnect() { connect(); }
 
-        // ── Resize: VNC canvas scales with window ────────────────
-        window.addEventListener('resize', () => {
-            if (rfb) applyScale();
-        });
+        // ── Resize: noVNC handles scaling automatically ────────────
 
         // ── Password check ───────────────────────────────────────
         async function verifyPassword(pw) {

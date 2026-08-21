@@ -341,13 +341,51 @@ namespace Agent.VNC
         {
             try
             {
-                ushort vk = KeysymToVirtualKey((uint)e.Keysym);
+                uint keysym = (uint)e.Keysym;
+
+                // For printable ASCII and common characters, use Unicode input
+                // This bypasses keyboard layout issues on the remote machine
+                if (keysym >= 0x0020 && keysym <= 0x007E)
+                {
+                    // Regular ASCII character — send as Unicode
+                    SendUnicodeChar((ushort)keysym, e.Pressed);
+                    return;
+                }
+                if (keysym >= 0x00A0 && keysym <= 0x00FF)
+                {
+                    // Latin-1 supplement (ä, ö, ü, etc.)
+                    SendUnicodeChar((ushort)keysym, e.Pressed);
+                    return;
+                }
+
+                // Special keys (Backspace, Tab, Enter, Escape, arrows, F-keys, modifiers)
+                ushort vk = KeysymToVirtualKey(keysym);
                 if (vk != 0)
                 {
                     SendKeyboardInput(vk, e.Pressed);
                 }
             }
             catch { }
+        }
+
+        private static void SendUnicodeChar(ushort character, bool keyDown)
+        {
+            var input = new INPUT
+            {
+                type = INPUT_KEYBOARD,
+                u = new InputUnion
+                {
+                    ki = new KEYBDINPUT
+                    {
+                        wVk = 0,
+                        wScan = character,
+                        dwFlags = keyDown ? 0x0004u : (0x0004 | KEYEVENTF_KEYUP), // KEYEVENTF_UNICODE
+                        time = 0,
+                        dwExtraInfo = IntPtr.Zero
+                    }
+                }
+            };
+            SendInput(1, new INPUT[] { input }, Marshal.SizeOf<INPUT>());
         }
 
         private int lastButtonMask = 0;
