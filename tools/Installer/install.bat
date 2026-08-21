@@ -76,7 +76,6 @@ echo    Downloads complete.
 REM --- 3. Copy files to destination ---
 echo [3/6] Installing to %DEST%...
 if not exist "%DEST%" mkdir "%DEST%"
-if not exist "%DEST%\VncDirect" mkdir "%DEST%\VncDirect"
 
 copy /y "%DIR%AgentLauncher.exe" "%DEST%\AgentLauncher.exe" >nul
 copy /y "%DIR%PortableApp.dll" "%DEST%\PortableApp.dll" >nul
