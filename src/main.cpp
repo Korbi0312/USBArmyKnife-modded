@@ -97,7 +97,7 @@ void emergencyReset() {
     currentLine = 0;
     
     // SSID aus Preferences lesen (oder Fallback auf Standard)
-    String ssid = prefs.getString("wifi-ap", "iPhone14");
+String ssid = prefs.getString("wifi-ap", "iPhone14");
     
     displayMessage("Device now running");
     displayMessage("USB MODE:", "Serial");
