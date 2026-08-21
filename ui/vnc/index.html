@@ -20,7 +20,7 @@
             --red: #dc3545;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
 
         /* ── Top Bar ─────────────────────────────────────────────── */
         #topbar {
@@ -93,42 +93,6 @@
             min-width: 30px;
             text-align: center;
         }
-        .sb-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100px;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-            outline: none;
-            cursor: pointer;
-        }
-        .sb-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            border: 2px solid var(--bg);
-        }
-        .sb-slider::-moz-range-thumb {
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            border: 2px solid var(--bg);
-        }
-        .sb-select {
-            background: var(--bg-input);
-            color: var(--text);
-            border: 1px solid var(--accent-dim);
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-size: 11px;
-            cursor: pointer;
-            outline: none;
-        }
-        .sb-select:focus { border-color: var(--accent); }
         .sb-btn {
             background: rgba(255,255,255,0.06);
             color: var(--text);
@@ -159,41 +123,11 @@
             overflow: hidden;
             position: relative;
             background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         #screen canvas {
             display: block;
             image-rendering: auto;
-        }
-        #resizeGrip {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 18px;
-            height: 18px;
-            cursor: nwse-resize;
-            opacity: 0.4;
-            z-index: 5;
-        }
-        #resizeGrip::before, #resizeGrip::after {
-            content: '';
-            position: absolute;
-            background: var(--accent);
-            border-radius: 1px;
-        }
-        #resizeGrip::before {
-            bottom: 3px; right: 3px;
-            width: 12px; height: 2px;
-            transform: rotate(-45deg);
-            transform-origin: right bottom;
-        }
-        #resizeGrip::after {
-            bottom: 6px; right: 3px;
-            width: 8px; height: 2px;
-            transform: rotate(-45deg);
-            transform-origin: right bottom;
+            cursor: crosshair;
         }
 
         /* ── Bottom Bar ──────────────────────────────────────────── */
@@ -208,11 +142,11 @@
             flex-shrink: 0;
         }
         .bb-btn {
-            background: rgba(255,255,255,0.04);
-            color: var(--text-dim);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 4px;
-            padding: 3px 12px;
+            padding: 4px 14px;
             font-size: 11px;
             cursor: pointer;
             transition: all 0.15s;
@@ -226,66 +160,7 @@
 
         let rfb;
         let desktopName;
-        let settings = { width: 2560, height: 1440, fps: 360 };
         let remoteControl = true;
-
-        // ── Settings ──────────────────────────────────────────────
-        async function loadSettings() {
-            try {
-                const resp = await fetch('/api/settings', { cache: 'no-store' });
-                const data = await resp.json();
-                if (data) {
-                    settings.width = data.width || 2560;
-                    settings.height = data.height || 1440;
-                    settings.fps = data.fps || 360;
-                    showRemoteLink(data.tailscaleIp || null);
-                }
-            } catch (e) { /* use defaults */ }
-            // Always force 1440p / 360fps
-            settings.width = 2560;
-            settings.height = 1440;
-            settings.fps = 360;
-        }
-
-        async function saveSettings() {
-            try {
-                await fetch('/api/settings?width=' + settings.width + '&height=' + settings.height + '&fps=' + settings.fps, { method: 'POST' });
-            } catch (e) { /* ignore */ }
-        }
-
-        function showRemoteLink(tailscaleIp) {
-            const el = document.getElementById('remoteLink');
-            if (tailscaleIp) {
-                const url = window.location.protocol + '//' + tailscaleIp + ':' + window.location.port + '/';
-                el.innerHTML = '<a href="' + url + '" target="_blank">' + tailscaleIp + '</a>';
-            } else {
-                el.textContent = '';
-            }
-        }
-
-        // ── UI Events ─────────────────────────────────────────────
-        function applyScale() {
-            // noVNC handles scaling with scaleViewport: true
-        }
-
-        document.getElementById('btnRemote').addEventListener('click', () => {
-            remoteControl = !remoteControl;
-            const btn = document.getElementById('btnRemote');
-            btn.textContent = remoteControl ? 'Mouse+Keyboard: AN' : 'Mouse+Keyboard: AUS';
-            btn.classList.toggle('active', remoteControl);
-            if (rfb) rfb.viewOnly = !remoteControl;
-        });
-
-        document.getElementById('btnReconnect').addEventListener('click', reconnect);
-
-        document.getElementById('btnDisconnect').addEventListener('click', () => {
-            if (rfb) { try { rfb.disconnect(); } catch (e) {} rfb = null; }
-            setStatus('getrennt', false);
-        });
-
-        document.getElementById('btnCtrlAltDel').addEventListener('click', () => {
-            if (rfb) rfb.sendCtrlAltDel();
-        });
 
         // ── VNC Connection ────────────────────────────────────────
         function setStatus(text, connected) {
@@ -323,7 +198,7 @@
 
             const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
             const url = scheme + '://' + window.location.hostname + ':' + window.location.port
-                      + '/websockify?w=' + settings.width + '&h=' + settings.height + '&fps=' + settings.fps;
+                      + '/websockify';
 
             setStatus('Verbinde...', false);
             rfb = new RFB(document.getElementById('screen'), url, {
@@ -333,9 +208,22 @@
                 showDotCursor: true
             });
 
+            // Force crosshair cursor on canvas (noVNC sets cursor:none)
+            const observer = new MutationObserver(() => {
+                const canvas = document.querySelector('#screen canvas');
+                if (canvas) {
+                    canvas.style.cursor = 'crosshair';
+                }
+            });
+            observer.observe(document.getElementById('screen'), { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+            // Also set immediately
+            setTimeout(() => {
+                const canvas = document.querySelector('#screen canvas');
+                if (canvas) canvas.style.cursor = 'crosshair';
+            }, 100);
+
             rfb.addEventListener('connect', () => {
                 connectedToServer();
-                applyScale();
             });
             rfb.addEventListener('credentialsrequired', credentialsAreRequired);
             rfb.addEventListener('desktopname', updateDesktopName);
@@ -344,7 +232,25 @@
 
         function reconnect() { connect(); }
 
-        // ── Resize: noVNC handles scaling automatically ────────────
+        // ── UI Events ─────────────────────────────────────────────
+        document.getElementById('btnRemote').addEventListener('click', () => {
+            remoteControl = !remoteControl;
+            const btn = document.getElementById('btnRemote');
+            btn.textContent = remoteControl ? 'Mouse+Keyboard: AN' : 'Mouse+Keyboard: AUS';
+            btn.classList.toggle('active', remoteControl);
+            if (rfb) rfb.viewOnly = !remoteControl;
+        });
+
+        document.getElementById('btnReconnect').addEventListener('click', reconnect);
+
+        document.getElementById('btnDisconnect').addEventListener('click', () => {
+            if (rfb) { try { rfb.disconnect(); } catch (e) {} rfb = null; }
+            setStatus('getrennt', false);
+        });
+
+        document.getElementById('btnCtrlAltDel').addEventListener('click', () => {
+            if (rfb) rfb.sendCtrlAltDel();
+        });
 
         // ── Password check ───────────────────────────────────────
         async function verifyPassword(pw) {
@@ -356,8 +262,6 @@
         }
 
         // ── Init ──────────────────────────────────────────────────
-        await loadSettings();
-
         let hasPassword = false;
         try {
             const resp = await fetch('/api/settings', { cache: 'no-store' });
@@ -404,9 +308,7 @@
     </div>
 
     <!-- VNC Screen -->
-    <div id="screen">
-        <div id="resizeGrip" title="Ziehen zum Skalieren"></div>
-    </div>
+    <div id="screen"></div>
 
     <!-- Bottom Bar -->
     <div id="bottombar">
