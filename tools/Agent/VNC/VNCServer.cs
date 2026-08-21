@@ -84,6 +84,14 @@ namespace Agent.VNC
         [DllImport("user32.dll")]
         private static extern ushort MapVirtualKeyW(uint uCode, uint uMapType);
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(out System.Drawing.Point lpPoint);
+
         private const uint MAPVK_VK_TO_VSC = 0;
 
         private static readonly Dictionary<uint, ushort> KeysymToVk = new()
@@ -261,31 +269,6 @@ namespace Agent.VNC
             return 0;
         }
 
-        private static void SendMouseInput(uint flags, int x, int y, int data = 0)
-        {
-            int screenW = GetSystemMetrics(SM_CXSCREEN);
-            int screenH = GetSystemMetrics(SM_CYSCREEN);
-            if (screenW == 0 || screenH == 0) return;
-
-            var input = new INPUT
-            {
-                type = INPUT_MOUSE,
-                u = new InputUnion
-                {
-                    mi = new MOUSEINPUT
-                    {
-                        dx = (int)((long)x * 65535 / screenW),
-                        dy = (int)((long)y * 65535 / screenH),
-                        mouseData = (uint)data,
-                        dwFlags = flags | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
-                        time = 0,
-                        dwExtraInfo = IntPtr.Zero
-                    }
-                }
-            };
-            SendInput(1, new INPUT[] { input }, Marshal.SizeOf<INPUT>());
-        }
-
         private static void SendKeyboardInput(ushort vk, bool keyDown)
         {
             ushort scan = MapVirtualKeyW(vk, MAPVK_VK_TO_VSC);
@@ -396,54 +379,67 @@ namespace Agent.VNC
         {
             try
             {
-                // VNC coordinates are relative to the framebuffer; map to screen coordinates
-                int fbW = framebuffer.Width;
-                int fbH = framebuffer.Height;
-                // Use virtual screen size (all monitors) since MOUSEEVENTF_VIRTUALDESK maps to that
-                int screenW = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-                int screenH = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-                int screenX0 = GetSystemMetrics(SM_XVIRTUALSCREEN);
-                int screenY0 = GetSystemMetrics(SM_YVIRTUALSCREEN);
-                if (fbW <= 0 || fbH <= 0 || screenW <= 0 || screenH <= 0) return;
-
-                int screenX = screenX0 + (int)((long)e.X * screenW / fbW);
-                int screenY = screenY0 + (int)((long)e.Y * screenH / fbH);
+                // VNC coordinates are relative to the framebuffer
+                // Since downscale=0, framebuffer matches screen resolution
+                int screenX = e.X;
+                int screenY = e.Y;
 
                 int buttonMask = e.PressedButtons;
                 int changed = buttonMask ^ lastButtonMask;
                 lastButtonMask = buttonMask;
 
-                // Mouse wheel (X11: 8=scroll up, 16=scroll down)
-                if ((buttonMask & 8) != 0)
-                {
-                    SendMouseInput(MOUSEEVENTF_MOVE | MOUSEEVENTF_WHEEL, screenX, screenY, WHEEL_DELTA);
-                    return;
-                }
-                if ((buttonMask & 16) != 0)
-                {
-                    SendMouseInput(MOUSEEVENTF_MOVE | MOUSEEVENTF_WHEEL, screenX, screenY, -WHEEL_DELTA);
-                    return;
-                }
+                // Move cursor directly
+                SetCursorPos(screenX, screenY);
 
-                // Only send move + button events when something actually changed
+                // Handle button changes
                 if (changed != 0)
                 {
-                    uint flags = MOUSEEVENTF_MOVE;
                     if ((changed & 1) != 0)
-                        flags |= (buttonMask & 1) != 0 ? MOUSEEVENTF_LEFTDOWN : MOUSEEVENTF_LEFTUP;
+                        SendMouseButton(MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP, (buttonMask & 1) != 0);
                     if ((changed & 2) != 0)
-                        flags |= (buttonMask & 2) != 0 ? MOUSEEVENTF_MIDDLEDOWN : MOUSEEVENTF_MIDDLEUP;
+                        SendMouseButton(MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_MIDDLEUP, (buttonMask & 2) != 0);
                     if ((changed & 4) != 0)
-                        flags |= (buttonMask & 4) != 0 ? MOUSEEVENTF_RIGHTDOWN : MOUSEEVENTF_RIGHTUP;
-                    SendMouseInput(flags, screenX, screenY);
+                        SendMouseButton(MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP, (buttonMask & 4) != 0);
                 }
-                else
-                {
-                    // Movement only — no button change
-                    SendMouseInput(MOUSEEVENTF_MOVE, screenX, screenY);
-                }
+
+                // Mouse wheel
+                if ((buttonMask & 8) != 0)
+                    SendMouseWheel(WHEEL_DELTA);
+                else if ((buttonMask & 16) != 0)
+                    SendMouseWheel(-WHEEL_DELTA);
             }
             catch { }
+        }
+
+        private static void SendMouseButton(uint downFlag, uint upFlag, bool pressed)
+        {
+            uint flags = pressed ? downFlag : upFlag;
+            var input = new INPUT
+            {
+                type = INPUT_MOUSE,
+                u = new InputUnion
+                {
+                    mi = new MOUSEINPUT { dwFlags = flags }
+                }
+            };
+            SendInput(1, new INPUT[] { input }, Marshal.SizeOf<INPUT>());
+        }
+
+        private static void SendMouseWheel(int delta)
+        {
+            var input = new INPUT
+            {
+                type = INPUT_MOUSE,
+                u = new InputUnion
+                {
+                    mi = new MOUSEINPUT
+                    {
+                        mouseData = (uint)delta,
+                        dwFlags = MOUSEEVENTF_WHEEL
+                    }
+                }
+            };
+            SendInput(1, new INPUT[] { input }, Marshal.SizeOf<INPUT>());
         }
 
         private void OnFrameUpdate()
