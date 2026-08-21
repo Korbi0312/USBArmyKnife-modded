@@ -20,6 +20,8 @@ namespace Agent
             vidToMatch = vidToMatch.ToUpperInvariant();
             pidToMatch = pidToMatch.ToUpperInvariant();
 
+            string? firstUsbPort = null;
+
             using (WmiConnection con = new WmiConnection())
             {
                 foreach (WmiObject p in con.CreateQuery("SELECT * FROM WIN32_SerialPort"))
@@ -45,11 +47,19 @@ namespace Agent
                         {
                             return p.GetPropertyValue("DeviceID").ToString();
                         }
+
+                        // Remember the first real USB serial port so we can fall
+                        // back to it when the configured VID/PID does not match
+                        // (the device may enumerate with a different VID/PID).
+                        if (firstUsbPort == null)
+                        {
+                            firstUsbPort = p.GetPropertyValue("DeviceID").ToString();
+                        }
                     }
                 }
             }
 
-            throw new DeviceNotFoundException();
+            return firstUsbPort;
         }
 
         public void Start(string vid, string pid, int baud = 115200)
@@ -83,16 +93,27 @@ namespace Agent
             {
                 m_RxPort.Open();
 
-                while (!cts.IsCancellationRequested)
+                // Announce our LAN IP so the device can hand it to the noVNC page,
+                // which then connects to the VNC server on this PC directly.
+                executer.SendAgentIp(m_RxPort);
+
+                using (var ipTimer = new System.Threading.Timer(
+                    _ => executer.SendAgentIp(m_RxPort),
+                    null,
+                    TimeSpan.FromSeconds(60),
+                    TimeSpan.FromSeconds(60)))
                 {
-                    try
+                    while (!cts.IsCancellationRequested)
                     {
-                        executer.ParseAndExecute(m_RxPort, cts);
-                    }
-                    catch (Exception)
-                    {
-                        cts.Cancel();
-                        throw;
+                        try
+                        {
+                            executer.ParseAndExecute(m_RxPort, cts);
+                        }
+                        catch (Exception)
+                        {
+                            cts.Cancel();
+                            throw;
+                        }
                     }
                 }
             }

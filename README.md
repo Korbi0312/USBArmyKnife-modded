@@ -1,8 +1,8 @@
 # USB Army Knife - modded
 
-Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3). This fork adds a fully translated 18-language web interface (both themes), rock-solid file storage with byte-exact save verification, PNG display and many quality-of-life improvements over the upstream project.
+Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3). This fork adds a fully translated 18-language web interface (both themes), rock-solid file storage with byte-exact save verification, PNG display, a PC-based VNC solution and many quality-of-life improvements over the upstream project.
 
-> 🚀 **v1.1.7** — Full release: 18-language UI in both themes, reliable byte-exact file saving, streaming file reads, PNG display (original UI), microphone streaming (on boards with a mic), new-file modal with keyboard layout & typing speed, and more.
+> 🚀 **v1.1.8-pre** — PC-based VNC (VncDirect), PC Installer/Uninstaller, Dark Theme VNC UI with FPS/quality/scaling, VNC password protection, remote access via Tailscale, pre-built firmware.
 
 ## Testimonials
 
@@ -57,6 +57,11 @@ This project implements a variety of attacks based around an easily concealable 
 
 | Feature | Description |
 | ------- | ----------- |
+| **PC-based VNC** | VncDirect hosts noVNC on port 7002 on your PC. The dongle deploys the agent — everything else runs on the PC. No relay through the dongle, full performance. |
+| **PC Installer / Uninstaller** | `install.bat` downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart + firewall. `uninstall.bat` with 3 options: remove autostart, full uninstall, or change VNC password. Auto-closes after 10 seconds. |
+| **VNC Web UI (Dark Theme)** | Gold-accented dark theme matching the dashboard. FPS slider (30–240), quality selector (1440p–360p), scale selector (Fenster/100%/75%/50%/25%), remote control toggle (mouse+keyboard), resize grip. |
+| **VNC Password Protection** | Password check on the VNC page — set via installer or uninstaller, verified on connect. |
+| **Remote Access (Tailscale)** | Access your PC's VNC from anywhere via Tailscale VPN — no port forwarding needed. The VNC page detects your Tailscale IP and shows a remote link. |
 | **Settings UI Enhancements** | Dropdown presets (VID, PID, USB version, device info, WiFi modes, TFT text size), named color picker (15 colors + custom) for boot LED, unit selector (sec/min/hr) for agent polling – in both gold and Bootstrap themes |
 | **Two Themes** | Gold/modern theme (default) and original Bootstrap theme (`/index_original.html`) – both with all settings enhancements |
 | **Keyboard Layout at Runtime** | Keyboard layout is now a runtime setting decoupled from the OS language switcher, with 23 layouts enabled |
@@ -83,7 +88,7 @@ This project implements a variety of attacks based around an easily concealable 
 | Ultimate RickRoll | Inject keystrokes to display the famous rickroll video but also uses ESP32 Marauder to blast the lyrics over WiFi. |
 | USB Ethernet PCAP | Turns the device into a USB network adapter and collects a PCAP of the first few seconds of network traffic. |
 | Deploy the serial agent | Deploys the agent if it isn't already installed and sends commands over the serial port. Command output can be seen in the web interface |
-| Pull the screen | Deploys the agent, the agent includes a tiny VNC server. Now the screen can be viewed via the web interface |
+| Pull the screen | Deploys the agent, then open VNC on your PC (`http://<PC-IP>:7002`) to view the victim's screen in real-time. |
 | Simple UI | A simple yet powerful UI to select scripts/images and run these using the hardware button. Shows how you can build complex UI interactions simply. |
 | Stream Mic audio over WiFi | The M5Stack AtomS3U has a microphone that you can stream over WiFi. |
 | Instantly crash Linux boxes | Deploy a bad filesystem which cause Linux machines which automount to panic. |
@@ -98,16 +103,15 @@ This project implements a variety of attacks based around an easily concealable 
 
 ## Getting Started
 
-Firstly please check the [wiki](https://github.com/Korbi0312/USBArmyKnife-modded/wiki) for a step by step guide and all manner of advice for getting started.
+ firstly please check the [wiki](https://github.com/Korbi0312/USBArmyKnife-modded/wiki) for a step by step guide and all manner of advice for getting started.
 
-### Installation
+### Option 1: Flash Pre-Built Firmware (Easiest)
 
-There are two options for getting the USB Army Knife firmware onto your device:
+1. Download the firmware zip from [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases)
+2. Flash using the [web installer](https://esp.huhn.me/) or [esptool](https://github.com/espressif/esptool)
+3. Install the PC agent: download `install.bat` from the releases page, right-click → Run as administrator
 
-1. **Flashing pre-built firmware using your web browser** (easiest route) – download from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page and use the [web installer](https://esp.huhn.me/)
-2. **Building and flashing the source** using PlatformIO (more powerful) – see [Building from Source](#building-from-source)
-
-### Building from Source
+### Option 2: Build from Source
 
 ```bash
 # Install PlatformIO, then:
@@ -115,6 +119,20 @@ platformio run --environment LILYGO-T-Dongle-S3
 # Or upload directly:
 platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 ```
+
+### PC Installation
+
+The PC installer (`install.bat`) sets up everything automatically:
+
+1. Run `install.bat` as administrator
+2. Enter a VNC password (optional, press Enter to skip)
+3. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
+4. Open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
+
+To uninstall, run `uninstall.bat` and choose:
+- **[1] Remove Autostart** — keeps files, removes startup entries
+- **[2] Full Uninstall** — removes everything
+- **[3] Change VNC Password** — set or clear the VNC password
 
 ## Usage
 
@@ -124,7 +142,22 @@ platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 4. Ensure the web interface has correctly loaded. You should see the currently running status and uptime. If not refresh the page.
 5. Use the web interface to create and manage your attacks using DuckyScript.
 
-ESP-S2 based devices have WiFi support but do not have a web interface. Attacks are managed via DuckyScript files. RP2040 devices do not have ESP32 Marauder capability.
+## VNC / Remote Screen Viewing
+
+Once the agent is deployed to the victim's machine, you can view their screen in real-time:
+
+1. Open `http://<your-pc-ip>:7002` in any browser
+2. The VNC interface connects to the agent running on the victim's PC
+3. Use the settings bar to adjust FPS (30–240), quality (1440p–360p), and scaling
+4. Toggle mouse+keyboard control on/off with the Remote Control button
+
+### Remote Access via Tailscale
+
+To access the VNC from outside your local network (e.g. from another country):
+
+1. Install [Tailscale](https://tailscale.com/) on both your PC and the device you want to connect from
+2. The VNC page automatically detects your Tailscale IP (100.x.x.x) and shows a remote link
+3. No port forwarding needed — Tailscale creates a secure VPN tunnel between your devices
 
 ## How to Get Help
 

@@ -1,187 +1,479 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-
-    <!--
-    noVNC example: lightweight example using minimal UI and features
-
-    This is a self-contained file which doesn't import WebUtil or external CSS.
-
-    Copyright (C) 2019 The noVNC Authors
-    noVNC is licensed under the MPL 2.0 (see LICENSE.txt)
-    This file is licensed under the 2-Clause BSD license (see LICENSE.txt).
-
-    Connect parameters are provided in query string:
-        http://example.com/?host=HOST&port=PORT&scale=true
-    -->
-    <title>noVNC</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USB Army Knife — VNC Remote</title>
     <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg-card: rgba(255,255,255,0.03);
+            --bg-input: #1a1a1a;
+            --border: rgba(212,175,55,0.15);
+            --border-card: rgba(255,255,255,0.06);
+            --accent: #d4af37;
+            --accent-dim: rgba(212,175,55,0.3);
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --text-heading: #f0e6c5;
+            --green: #28a745;
+            --red: #dc3545;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
-        body {
-            margin: 0;
-            background-color: dimgrey;
-            height: 100%;
+        /* ── Top Bar ─────────────────────────────────────────────── */
+        #topbar {
+            height: 42px;
+            background: #111118;
+            border-bottom: 1px solid var(--border);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            padding: 0 12px;
+            gap: 12px;
+            z-index: 10;
         }
-        html {
-            height: 100%;
+        #topbar .logo {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
+        #topbar .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        #topbar .status-dot.connected { background: var(--green); }
+        #topbar .status-text {
+            font-size: 12px;
+            color: var(--text-dim);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #topbar .status-text.connected { color: var(--text); }
 
-        #top_bar {
-            background-color: #6e84a3;
-            color: white;
-            font: bold 12px Helvetica;
-            padding: 6px 5px 4px 5px;
-            border-bottom: 1px outset;
+        /* ── Settings Bar ────────────────────────────────────────── */
+        #settingsbar {
+            height: 38px;
+            background: #0d0d14;
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 6px;
+            overflow-x: auto;
+            flex-shrink: 0;
         }
-        #status {
+        .sb-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0 8px;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            height: 24px;
+        }
+        .sb-group:last-child { border-right: none; }
+        .sb-label {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .sb-val {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            min-width: 30px;
             text-align: center;
         }
-        #sendCtrlAltDelButton {
-            position: fixed;
-            top: 0px;
-            right: 0px;
-            border: 1px outset;
-            padding: 5px 5px 4px 5px;
+        .sb-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            outline: none;
             cursor: pointer;
         }
-
-        #screen {
-            flex: 1; /* fill remaining space */
+        .sb-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 2px solid var(--bg);
+        }
+        .sb-slider::-moz-range-thumb {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 2px solid var(--bg);
+        }
+        .sb-select {
+            background: var(--bg-input);
+            color: var(--text);
+            border: 1px solid var(--accent-dim);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            outline: none;
+        }
+        .sb-select:focus { border-color: var(--accent); }
+        .sb-btn {
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            padding: 3px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+        .sb-btn:hover { background: rgba(255,255,255,0.12); border-color: var(--accent-dim); }
+        .sb-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+        .sb-remote {
+            margin-left: auto;
+            font-size: 10px;
+            color: var(--text-dim);
+            white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        .sb-remote a { color: var(--accent); text-decoration: none; }
+
+        /* ── Screen ──────────────────────────────────────────────── */
+        #screen {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #screen canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        #resizeGrip {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 18px;
+            height: 18px;
+            cursor: nwse-resize;
+            opacity: 0.4;
+            z-index: 5;
+        }
+        #resizeGrip::before, #resizeGrip::after {
+            content: '';
+            position: absolute;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+        #resizeGrip::before {
+            bottom: 3px; right: 3px;
+            width: 12px; height: 2px;
+            transform: rotate(-45deg);
+            transform-origin: right bottom;
+        }
+        #resizeGrip::after {
+            bottom: 6px; right: 3px;
+            width: 8px; height: 2px;
+            transform: rotate(-45deg);
+            transform-origin: right bottom;
         }
 
+        /* ── Bottom Bar ──────────────────────────────────────────── */
+        #bottombar {
+            height: 32px;
+            background: #111118;
+            border-top: 1px solid var(--border-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .bb-btn {
+            background: rgba(255,255,255,0.04);
+            color: var(--text-dim);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            padding: 3px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .bb-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: var(--accent-dim); }
+        .bb-btn.danger:hover { border-color: var(--red); color: var(--red); }
     </style>
 
     <script type="module" crossorigin="anonymous">
-        // RFB holds the API to connect and communicate with a VNC server
         import RFB from './core/rfb.js';
 
         let rfb;
         let desktopName;
+        let settings = { width: 1920, height: 1080, fps: 30 };
+        let remoteControl = true;
 
-        // When this function is called we have
-        // successfully connected to a server
-        function connectedToServer(e) {
-            status("Connected to " + desktopName);
+        // ── Settings ──────────────────────────────────────────────
+        async function loadSettings() {
+            try {
+                const resp = await fetch('/api/settings', { cache: 'no-store' });
+                const data = await resp.json();
+                if (data) {
+                    settings.width = data.width || 1920;
+                    settings.height = data.height || 1080;
+                    settings.fps = data.fps || 30;
+                    applySettingsToUI();
+                    showRemoteLink(data.tailscaleIp || null);
+                }
+            } catch (e) { /* use defaults */ }
         }
 
-        // This function is called when we are disconnected
-        function disconnectedFromServer(e) {
-            if (e.detail.clean) {
-                status("Disconnected");
+        function applySettingsToUI() {
+            const sharpSel = document.getElementById('selSharp');
+            const key = settings.width + 'x' + settings.height;
+            if ([...sharpSel.options].some(o => o.value === key)) sharpSel.value = key;
+            document.getElementById('sliderFps').value = settings.fps;
+            document.getElementById('lblFps').textContent = settings.fps + ' FPS';
+        }
+
+        async function saveSettings() {
+            const wh = document.getElementById('selSharp').value.split('x');
+            settings.width = parseInt(wh[0]);
+            settings.height = parseInt(wh[1]);
+            settings.fps = parseInt(document.getElementById('sliderFps').value);
+            document.getElementById('lblFps').textContent = settings.fps + ' FPS';
+            try {
+                await fetch('/api/settings?width=' + settings.width + '&height=' + settings.height + '&fps=' + settings.fps, { method: 'POST' });
+            } catch (e) { /* ignore */ }
+            reconnect();
+        }
+
+        function showRemoteLink(tailscaleIp) {
+            const el = document.getElementById('remoteLink');
+            if (tailscaleIp) {
+                const url = window.location.protocol + '//' + tailscaleIp + ':' + window.location.port + '/';
+                el.innerHTML = '<a href="' + url + '" target="_blank">' + tailscaleIp + '</a>';
             } else {
-                status("Something went wrong, connection is closed");
+                el.textContent = '';
             }
         }
 
-        // When this function is called, the server requires
-        // credentials to authenticate
+        // ── UI Events ─────────────────────────────────────────────
+        document.getElementById('sliderFps').addEventListener('input', function() {
+            document.getElementById('lblFps').textContent = this.value + ' FPS';
+        });
+        document.getElementById('sliderFps').addEventListener('change', saveSettings);
+        document.getElementById('selSharp').addEventListener('change', saveSettings);
+
+        document.getElementById('selScale').addEventListener('change', function() {
+            applyScale(this.value);
+        });
+
+        function applyScale(val) {
+            if (!rfb) return;
+            if (val === 'fit') {
+                rfb.scaleViewport = true;
+            } else {
+                rfb.scaleViewport = false;
+                const factor = parseFloat(val);
+                const screen = document.getElementById('screen');
+                const canvas = screen.querySelector('canvas');
+                if (canvas) {
+                    canvas.style.transformOrigin = 'top left';
+                    canvas.style.transform = 'scale(' + factor + ')';
+                    canvas.style.maxWidth = 'none';
+                    canvas.style.maxHeight = 'none';
+                }
+            }
+        }
+
+        document.getElementById('btnRemote').addEventListener('click', () => {
+            remoteControl = !remoteControl;
+            const btn = document.getElementById('btnRemote');
+            btn.textContent = remoteControl ? 'Mouse+Keyboard: AN' : 'Mouse+Keyboard: AUS';
+            btn.classList.toggle('active', remoteControl);
+            if (rfb) rfb.viewOnly = !remoteControl;
+        });
+
+        document.getElementById('btnReconnect').addEventListener('click', reconnect);
+
+        document.getElementById('btnDisconnect').addEventListener('click', () => {
+            if (rfb) { try { rfb.disconnect(); } catch (e) {} rfb = null; }
+            setStatus('getrennt', false);
+        });
+
+        document.getElementById('btnCtrlAltDel').addEventListener('click', () => {
+            if (rfb) rfb.sendCtrlAltDel();
+        });
+
+        // ── VNC Connection ────────────────────────────────────────
+        function setStatus(text, connected) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('statusText').classList.toggle('connected', connected);
+            document.getElementById('statusDot').classList.toggle('connected', connected);
+        }
+
+        function connectedToServer(e) {
+            setStatus('Verbunden — ' + desktopName, true);
+        }
+
+        function disconnectedFromServer(e) {
+            if (e.detail.clean) {
+                setStatus('Verbindung getrennt', false);
+            } else {
+                setStatus('Verbindung abgebrochen', false);
+            }
+        }
+
         function credentialsAreRequired(e) {
-            const password = prompt("Password Required:");
+            const password = prompt('Passwort erforderlich:');
             rfb.sendCredentials({ password: password });
         }
 
-        // When this function is called we have received
-        // a desktop name from the server
         function updateDesktopName(e) {
             desktopName = e.detail.name;
         }
 
-        // Since most operating systems will catch Ctrl+Alt+Del
-        // before they get a chance to be intercepted by the browser,
-        // we provide a way to emulate this key sequence.
-        function sendCtrlAltDel() {
-            rfb.sendCtrlAltDel();
-            return false;
-        }
-
-        // Show a status text in the top bar
-        function status(text) {
-            document.getElementById('status').textContent = text;
-        }
-
-        // This function extracts the value of one variable from the
-        // query string. If the variable isn't defined in the URL
-        // it returns the default value instead.
-        function readQueryVariable(name, defaultValue) {
-            // A URL with a query parameter can look like this (But will most probably get logged on the http server):
-            // https://www.example.com?myqueryparam=myvalue
-            //
-            // For privacy (Using a hastag #, the parameters will not be sent to the server)
-            // the url can be requested in the following way:
-            // https://www.example.com#myqueryparam=myvalue&password=secreatvalue
-            //
-            // Even Mixing public and non public parameters will work:
-            // https://www.example.com?nonsecretparam=example.com#password=secreatvalue
-            //
-            // Note that we use location.href instead of location.search
-            // because Firefox < 53 has a bug w.r.t location.search
-            const re = new RegExp('.*[?&]' + name + '=([^&#]*)'),
-                  match = ''.concat(document.location.href, window.location.hash).match(re);
-
-            if (match) {
-                // We have to decode the URL since want the cleartext value
-                return decodeURIComponent(match[1]);
+        function connect() {
+            if (rfb) {
+                try { rfb.disconnect(); } catch (e) {}
+                rfb = null;
             }
 
-            return defaultValue;
+            const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const url = scheme + '://' + window.location.hostname + ':' + window.location.port
+                      + '/websockify?w=' + settings.width + '&h=' + settings.height + '&fps=' + settings.fps;
+
+            setStatus('Verbinde...', false);
+            rfb = new RFB(document.getElementById('screen'), url, {
+                viewOnly: !remoteControl,
+                scaleViewport: true,
+                resizeSession: false
+            });
+
+            rfb.addEventListener('connect', () => connectedToServer());
+            rfb.addEventListener('credentialsrequired', credentialsAreRequired);
+            rfb.addEventListener('desktopname', updateDesktopName);
+            rfb.addEventListener('disconnect', (e) => disconnectedFromServer(e));
         }
 
-        document.getElementById('sendCtrlAltDelButton')
-            .onclick = sendCtrlAltDel;
+        function reconnect() { connect(); }
 
-        // Read parameters specified in the URL query string
-        // By default, use the host and port of server that served this file
-        const host = readQueryVariable('host', window.location.hostname);
-        let port = readQueryVariable('port', window.location.port);
-        const password = readQueryVariable('password');
-        const path = readQueryVariable('path', 'websockify');
+        // ── Resize: VNC canvas scales with window ────────────────
+        window.addEventListener('resize', () => {
+            if (rfb) {
+                rfb.scaleViewport = true;
+            }
+        });
 
-        // | | |         | | |
-        // | | | Connect | | |
-        // v v v         v v v
+        // ── Password check ───────────────────────────────────────
+        async function verifyPassword(pw) {
+            try {
+                const resp = await fetch('/api/verify-password?pw=' + encodeURIComponent(pw), { cache: 'no-store' });
+                const data = await resp.json();
+                return data.ok === true;
+            } catch (e) { return false; }
+        }
 
-        status("Connecting");
+        // ── Init ──────────────────────────────────────────────────
+        await loadSettings();
 
-        // Build the websocket URL used to connect
-        let url;
-        if (window.location.protocol === "https:") {
-            url = 'wss';
+        let hasPassword = false;
+        try {
+            const resp = await fetch('/api/settings', { cache: 'no-store' });
+            const data = await resp.json();
+            hasPassword = data && data.hasPassword === true;
+        } catch (e) {}
+
+        if (hasPassword) {
+            let attempts = 0;
+            let authenticated = false;
+            while (attempts < 3 && !authenticated) {
+                const pw = prompt('VNC-Passwort erforderlich:');
+                if (pw === null) { setStatus('Abgebrochen', false); break; }
+                authenticated = await verifyPassword(pw);
+                if (!authenticated) {
+                    attempts++;
+                    if (attempts < 3) alert('Falsches Passwort. Nochmal versuchen.');
+                }
+            }
+            if (authenticated) connect();
         } else {
-            url = 'ws';
+            connect();
         }
-        url += '://' + host;
-        if(port) {
-            url += ':' + port;
-        }
-        url += '/' + path;
-
-        // Creating a new RFB object will start a new connection
-        rfb = new RFB(document.getElementById('screen'), url,
-                      { credentials: { password: password } });
-
-        // Add listeners to important events from the RFB module
-        rfb.addEventListener("connect",  connectedToServer);
-        rfb.addEventListener("disconnect", disconnectedFromServer);
-        rfb.addEventListener("credentialsrequired", credentialsAreRequired);
-        rfb.addEventListener("desktopname", updateDesktopName);
-
-        // Set parameters that can be changed on an active connection
-        rfb.viewOnly = readQueryVariable('view_only', false);
-        rfb.scaleViewport = readQueryVariable('scale', false);
     </script>
 </head>
 
 <body>
-    <div id="top_bar">
-        <div id="status">Loading</div>
-        <div id="sendCtrlAltDelButton">Send CtrlAltDel</div>
+    <!-- Top Bar -->
+    <div id="topbar">
+        <span class="logo">USB ARMY KNIFE</span>
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Verbinde...</span>
     </div>
+
+    <!-- Settings Bar -->
+    <div id="settingsbar">
+        <div class="sb-group">
+            <span class="sb-label">FPS</span>
+            <input type="range" class="sb-slider" id="sliderFps" min="30" max="240" step="1" value="30" style="width:110px;">
+            <span class="sb-val" id="lblFps">30 FPS</span>
+        </div>
+        <div class="sb-group">
+            <span class="sb-label">Qualität</span>
+            <select class="sb-select" id="selSharp">
+                <option value="2560x1440">1440p</option>
+                <option value="1920x1080" selected>1080p</option>
+                <option value="1280x720">720p</option>
+                <option value="854x480">480p</option>
+                <option value="640x360">360p</option>
+            </select>
+        </div>
+        <div class="sb-group">
+            <span class="sb-label">Skalierung</span>
+            <select class="sb-select" id="selScale">
+                <option value="fit">Fenster</option>
+                <option value="1">100%</option>
+                <option value="0.75">75%</option>
+                <option value="0.5">50%</option>
+                <option value="0.25">25%</option>
+            </select>
+        </div>
+        <div class="sb-group">
+            <button class="sb-btn active" id="btnRemote">Mouse+Keyboard: AN</button>
+        </div>
+        <div class="sb-group">
+            <button class="sb-btn" id="btnReconnect">Neu verbinden</button>
+        </div>
+        <span class="sb-remote" id="remoteLink"></span>
+    </div>
+
+    <!-- VNC Screen -->
     <div id="screen">
-        <!-- This is where the remote screen will appear -->
+        <div id="resizeGrip" title="Ziehen zum Skalieren"></div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div id="bottombar">
+        <button class="bb-btn" id="btnCtrlAltDel">Strg+Alt+Entf</button>
+        <button class="bb-btn danger" id="btnDisconnect">Trennen</button>
     </div>
 </body>
 </html>

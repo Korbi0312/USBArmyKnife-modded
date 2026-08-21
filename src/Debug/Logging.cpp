@@ -11,7 +11,7 @@ static std::vector<std::string> logMsg;
 #define LOG_DELAY_UNTIL_DEBUGGER                    "loggerdelay"
 #define LOG_DELAY_UNTIL_DEBUGGER_DEFAULT            true
 
-static bool loggerDelayUntilDebuggerConnected = LOG_DELAY_UNTIL_DEBUGGER_DEFAULT;
+static bool loggerDelayUntilDebuggerConnected = false;
 static bool writtenPendingEntries = false;
 
 namespace Debug

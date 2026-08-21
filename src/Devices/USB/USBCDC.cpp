@@ -4,6 +4,7 @@
 
 #include <HardwareSerial.h>
 #include <unordered_map>
+#include <algorithm>
 
 #include "USBCDC.h"
 #include "../../Debug/Logging.h"
@@ -18,6 +19,7 @@
 
 static uint8_t *serialPortRecvBuffer = nullptr;
 static std::unordered_map<HostCommand, std::function<void(uint8_t *, size_t)>> callbacks;
+static Preferences *cdcPreferences = nullptr;
 
 #define USB_SERIALRAW "usbSerialRaw"
 #define USB_SERIALRAW_DEFAULT false
@@ -65,6 +67,29 @@ void USBCDCWrapper::begin(Preferences &prefs)
     usbRawMode = prefs.getBool(USB_SERIALRAW, USB_SERIALRAW_DEFAULT);
 
     begin(115200);
+
+    // The PC Agent reports its LAN IP here (always registered, independent of
+    // the WiFi/web-server state). The device hands it to the noVNC page via
+    // /api/status so the browser can connect directly to the PC.
+    cdcPreferences = &prefs;
+    setCallback(HostCommand::AgentIp, [](uint8_t *buffer, const size_t size) -> void
+    {
+        if (cdcPreferences == nullptr || size == 0)
+        {
+            return;
+        }
+
+        std::string ip((char *)buffer, size);
+        ip.erase(std::remove(ip.begin(), ip.end(), '\r'), ip.end());
+        ip.erase(std::remove(ip.begin(), ip.end(), '\n'), ip.end());
+        if (ip.length() == 0)
+        {
+            return;
+        }
+
+        cdcPreferences->putString("pc-ip", ip.c_str());
+        Debug::Log.info(LOG_CDC, "Agent IP set to " + ip);
+    });
 }
 
 void USBCDCWrapper::loop(Preferences &prefs)
@@ -112,7 +137,20 @@ void USBCDCWrapper::loop(Preferences &prefs)
             while (totalRead != len)
             {
                 int read = Serial.read(serialPortRecvBuffer + totalRead, len - totalRead);
+                if (read <= 0)
+                {
+                    // No data available right now. Never busy-wait here: if the
+                    // stream stalls (agent paused, slow USB) this would spin the
+                    // CPU and trip the task watchdog.
+                    break;
+                }
                 totalRead += read;
+            }
+
+            if (totalRead != len)
+            {
+                Debug::Log.error(LOG_CDC, "Serial payload read incomplete");
+                break;
             }
 
             callbacks[tag](serialPortRecvBuffer, totalRead);

@@ -329,6 +329,7 @@ void DuckyPayload::stop() {
     duckyFileParser.Restart();
     totalErrors = 0;
     lastExecutionResult = 0;
+    Devices::USB::HID.flushKeyboardEvents();
     Debug::Log.info(LOG_DUCKY, "Payload stopped and interpreter reset");
 }
 

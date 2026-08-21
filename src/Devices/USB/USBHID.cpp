@@ -6,6 +6,7 @@
 
 #include <Adafruit_TinyUSB.h>
 #include <queue>
+#include <mutex>
 
 #include "../../Debug/Logging.h"
 #define TAG_USB "USB"
@@ -43,6 +44,7 @@ struct MOUSE_EVENT
 static std::queue<KEY_EVENT> eventsToProcess;
 static std::queue<std::pair<uint8_t, uint16_t>> cdcEventsToProcess;
 static std::queue<MOUSE_EVENT> mouseEventsToProcess;
+static std::mutex eventsMutex;
 Adafruit_USBD_HID *usb_hid = nullptr;
 
 USBHID::USBHID()
@@ -65,7 +67,22 @@ void USBHID::begin(Preferences &prefs)
 
 bool USBHID::IsQueueEmpty()
 {
+    std::lock_guard<std::mutex> lock(eventsMutex);
     return eventsToProcess.empty();
+}
+
+void USBHID::flushKeyboardEvents()
+{
+    std::lock_guard<std::mutex> lock(eventsMutex);
+    while (!eventsToProcess.empty())
+    {
+        eventsToProcess.pop();
+    }
+
+    if (usb_hid != nullptr && TinyUSBDevice.mounted() && usb_hid->ready())
+    {
+        usb_hid->keyboardRelease(RID_KEYBOARD);
+    }
 }
 
 void USBHID::keyboard_press(const uint8_t modifiers, const uint8_t key1, const uint8_t key2, const uint8_t key3, const uint8_t key4, const uint8_t key5, const uint8_t key6)
@@ -85,6 +102,7 @@ void USBHID::keyboard_press(const uint8_t modifiers, const uint8_t key1, const u
     event.Keycode[5] = key6;
     event.Modifiers = modifiers;
 
+    std::lock_guard<std::mutex> lock(eventsMutex);
     eventsToProcess.push(event);
 }
 
@@ -98,6 +116,7 @@ void USBHID::keyboard_release()
     KEY_EVENT event = {0};
     event.ID = RID_KEYBOARD;
 
+    std::lock_guard<std::mutex> lock(eventsMutex);
     eventsToProcess.push(event);
 }
 
@@ -178,7 +197,11 @@ void USBHID::loop(Preferences &prefs)
             else
             {
                 bool sent = false;
-                auto report = eventsToProcess.front();
+                KEY_EVENT report;
+                {
+                    std::lock_guard<std::mutex> lock(eventsMutex);
+                    report = eventsToProcess.front();
+                }
                 if (report.Modifiers == 0 && report.Keycode[0] == 0)
                 {
                     sent = usb_hid->keyboardRelease(report.ID);
@@ -190,6 +213,7 @@ void USBHID::loop(Preferences &prefs)
                 
                 if (sent)
                 {
+                    std::lock_guard<std::mutex> lock(eventsMutex);
                     eventsToProcess.pop();
                     delay(HID_WAIT_TIME);
                 }

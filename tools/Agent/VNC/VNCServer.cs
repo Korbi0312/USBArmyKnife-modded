@@ -12,16 +12,18 @@ namespace Agent.VNC
         private readonly Action OnError;
         private readonly VncServerSession session;
         private readonly VNCFramebufferSource framebuffer;
+        private readonly double maxUpdateRate;
         private bool disposedValue;
 
-        public VNCServer(Action onerr)
+        public VNCServer(Action onerr, double maxUpdateRate = 0.3, int downscale = 1, ILoggerFactory? loggerFactory = null, int targetWidth = 0, int targetHeight = 0)
         {
             this.OnError = onerr;
+            this.maxUpdateRate = maxUpdateRate;
 
             // When run over serial we are only able to transmit around 1kb/s 
-            framebuffer = new VNCFramebufferSource(OnFrameUpdate, 1);
+            framebuffer = new VNCFramebufferSource(OnFrameUpdate, downscale, targetWidth, targetHeight);
 
-            var loggerFactory = new LoggerFactory();
+            loggerFactory ??= new LoggerFactory();
             var log = loggerFactory.CreateLogger("vnc");
 
             // Create a session.
@@ -32,10 +34,14 @@ namespace Agent.VNC
             session.Closed += HandleClosed;
 #pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
 
-            session.Encoder = new TightEncoder(session)
-            {
-                Compression = TightCompression.Jpeg,
-            };
+            // The library only picks the JPEG path when the client sends a Tight quality hint in the range
+            // -32..-23 (Quamotion fork numbering). noVNC sends -256+level, which never matches, so the
+            // encoder would always fall back to zlib (~225 KB per full frame instead of ~30 KB JPEG).
+            // Force the JPEG path with a dedicated encoder subclass.
+            var encoder = new JpegTightEncoder(session);
+            session.Encoders.Clear();
+            session.Encoders.Add(encoder);
+            session.Encoder = encoder;
         }
 
         private void OnFrameUpdate()
@@ -44,8 +50,28 @@ namespace Agent.VNC
             // Basically the pixel format that is passed from NoVNC results in JPEGs that are black
             // Apart from some colour shift values being different the format is the same as the default
             // So to mitigate I force the default here every time we want to make a frame
-            session.ClientPixelFormat = new VncPixelFormat();
-            session.MaxUpdateRate = 0.3;
+            session.ClientPixelFormat = VncPixelFormat.RGB32;
+            session.MaxUpdateRate = maxUpdateRate;
+        }
+
+        // TightEncoder subclass that always uses the JPEG path for large rectangles,
+        // bypassing the library's quality-hint lookup (which never matches noVNC's hints).
+        private sealed class JpegTightEncoder : TightEncoder
+        {
+            public JpegTightEncoder(VncServerSession session) : base(session)
+            {
+                Compression = TightCompression.Jpeg;
+            }
+
+            public override int Send(Stream stream, VncPixelFormat pixelFormat, VncRectangle region, byte[] contents)
+            {
+                if (!region.IsEmpty && contents.Length >= 256)
+                {
+                    return SendWithJpegCompression(stream, pixelFormat, region, contents, 50);
+                }
+
+                return SendWithBasicCompression(stream, pixelFormat, region, contents);
+            }
         }
 
         public void Start(Stream stream)

@@ -1,3 +1,3 @@
 #pragma once
-const char GIT_COMMIT_HASH[] = "ebb777cf032329d26bdf7dbc73d1ec0827648594";
+const char GIT_COMMIT_HASH[] = "c15bb58ebb88aa0de46944180f0e2395aa0661e7";
 const char GIT_TAG[] = "v1.1.7";

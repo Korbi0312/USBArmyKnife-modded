@@ -165,6 +165,23 @@ std::string HardwareStorage::readLineFromFile(const std::string &filename, const
     while (file.available())
     {
         line = file.readStringUntil('\n'); // todo read up to EOF
+
+        // Skip blank lines (whitespace only) so they are never mistaken for EOF
+        bool blank = true;
+        for (unsigned int i = 0; i < line.length(); i++)
+        {
+            char ch = line[i];
+            if (ch != '\r' && ch != '\n' && ch != ' ' && ch != '\t')
+            {
+                blank = false;
+                break;
+            }
+        }
+        if (blank)
+        {
+            continue;
+        }
+
         if (currentLine == lineNumber)
         {
             break;
@@ -214,8 +231,13 @@ static void listDir(std::vector<std::string> &files, fs::FS &fs, const char *dir
         }
         else
         {
-            std::string filename = std::string(file.name());
-            files.emplace_back("/" + filename);
+            std::string filename =
+#ifdef ARDUINO_ARCH_RP2040
+                std::string(file.fullName());
+#else
+                std::string(file.path());
+#endif
+            files.emplace_back(filename);
         }
         file = root.openNextFile();
     }

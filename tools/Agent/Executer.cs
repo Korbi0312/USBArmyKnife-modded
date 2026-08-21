@@ -13,9 +13,18 @@ namespace Agent
     {
         private CancellationTokenSource? currentCts;
 
+        // Set by the device (WSPause TLV) when the browser's websocket queue is
+        // full. While paused the relay must not push more WSDATARECV chunks.
+        private volatile bool vncPaused = false;
+
         private BlockingCollection<byte[]> vncDataBlocks = new();
-        private readonly VNCServer vnc;
+        private VNCServer? vnc;
         private TransportStream? vncStream = null;
+
+        private int vncTargetW = 0;
+        private int vncTargetH = 0;
+        private double vncFps = 10;
+        private int vncDownscale = 2;
 
         public enum Command
         {
@@ -28,11 +37,32 @@ namespace Agent
             RequestAgentStatus = 7,
             AgentStatus = 8,
             ExecuteResult = 9,
-            MicPcmData = 10
+            MicPcmData = 10,
+            AgentIp = 11,
+            WSPause = 12
         }
 
         public Executer()
         {
+            RecreateVnc();
+        }
+
+        // The relay-leg VNC server (screen capture on this machine, fed over the
+        // serial link to the device). Recreated whenever the device reports new
+        // sharpness / frame-rate settings.
+        private void RecreateVnc()
+        {
+            if (vnc != null)
+            {
+                try
+                {
+                    vnc.Dispose();
+                }
+                catch
+                {
+                }
+            }
+
             vnc = new VNCServer(() =>
             {
                 if (currentCts != null)
@@ -46,7 +76,95 @@ namespace Agent
 
                     }
                 }
-            });
+            }, vncFps, vncDownscale, null, vncTargetW, vncTargetH);
+        }
+
+        // Tells the device our LAN IP so the noVNC page it serves can connect
+        // directly to the PC (ws://<ip>:7002) instead of relaying over serial.
+        public void SendAgentIp(Stream stream)
+        {
+            try
+            {
+                var ip = GetLanIp();
+                if (string.IsNullOrEmpty(ip))
+                {
+                    Log("SendAgentIp: no LAN IP found");
+                    return;
+                }
+
+                var buffer = Encoding.UTF8.GetBytes(ip);
+                TLVHandling.WriteTLVToStream((byte)Command.AgentIp, buffer, 0, buffer.Length, stream).Wait();
+                Log("SendAgentIp: " + ip);
+#if DEBUG
+                Console.WriteLine("OUT AgentIp) " + ip);
+#endif
+            }
+            catch (Exception)
+            {
+#if DEBUG
+                Console.WriteLine("OUT AgentIp) failed");
+#endif
+            }
+        }
+
+        internal static void Log(string message)
+        {
+            try
+            {
+                File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "agent.log"), $"{DateTime.Now:HH:mm:ss} {message}{Environment.NewLine}");
+            }
+            catch
+            {
+            }
+        }
+
+        private static string GetLanIp()
+        {
+            try
+            {
+                foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (ni.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up)
+                    {
+                        continue;
+                    }
+
+                    if (ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Loopback ||
+                        ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Tunnel)
+                    {
+                        continue;
+                    }
+
+                    // Skip USB/NCM/RNDIS virtual adapters, we want the real LAN/WiFi address
+                    var desc = (ni.Description ?? "") + " " + ni.Name;
+                    if (desc.IndexOf("USB", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        desc.IndexOf("NCM", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        desc.IndexOf("RNDIS", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        desc.IndexOf("WAN", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (var addr in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (addr.Address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            continue;
+                        }
+
+                        var ip = addr.Address.ToString();
+                        if (!string.IsNullOrEmpty(ip) && !ip.StartsWith("169.254"))
+                        {
+                            return ip;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return string.Empty;
         }
 
         public void ParseAndExecute(Stream stream, CancellationTokenSource cts)
@@ -211,9 +329,18 @@ namespace Agent
                             int dataSent = 0;
                             while (dataSent < buffer.Length)
                             {
+                                // The device pauses the relay (WSPause=1) when its
+                                // websocket queue is full. Hold off sending further
+                                // chunks until it signals WSPause=0.
+                                while (vncPaused)
+                                {
+                                    cts.Token.ThrowIfCancellationRequested();
+                                    await Task.Delay(10, cts.Token);
+                                }
+
                                 var amountOfDataToSend = buffer.Length - dataSent > 2048 ? 2048 : buffer.Length - dataSent;
                                 await TLVHandling.WriteTLVToStream((byte)Command.WSDATARECV, buffer, dataSent, amountOfDataToSend, stream, cts.Token);
-                                await Task.Delay(100); // processing time to ensure we can push the buffer out over WiFi before we get another one
+                                await Task.Delay(10); // small processing time so the ESP32 can push the buffer out over WiFi
                                 dataSent += amountOfDataToSend;
 #if DEBUG
                                 Console.WriteLine("OUT WSDATARECV)" + amountOfDataToSend);
@@ -235,7 +362,7 @@ namespace Agent
 #pragma warning restore CS0168 // Variable is declared but never used
                     });
                     currentCts = cts;
-                    vnc.Start(vncStream);
+                    vnc!.Start(vncStream);
                     break;
                 case Command.WSDISCONNECT:
                     if (vncStream != null)
@@ -282,6 +409,12 @@ namespace Agent
                             File.WriteAllBytes(filename, data);
                         }
                     }
+                    break;
+                case Command.WSPause:
+                    vncPaused = data.Length > 0 && data[0] != 0;
+#if DEBUG
+                    Console.WriteLine(vncPaused ? "IN WSPause) paused" : "IN WSPause) resumed");
+#endif
                     break;
                 default:
                     throw new InvalidDataException("unknown command");

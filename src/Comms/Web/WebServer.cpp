@@ -11,6 +11,7 @@
 #include <ArduinoJson.h>
 #include <uptime.h>
 #include <ElegantOTA.h>
+#include <algorithm>
 
 #include "../../Devices/TFT/HardwareTFT.h"
 #include "../../Devices/Storage/HardwareStorage.h"
@@ -1350,6 +1351,10 @@ static void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsE
   else if (type == WS_EVT_DISCONNECT)
   {
     Devices::USB::CDC.writeBinary(HostCommand::WSDISCONNECT, nullptr, 0);
+
+    // If the browser left while the relay was paused, let the agent resume.
+    const uint8_t p = 0;
+    Devices::USB::CDC.writeBinary(HostCommand::WSPause, &p, 1);
   }
   else
   {
@@ -1451,8 +1456,27 @@ static void webRequestHandler(AsyncWebServerRequest *request)
     } else {
       root["wifi_ssid"] = "iPhone14";
     }
-    root["agent"] = "Not connected";
-    root["machine"] = root["wifi_ssid"];
+    root["agent"] = Attacks::Agent.isAgentConnected() ? "Connected" : "Not connected";
+    root["machine"] = Attacks::Agent.isAgentConnected() ? Attacks::Agent.machineName() : root["wifi_ssid"];
+
+    if (preferences != nullptr) {
+      String manualUrl = preferences->getString("vnc-direct-url", "");
+      String pcIp = preferences->getString("pc-ip", "");
+      if (manualUrl.length() != 0)
+      {
+        root["vncDirectUrl"] = manualUrl;
+      }
+      else if (pcIp.length() != 0)
+      {
+        root["vncDirectUrl"] = "http://" + pcIp + ":7002/";
+      }
+      else
+      {
+        root["vncDirectUrl"] = "";
+      }
+    } else {
+      root["vncDirectUrl"] = "";
+    }
 
     root["sd_pct"] = Devices::Storage.usedPercentage();
     root["sd_total"] = Devices::Storage.totalBytes();
@@ -1469,6 +1493,79 @@ static void webRequestHandler(AsyncWebServerRequest *request)
 
     response->setLength();
     request->send(response);
+  }
+  else if (url == "/api/vncs")
+  {
+    if (request->method() == HTTP_POST && preferences != nullptr && request->hasParam("ip"))
+    {
+      String ip = request->getParam("ip")->value();
+      ip.trim();
+      if (ip.length() == 0)
+      {
+        request->send(400, "application/json", "{\"error\":\"missing ip\"}");
+      }
+      else
+      {
+        int count = preferences->getInt("vnc-count", 0);
+        if (count >= 16)
+        {
+          request->send(400, "application/json", "{\"error\":\"list full\"}");
+        }
+        else
+        {
+          String name = request->hasParam("name") ? request->getParam("name")->value() : "";
+          name.trim();
+          preferences->putString(("vnc-" + String(count) + "-ip").c_str(), ip.c_str());
+          preferences->putString(("vnc-" + String(count) + "-name").c_str(), name.c_str());
+          preferences->putInt("vnc-count", count + 1);
+          Debug::Log.info(LOG_WEB, std::string("API add VNC ") + ip.c_str());
+          request->send(200, "application/json", "{}");
+        }
+      }
+    }
+    else
+    {
+      AsyncJsonResponse *response = new AsyncJsonResponse();
+      JsonArray arr = response->getRoot().createNestedArray("vncs");
+      if (preferences != nullptr)
+      {
+        int count = preferences->getInt("vnc-count", 0);
+        for (int i = 0; i < count; i++)
+        {
+          JsonObject entry = arr.createNestedObject();
+          entry["ip"] = preferences->getString(("vnc-" + String(i) + "-ip").c_str(), "");
+          entry["name"] = preferences->getString(("vnc-" + String(i) + "-name").c_str(), "");
+        }
+      }
+      response->setLength();
+      request->send(response);
+    }
+  }
+  else if (url == "/api/vncs/delete" && request->hasParam("ip"))
+  {
+    if (preferences != nullptr)
+    {
+      String ip = request->getParam("ip")->value();
+      int count = preferences->getInt("vnc-count", 0);
+      for (int i = 0; i < count; i++)
+      {
+        String key = "vnc-" + String(i) + "-ip";
+        if (preferences->getString(key.c_str(), "") == ip)
+        {
+          for (int j = i; j < count - 1; j++)
+          {
+            preferences->putString(("vnc-" + String(j) + "-ip").c_str(), preferences->getString(("vnc-" + String(j + 1) + "-ip").c_str(), "").c_str());
+            preferences->putString(("vnc-" + String(j) + "-name").c_str(), preferences->getString(("vnc-" + String(j + 1) + "-name").c_str(), "").c_str());
+          }
+          preferences->remove(("vnc-" + String(count - 1) + "-ip").c_str());
+          preferences->remove(("vnc-" + String(count - 1) + "-name").c_str());
+          preferences->putInt("vnc-count", count - 1);
+          Debug::Log.info(LOG_WEB, std::string("API delete VNC ") + ip.c_str());
+          break;
+        }
+      }
+    }
+    request->send(200, "application/json", "{}");
   }
   else if (url == "/api/led/toggle")
   {
@@ -1956,6 +2053,8 @@ void WebSite::begin(Preferences &prefs)
 
   preferences = &prefs;
 
+  registerUserConfigurableSetting(CATEGORY_WIFI, "vnc-direct-url", USBArmyKnifeCapability::SettingType::String, "");
+
   controlInterfaceWebServer.onFileUpload(handleUpload);
   controlInterfaceWebServer.onNotFound(webRequestHandler);
   
@@ -1967,8 +2066,45 @@ void WebSite::begin(Preferences &prefs)
   controlInterfaceWebServer.begin();
 
   Devices::USB::CDC.setCallback(HostCommand::WSDATARECV, [](uint8_t *buffer, const size_t size) -> void
-  { 
-    ws.binaryAll(buffer, size);
+  {
+    if (ws.count() == 0)
+    {
+      return;
+    }
+
+    // Flow control for the VNC relay. The websocket write queue is bounded
+    // (WS_MAX_QUEUED_MESSAGES=4), so queued data can never exhaust the heap.
+    // When the queue is full we pause the agent (WSPause=1) instead of
+    // blocking here: blocking would overflow the USB serial RX FIFO and
+    // corrupt the TLV stream. Once the browser drains the queue we send
+    // WSPause=0 and the agent resumes. A chunk already in flight may be
+    // dropped, which is preferable to a crash.
+    static bool pauseSent = false;
+    const bool writable = ws.availableForWriteAll();
+
+    if (!writable && !pauseSent)
+    {
+      pauseSent = true;
+      const uint8_t p = 1;
+      Devices::USB::CDC.writeBinary(HostCommand::WSPause, &p, 1);
+      Debug::Log.info(LOG_WEB, "VNC relay: paused agent");
+    }
+    else if (writable && pauseSent)
+    {
+      pauseSent = false;
+      const uint8_t p = 0;
+      Devices::USB::CDC.writeBinary(HostCommand::WSPause, &p, 1);
+      Debug::Log.info(LOG_WEB, "VNC relay: resumed agent");
+    }
+
+    if (writable)
+    {
+      ws.binaryAll(buffer, size);
+    }
+    else
+    {
+      Debug::Log.info(LOG_WEB, "VNC relay: dropped " + std::to_string(size) + " bytes");
+    }
   });
 
   Devices::Mic.setCallback([](uint8_t *buffer, const size_t size) -> bool
