@@ -76,8 +76,10 @@ namespace Agent.VNC
 
         private const int SM_CXSCREEN = 0;
         private const int SM_CYSCREEN = 1;
-        private const int SM_CXVSCREEN = 76;
-        private const int SM_CYVSCREEN = 77;
+        private const int SM_CXVIRTUALSCREEN = 78;
+        private const int SM_CYVIRTUALSCREEN = 79;
+        private const int SM_XVIRTUALSCREEN = 76;
+        private const int SM_YVIRTUALSCREEN = 77;
 
         [DllImport("user32.dll")]
         private static extern ushort MapVirtualKeyW(uint uCode, uint uMapType);
@@ -397,12 +399,15 @@ namespace Agent.VNC
                 // VNC coordinates are relative to the framebuffer; map to screen coordinates
                 int fbW = framebuffer.Width;
                 int fbH = framebuffer.Height;
-                int screenW = GetSystemMetrics(SM_CXSCREEN);
-                int screenH = GetSystemMetrics(SM_CYSCREEN);
+                // Use virtual screen size (all monitors) since MOUSEEVENTF_VIRTUALDESK maps to that
+                int screenW = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                int screenH = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                int screenX0 = GetSystemMetrics(SM_XVIRTUALSCREEN);
+                int screenY0 = GetSystemMetrics(SM_YVIRTUALSCREEN);
                 if (fbW <= 0 || fbH <= 0 || screenW <= 0 || screenH <= 0) return;
 
-                int screenX = (int)((long)e.X * screenW / fbW);
-                int screenY = (int)((long)e.Y * screenH / fbH);
+                int screenX = screenX0 + (int)((long)e.X * screenW / fbW);
+                int screenY = screenY0 + (int)((long)e.Y * screenH / fbH);
 
                 int buttonMask = e.PressedButtons;
                 int changed = buttonMask ^ lastButtonMask;
