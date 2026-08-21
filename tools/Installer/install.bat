@@ -85,7 +85,7 @@ copy /y "%DIR%vcruntime140.dll" "%DEST%\vcruntime140.dll" >nul
 copy /y "%DIR%WmiLight.Native.dll" "%DEST%\WmiLight.Native.dll" >nul
 
 REM Extract VncDirect.zip
-powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%\VncDirect' -Force" >nul 2>&1
+powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%' -Force" >nul 2>&1
 
 REM --- Save password ---
 if not "%VNCPASSWD%"=="" (
