@@ -89,7 +89,7 @@ powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -Desti
 REM --- Save password ---
 if not "%VNCPASSWD%"=="" (
     echo [+] Saving password...
-    powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-settings.json') { $j = Get-Content '%DEST%\VncDirect\vnc-settings.json' -Raw | ConvertFrom-Json -AsHashtable }; $j['password'] = '%VNCPASSWD%'; $j | ConvertTo-Json | Set-Content '%DEST%\VncDirect\vnc-settings.json' -Encoding UTF8"
+    powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-settings.json') { try { $raw = Get-Content '%DEST%\VncDirect\vnc-settings.json' -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; $j['password'] = '%VNCPASSWD%'; $j | ConvertTo-Json | Set-Content '%DEST%\VncDirect\vnc-settings.json' -Encoding UTF8"
 )
 
 REM --- 4. Set up autostart ---

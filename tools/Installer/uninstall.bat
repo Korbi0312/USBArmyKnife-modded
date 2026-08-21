@@ -30,7 +30,7 @@ echo.
 REM Check if password exists
 set "HAS_PASSWORD=0"
 if exist "%SETTINGS%" (
-    findstr /i "\"password\"" "%SETTINGS%" >nul 2>&1
+    findstr /i "\"password\" *: *\"[^\"]\+\"" "%SETTINGS%" >nul 2>&1
     if %errorlevel% equ 0 (
         set "HAS_PASSWORD=1"
     )
@@ -207,7 +207,7 @@ if not "%NEWPASS%"=="" (
     powershell -NoProfile -Command ^
         "$s = '%DEST%\VncDirect\vnc-settings.json'; " ^
         "$j = @{}; " ^
-        "if (Test-Path $s) { $j = Get-Content $s -Raw | ConvertFrom-Json -AsHashtable }; " ^
+        "if (Test-Path $s) { try { $raw = Get-Content $s -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; " ^
         "$j['password'] = '%NEWPASS%'; " ^
         "$j | ConvertTo-Json | Set-Content $s -Encoding UTF8"
     echo    Password saved.
@@ -217,7 +217,7 @@ if not "%NEWPASS%"=="" (
     powershell -NoProfile -Command ^
         "$s = '%DEST%\VncDirect\vnc-settings.json'; " ^
         "$j = @{}; " ^
-        "if (Test-Path $s) { $j = Get-Content $s -Raw | ConvertFrom-Json -AsHashtable }; " ^
+        "if (Test-Path $s) { try { $raw = Get-Content $s -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; " ^
         "$j['password'] = ''; " ^
         "$j | ConvertTo-Json | Set-Content $s -Encoding UTF8"
     echo    Password cleared.
