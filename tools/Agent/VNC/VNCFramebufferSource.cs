@@ -24,7 +24,6 @@ namespace Agent.VNC
         private readonly int targetWidth = 0;
         private readonly int targetHeight = 0;
         private VncFramebuffer? framebuffer = null;
-        private byte[]? resizeBuffer = null;
         private bool disposedValue;
         private DateTime lastUpdateTime = DateTime.MinValue;
         private Action onNewFrame;
@@ -93,25 +92,29 @@ namespace Agent.VNC
 
                 lock (this.framebuffer.SyncRoot)
                 {
+                    byte[] buf = this.framebuffer.GetBuffer();
+                    int stride = this.framebuffer.Stride;
+
                     if (outW == image.Width && outH == image.Height)
                     {
+                        // Direct copy: write BGRA rows straight into the framebuffer buffer
                         for (int row = 0; row < image.Height; row++)
                         {
+                            int bufOffset = row * stride;
                             for (int col = 0; col < image.Width; col++)
                             {
-                                this.framebuffer.SetPixel(col, row, new byte[] { refImage[col, row].B, refImage[col, row].G, refImage[col, row].R, refImage[col, row].A, });
+                                ColorBGRA px = refImage[col, row];
+                                buf[bufOffset]     = px.B;
+                                buf[bufOffset + 1] = px.G;
+                                buf[bufOffset + 2] = px.R;
+                                buf[bufOffset + 3] = px.A;
+                                bufOffset += 4;
                             }
                         }
                     }
                     else
                     {
-                        // Bilinear downsample into a temporary buffer, then fill the
-                        // framebuffer from it.
-                        if (resizeBuffer == null || resizeBuffer.Length != outW * outH * 4)
-                        {
-                            resizeBuffer = new byte[outW * outH * 4];
-                        }
-
+                        // Bilinear downsample directly into the framebuffer buffer
                         float scaleX = (float)image.Width / outW;
                         float scaleY = (float)image.Height / outH;
                         for (int y = 0; y < outH; y++)
@@ -122,6 +125,8 @@ namespace Agent.VNC
                             int y1 = y0 + 1;
                             if (y1 >= image.Height) y1 = image.Height - 1;
                             float fy = sy - y0;
+                            float oneMinusFy = 1 - fy;
+                            int bufRow = y * stride;
                             for (int x = 0; x < outW; x++)
                             {
                                 float sx = (x + 0.5f) * scaleX - 0.5f;
@@ -130,27 +135,18 @@ namespace Agent.VNC
                                 int x1 = x0 + 1;
                                 if (x1 >= image.Width) x1 = image.Width - 1;
                                 float fx = sx - x0;
+                                float oneMinusFx = 1 - fx;
 
                                 ColorBGRA c00 = refImage[x0, y0];
                                 ColorBGRA c10 = refImage[x1, y0];
                                 ColorBGRA c01 = refImage[x0, y1];
                                 ColorBGRA c11 = refImage[x1, y1];
 
-                                int idx = (y * outW + x) * 4;
-                                resizeBuffer[idx] = (byte)((c00.B * (1 - fx) + c10.B * fx) * (1 - fy) + (c01.B * (1 - fx) + c11.B * fx) * fy);
-                                resizeBuffer[idx + 1] = (byte)((c00.G * (1 - fx) + c10.G * fx) * (1 - fy) + (c01.G * (1 - fx) + c11.G * fx) * fy);
-                                resizeBuffer[idx + 2] = (byte)((c00.R * (1 - fx) + c10.R * fx) * (1 - fy) + (c01.R * (1 - fx) + c11.R * fx) * fy);
-                                resizeBuffer[idx + 3] = (byte)((c00.A * (1 - fx) + c10.A * fx) * (1 - fy) + (c01.A * (1 - fx) + c11.A * fx) * fy);
-                            }
-                        }
-
-                        for (int y = 0; y < outH; y++)
-                        {
-                            int rowBase = y * outW * 4;
-                            for (int x = 0; x < outW; x++)
-                            {
-                                int idx = rowBase + x * 4;
-                                this.framebuffer.SetPixel(x, y, new byte[] { resizeBuffer[idx], resizeBuffer[idx + 1], resizeBuffer[idx + 2], resizeBuffer[idx + 3] });
+                                int idx = bufRow + x * 4;
+                                buf[idx]     = (byte)((c00.B * oneMinusFx + c10.B * fx) * oneMinusFy + (c01.B * oneMinusFx + c11.B * fx) * fy);
+                                buf[idx + 1] = (byte)((c00.G * oneMinusFx + c10.G * fx) * oneMinusFy + (c01.G * oneMinusFx + c11.G * fx) * fy);
+                                buf[idx + 2] = (byte)((c00.R * oneMinusFx + c10.R * fx) * oneMinusFy + (c01.R * oneMinusFx + c11.R * fx) * fy);
+                                buf[idx + 3] = (byte)((c00.A * oneMinusFx + c10.A * fx) * oneMinusFy + (c01.A * oneMinusFx + c11.A * fx) * fy);
                             }
                         }
                     }
