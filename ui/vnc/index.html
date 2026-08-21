@@ -341,7 +341,8 @@
             rfb = new RFB(document.getElementById('screen'), url, {
                 viewOnly: !remoteControl,
                 scaleViewport: false,
-                resizeSession: false
+                resizeSession: false,
+                showDotCursor: true
             });
 
             rfb.addEventListener('connect', () => {
