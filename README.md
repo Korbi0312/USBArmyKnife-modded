@@ -122,17 +122,78 @@ platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 
 ### PC Installation
 
-The PC installer (`install.bat`) sets up everything automatically:
+#### Option A: PC Installer (Recommended)
 
-1. Run `install.bat` as administrator
-2. Enter a VNC password (optional, press Enter to skip)
-3. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
-4. Open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
+1. Download `install.bat` from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page (or copy from `tools/Installer/install.bat`)
+2. Right-click → **Run as administrator**
+3. Enter a VNC password (optional, press Enter to skip)
+4. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
+5. Open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
 
 To uninstall, run `uninstall.bat` and choose:
 - **[1] Remove Autostart** — keeps files, removes startup entries
 - **[2] Full Uninstall** — removes everything
 - **[3] Change VNC Password** — set or clear the VNC password
+
+#### Option B: Manual Installation (if installer doesn't work)
+
+If the installer fails (e.g. no internet, corporate firewall), you can set up the agent manually:
+
+1. **Download the agent binaries** from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page or compile from source (see below)
+2. **Create `C:\AgentInstall`** and copy these files into it:
+   - `AgentLauncher.exe`
+   - `PortableApp.dll`
+   - `turbojpeg.dll`
+   - `vcruntime140.dll`
+   - `WmiLight.Native.dll`
+3. **Download and extract VncDirect** — download `VncDirect.zip` from the releases page, extract to `C:\AgentInstall\VncDirect\`
+4. **Set up autostart** — create these VBS files in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`:
+
+   **VncDirect.vbs:**
+   ```vbs
+   Set fso = CreateObject("Scripting.FileSystemObject")
+   exe = "C:\AgentInstall\VncDirect\VncDirect.exe"
+   If fso.FileExists(exe) Then
+       CreateObject("WScript.Shell").Run """" & exe & """ port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0", 0, False
+   End If
+   ```
+
+   **USBArmyKnifeAgent.vbs:**
+   ```vbs
+   Set fso = CreateObject("Scripting.FileSystemObject")
+   exe = "C:\AgentInstall\AgentLauncher.exe"
+   If fso.FileExists(exe) Then
+       CreateObject("WScript.Shell").Run """" & exe & """ vid=cafe pid=403f cwd=C:\AgentInstall", 0, False
+   End If
+   ```
+
+5. **Add firewall rule** (run as admin):
+   ```
+   netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002
+   ```
+6. **Start the services:**
+   ```
+   C:\AgentInstall\VncDirect\VncDirect.exe port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0
+   C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall
+   ```
+
+#### Compile Agent from Source
+
+The agent is compiled into Windows native instructions. Cross compilation is not currently supported by dotnet so you'll need to run these steps on a Windows machine.
+
+```bash
+# Install .NET 8.0 SDK first, then:
+cd tools/AgentLauncher
+dotnet publish -r win-x64 -c Release
+
+cd ../Agent
+dotnet publish -r win-x64 -c Release
+
+cd ../VncDirect
+dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true
+```
+
+The compiled binaries are in `tools/AgentLauncher/bin/Release/net8.0-windows/win-x64/publish/` and `tools/Agent/bin/Release/net8.0-windows/win-x64/publish/`.
 
 ## Usage
 
