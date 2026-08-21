@@ -226,7 +226,7 @@
 
         let rfb;
         let desktopName;
-        let settings = { width: 1920, height: 1080, fps: 30 };
+        let settings = { width: 2560, height: 1440, fps: 360 };
         let remoteControl = true;
 
         // ── Settings ──────────────────────────────────────────────
@@ -235,33 +235,22 @@
                 const resp = await fetch('/api/settings', { cache: 'no-store' });
                 const data = await resp.json();
                 if (data) {
-                    settings.width = data.width || 1920;
-                    settings.height = data.height || 1080;
-                    settings.fps = data.fps || 30;
-                    applySettingsToUI();
+                    settings.width = data.width || 2560;
+                    settings.height = data.height || 1440;
+                    settings.fps = data.fps || 360;
                     showRemoteLink(data.tailscaleIp || null);
                 }
             } catch (e) { /* use defaults */ }
-        }
-
-        function applySettingsToUI() {
-            const sharpSel = document.getElementById('selSharp');
-            const key = settings.width + 'x' + settings.height;
-            if ([...sharpSel.options].some(o => o.value === key)) sharpSel.value = key;
-            document.getElementById('sliderFps').value = settings.fps;
-            document.getElementById('lblFps').textContent = settings.fps + ' FPS';
+            // Always force 1440p / 360fps
+            settings.width = 2560;
+            settings.height = 1440;
+            settings.fps = 360;
         }
 
         async function saveSettings() {
-            const wh = document.getElementById('selSharp').value.split('x');
-            settings.width = parseInt(wh[0]);
-            settings.height = parseInt(wh[1]);
-            settings.fps = parseInt(document.getElementById('sliderFps').value);
-            document.getElementById('lblFps').textContent = settings.fps + ' FPS';
             try {
                 await fetch('/api/settings?width=' + settings.width + '&height=' + settings.height + '&fps=' + settings.fps, { method: 'POST' });
             } catch (e) { /* ignore */ }
-            reconnect();
         }
 
         function showRemoteLink(tailscaleIp) {
@@ -275,39 +264,20 @@
         }
 
         // ── UI Events ─────────────────────────────────────────────
-        document.getElementById('sliderFps').addEventListener('input', function() {
-            document.getElementById('lblFps').textContent = this.value + ' FPS';
-        });
-        document.getElementById('sliderFps').addEventListener('change', saveSettings);
-        document.getElementById('selSharp').addEventListener('change', saveSettings);
-
-        document.getElementById('selScale').addEventListener('change', function() {
-            applyScale(this.value);
-        });
-
-        function applyScale(val) {
+        function applyScale() {
             if (!rfb) return;
             const screen = document.getElementById('screen');
             const canvas = screen.querySelector('canvas');
             if (!canvas) return;
-            if (val === 'fit') {
-                // Calculate scale to fill the container while maintaining aspect ratio
-                const cw = canvas.width || 1;
-                const ch = canvas.height || 1;
-                const sw = screen.clientWidth;
-                const sh = screen.clientHeight;
-                const scale = Math.min(sw / cw, sh / ch);
-                canvas.style.transformOrigin = '0 0';
-                canvas.style.transform = 'scale(' + scale + ')';
-                canvas.style.marginLeft = ((sw - cw * scale) / 2) + 'px';
-                canvas.style.marginTop = ((sh - ch * scale) / 2) + 'px';
-            } else {
-                const factor = parseFloat(val);
-                canvas.style.transformOrigin = '0 0';
-                canvas.style.transform = 'scale(' + factor + ')';
-                canvas.style.marginLeft = '0';
-                canvas.style.marginTop = '0';
-            }
+            const cw = canvas.width || 1;
+            const ch = canvas.height || 1;
+            const sw = screen.clientWidth;
+            const sh = screen.clientHeight;
+            const scale = Math.min(sw / cw, sh / ch);
+            canvas.style.transformOrigin = '0 0';
+            canvas.style.transform = 'scale(' + scale + ')';
+            canvas.style.marginLeft = ((sw - cw * scale) / 2) + 'px';
+            canvas.style.marginTop = ((sh - ch * scale) / 2) + 'px';
         }
 
         document.getElementById('btnRemote').addEventListener('click', () => {
@@ -376,7 +346,7 @@
 
             rfb.addEventListener('connect', () => {
                 connectedToServer();
-                applyScale(document.getElementById('selScale').value);
+                applyScale();
             });
             rfb.addEventListener('credentialsrequired', credentialsAreRequired);
             rfb.addEventListener('desktopname', updateDesktopName);
@@ -387,9 +357,7 @@
 
         // ── Resize: VNC canvas scales with window ────────────────
         window.addEventListener('resize', () => {
-            if (rfb) {
-                applyScale(document.getElementById('selScale').value);
-            }
+            if (rfb) applyScale();
         });
 
         // ── Password check ───────────────────────────────────────
@@ -440,31 +408,6 @@
 
     <!-- Settings Bar -->
     <div id="settingsbar">
-        <div class="sb-group">
-            <span class="sb-label">FPS</span>
-            <input type="range" class="sb-slider" id="sliderFps" min="15" max="120" step="1" value="30" style="width:110px;">
-            <span class="sb-val" id="lblFps">30 FPS</span>
-        </div>
-        <div class="sb-group">
-            <span class="sb-label">Qualität</span>
-            <select class="sb-select" id="selSharp">
-                <option value="2560x1440">1440p</option>
-                <option value="1920x1080" selected>1080p</option>
-                <option value="1280x720">720p</option>
-                <option value="854x480">480p</option>
-                <option value="640x360">360p</option>
-            </select>
-        </div>
-        <div class="sb-group">
-            <span class="sb-label">Skalierung</span>
-            <select class="sb-select" id="selScale">
-                <option value="fit">Fenster</option>
-                <option value="1">100%</option>
-                <option value="0.75">75%</option>
-                <option value="0.5">50%</option>
-                <option value="0.25">25%</option>
-            </select>
-        </div>
         <div class="sb-group">
             <button class="sb-btn active" id="btnRemote">Mouse+Keyboard: AN</button>
         </div>
