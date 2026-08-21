@@ -10,9 +10,7 @@ REM ============================================================
 
 set "DEST=C:\AgentInstall"
 set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
-set "REPO=Korbi0312/USBArmyKnife-modded"
-set "RELEASE=v1.1.8-pre"
-set "BASE=https://github.com/%REPO%/releases/download/%RELEASE%"
+set "BASE=https://raw.githubusercontent.com/Korbi0312/USBArmyKnife-modded/master/tools/Installer"
 set "TEMP=%TEMP%\USBArmyKnife"
 
 REM --- Elevation check ---
@@ -51,28 +49,25 @@ timeout /t 1 /nobreak >nul
 REM --- 2. Download files from GitHub ---
 echo [2/6] Downloading files from GitHub...
 if not exist "%TEMP%" mkdir "%TEMP%"
-if not exist "%TEMP%\VncDirect" mkdir "%TEMP%\VncDirect"
 
-echo    Downloading AgentLauncher.exe...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%TEMP%\AgentLauncher.exe' -UseBasicParsing" >nul 2>&1
-if not exist "%TEMP%\AgentLauncher.exe" (
-    echo    [!] FAILED to download AgentLauncher.exe
+echo    Downloading VncDirect.zip...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect.zip' -OutFile '%TEMP%\VncDirect.zip' -UseBasicParsing" >nul 2>&1
+if not exist "%TEMP%\VncDirect.zip" (
+    echo    [!] FAILED to download VncDirect.zip
     echo    Check your internet connection and try again.
     pause
     exit /b 1
 )
 
-echo    Downloading DLLs...
+echo    Extracting...
+powershell -NoProfile -Command "Expand-Archive -Path '%TEMP%\VncDirect.zip' -DestinationPath '%TEMP%' -Force" >nul 2>&1
+
+echo    Downloading agent files...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%TEMP%\AgentLauncher.exe' -UseBasicParsing" >nul 2>&1
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/PortableApp.dll' -OutFile '%TEMP%\PortableApp.dll' -UseBasicParsing" >nul 2>&1
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/turbojpeg.dll' -OutFile '%TEMP%\turbojpeg.dll' -UseBasicParsing" >nul 2>&1
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vcruntime140.dll' -OutFile '%TEMP%\vcruntime140.dll' -UseBasicParsing" >nul 2>&1
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/WmiLight.Native.dll' -OutFile '%TEMP%\WmiLight.Native.dll' -UseBasicParsing" >nul 2>&1
-
-echo    Downloading VNC Server...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect.zip' -OutFile '%TEMP%\VncDirect.zip' -UseBasicParsing" >nul 2>&1
-if exist "%TEMP%\VncDirect.zip" (
-    powershell -NoProfile -Command "Expand-Archive -Path '%TEMP%\VncDirect.zip' -DestinationPath '%TEMP%\VncDirect' -Force" >nul 2>&1
-)
 
 echo    Downloads complete.
 
@@ -89,7 +84,7 @@ copy /y "%TEMP%\WmiLight.Native.dll" "%DEST%\" >nul
 
 if exist "%TEMP%\VncDirect\VncDirect.exe" (
     copy /y "%TEMP%\VncDirect\VncDirect.exe" "%DEST%\VncDirect\" >nul
-    copy /y "%TEMP%\VncDirect\VncDirect.dll" "%DEST%\VncDirect\" >nul
+    copy /y "%TEMP%\VncDirect\*.dll" "%DEST%\VncDirect\" >nul
 )
 if exist "%TEMP%\VncDirect\vnc" (
     xcopy /q /y /e "%TEMP%\VncDirect\vnc" "%DEST%\VncDirect\vnc\" >nul
