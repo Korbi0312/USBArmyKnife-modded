@@ -60,11 +60,17 @@ if not exist "%DIR%VncDirect.zip" (
 )
 
 echo    Downloading agent files...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%DIR%AgentLauncher.exe' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/PortableApp.dll' -OutFile '%DIR%PortableApp.dll' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/turbojpeg.dll' -OutFile '%DIR%turbojpeg.dll' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vcruntime140.dll' -OutFile '%DIR%vcruntime140.dll' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/WmiLight.Native.dll' -OutFile '%DIR%WmiLight.Native.dll' -UseBasicParsing" >nul 2>&1
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%DIR%AgentLauncher.exe' -UseBasicParsing" 2>nul
+if not exist "%DIR%AgentLauncher.exe" (
+    echo    [!] FAILED to download AgentLauncher.exe
+    echo    Check your internet connection.
+    pause
+    exit /b 1
+)
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/PortableApp.dll' -OutFile '%DIR%PortableApp.dll' -UseBasicParsing" 2>nul
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/turbojpeg.dll' -OutFile '%DIR%turbojpeg.dll' -UseBasicParsing" 2>nul
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vcruntime140.dll' -OutFile '%DIR%vcruntime140.dll' -UseBasicParsing" 2>nul
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/WmiLight.Native.dll' -OutFile '%DIR%WmiLight.Native.dll' -UseBasicParsing" 2>nul
 
 echo    Downloads complete.
 
@@ -80,7 +86,7 @@ copy /y "%DIR%vcruntime140.dll" "%DEST%\vcruntime140.dll" >nul
 copy /y "%DIR%WmiLight.Native.dll" "%DEST%\WmiLight.Native.dll" >nul
 
 REM Extract VncDirect.zip
-powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%\VncDirect' -Force" >nul 2>&1
+powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%' -Force" >nul 2>&1
 
 REM --- Save password ---
 if not "%VNCPASSWD%"=="" (
