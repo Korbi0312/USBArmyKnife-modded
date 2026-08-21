@@ -122,13 +122,17 @@ platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 
 ### Agent Installation
 
+All files needed for the PC agent are in [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer).
+
 #### Option A: Installer (Recommended)
 
-1. Copy `tools/Installer/install.bat` to your PC
-2. Right-click → **Run as administrator**
-3. Enter a VNC password (optional, press Enter to skip)
-4. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
-5. Open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
+1. Go to [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer)
+2. Download `install.bat` (click the file → "Download raw file")
+3. Save it anywhere on your PC (e.g. Desktop)
+4. Right-click → **Run as administrator**
+5. Enter a VNC password (optional, press Enter to skip)
+6. The installer downloads all remaining files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
+7. After installation, open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
 
 To uninstall, run `uninstall.bat` and choose:
 - **[1] Remove Autostart** — keeps files, removes startup entries
@@ -137,17 +141,19 @@ To uninstall, run `uninstall.bat` and choose:
 
 #### Option B: Manual Installation (if installer doesn't work)
 
-If the installer fails (e.g. no internet, corporate firewall), you can set up the agent manually:
+If the installer fails (e.g. no internet, corporate firewall), set up the agent manually:
 
-1. **Download the agent binaries** from `tools/Installer/` in this repository or compile from source (see below)
-2. **Create `C:\AgentInstall`** and copy these files into it:
+1. Go to [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer)
+2. Download **all files** from that folder (click each file → "Download raw file")
+3. Create `C:\AgentInstall` on your PC
+4. Copy these files into `C:\AgentInstall`:
    - `AgentLauncher.exe`
    - `PortableApp.dll`
    - `turbojpeg.dll`
    - `vcruntime140.dll`
    - `WmiLight.Native.dll`
-3. **Download and extract VncDirect** — download `VncDirect.zip` from `tools/Installer/`, extract to `C:\AgentInstall\VncDirect\`
-4. **Set up autostart** — create these VBS files in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`:
+5. Download `VncDirect.zip` from the same folder, extract it to `C:\AgentInstall\VncDirect\`
+6. Create the VBS autostart files in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`:
 
    **VncDirect.vbs:**
    ```vbs
@@ -167,11 +173,11 @@ If the installer fails (e.g. no internet, corporate firewall), you can set up th
    End If
    ```
 
-5. **Add firewall rule** (run as admin):
+7. Add firewall rule (run as admin):
    ```
    netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002
    ```
-6. **Start the services:**
+8. Start the services:
    ```
    C:\AgentInstall\VncDirect\VncDirect.exe port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0
    C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall
