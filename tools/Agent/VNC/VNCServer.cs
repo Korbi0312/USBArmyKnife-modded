@@ -350,6 +350,8 @@ namespace Agent.VNC
             catch { }
         }
 
+        private int lastButtonMask = 0;
+
         private void HandlePointerChanged(object? sender, PointerChangedEventArgs e)
         {
             try
@@ -364,43 +366,38 @@ namespace Agent.VNC
                 int screenX = (int)((long)e.X * screenW / fbW);
                 int screenY = (int)((long)e.Y * screenH / fbH);
 
-                // Map VNC button mask (bit 0=left, 1=middle, 2=right) to Windows flags
-                uint flags = MOUSEEVENTF_MOVE;
                 int buttonMask = e.PressedButtons;
+                int changed = buttonMask ^ lastButtonMask;
+                lastButtonMask = buttonMask;
 
-                // Left button
-                if ((buttonMask & 1) != 0)
-                    flags |= MOUSEEVENTF_LEFTDOWN;
-                else
-                    flags |= MOUSEEVENTF_LEFTUP;
-
-                // Middle button
-                if ((buttonMask & 2) != 0)
-                    flags |= MOUSEEVENTF_MIDDLEDOWN;
-                else
-                    flags |= MOUSEEVENTF_MIDDLEUP;
-
-                // Right button
-                if ((buttonMask & 4) != 0)
-                    flags |= MOUSEEVENTF_RIGHTDOWN;
-                else
-                    flags |= MOUSEEVENTF_RIGHTUP;
-
-                // Mouse wheel (buttons 3=scroll up, 4=scroll down in some VNC clients)
-                // X11: 8=scroll up, 16=scroll down
+                // Mouse wheel (X11: 8=scroll up, 16=scroll down)
                 if ((buttonMask & 8) != 0)
                 {
-                    flags |= MOUSEEVENTF_WHEEL;
-                    SendMouseInput(flags, screenX, screenY, WHEEL_DELTA);
+                    SendMouseInput(MOUSEEVENTF_MOVE | MOUSEEVENTF_WHEEL, screenX, screenY, WHEEL_DELTA);
+                    return;
                 }
-                else if ((buttonMask & 16) != 0)
+                if ((buttonMask & 16) != 0)
                 {
-                    flags |= MOUSEEVENTF_WHEEL;
-                    SendMouseInput(flags, screenX, screenY, -WHEEL_DELTA);
+                    SendMouseInput(MOUSEEVENTF_MOVE | MOUSEEVENTF_WHEEL, screenX, screenY, -WHEEL_DELTA);
+                    return;
+                }
+
+                // Only send move + button events when something actually changed
+                if (changed != 0)
+                {
+                    uint flags = MOUSEEVENTF_MOVE;
+                    if ((changed & 1) != 0)
+                        flags |= (buttonMask & 1) != 0 ? MOUSEEVENTF_LEFTDOWN : MOUSEEVENTF_LEFTUP;
+                    if ((changed & 2) != 0)
+                        flags |= (buttonMask & 2) != 0 ? MOUSEEVENTF_MIDDLEDOWN : MOUSEEVENTF_MIDDLEUP;
+                    if ((changed & 4) != 0)
+                        flags |= (buttonMask & 4) != 0 ? MOUSEEVENTF_RIGHTDOWN : MOUSEEVENTF_RIGHTUP;
+                    SendMouseInput(flags, screenX, screenY);
                 }
                 else
                 {
-                    SendMouseInput(flags, screenX, screenY);
+                    // Movement only — no button change
+                    SendMouseInput(MOUSEEVENTF_MOVE, screenX, screenY);
                 }
             }
             catch { }
