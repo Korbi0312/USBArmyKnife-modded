@@ -107,9 +107,9 @@ This project implements a variety of attacks based around an easily concealable 
 
 ### Option 1: Flash Pre-Built Firmware (Easiest)
 
-1. Download the firmware zip from [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases)
+1. Download the firmware zip from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page
 2. Flash using the [web installer](https://esp.huhn.me/) or [esptool](https://github.com/espressif/esptool)
-3. Install the PC agent: download `install.bat` from the releases page, right-click → Run as administrator
+3. Install the agent: copy `install.bat` from `tools/Installer/`, right-click → Run as administrator
 
 ### Option 2: Build from Source
 
@@ -120,11 +120,11 @@ platformio run --environment LILYGO-T-Dongle-S3
 platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 ```
 
-### PC Installation
+### Agent Installation
 
-#### Option A: PC Installer (Recommended)
+#### Option A: Installer (Recommended)
 
-1. Download `install.bat` from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page (or copy from `tools/Installer/install.bat`)
+1. Copy `tools/Installer/install.bat` to your PC
 2. Right-click → **Run as administrator**
 3. Enter a VNC password (optional, press Enter to skip)
 4. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
@@ -139,14 +139,14 @@ To uninstall, run `uninstall.bat` and choose:
 
 If the installer fails (e.g. no internet, corporate firewall), you can set up the agent manually:
 
-1. **Download the agent binaries** from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page or compile from source (see below)
+1. **Download the agent binaries** from `tools/Installer/` in this repository or compile from source (see below)
 2. **Create `C:\AgentInstall`** and copy these files into it:
    - `AgentLauncher.exe`
    - `PortableApp.dll`
    - `turbojpeg.dll`
    - `vcruntime140.dll`
    - `WmiLight.Native.dll`
-3. **Download and extract VncDirect** — download `VncDirect.zip` from the releases page, extract to `C:\AgentInstall\VncDirect\`
+3. **Download and extract VncDirect** — download `VncDirect.zip` from `tools/Installer/`, extract to `C:\AgentInstall\VncDirect\`
 4. **Set up autostart** — create these VBS files in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`:
 
    **VncDirect.vbs:**

