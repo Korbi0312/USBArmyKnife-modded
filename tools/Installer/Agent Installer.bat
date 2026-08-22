@@ -167,7 +167,7 @@ echo     Scheduled task "Security Script" created.
 
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if %errorlevel% equ 0 goto skip_watchdog
-schtasks /create /tn "VNC Watchdog" /tr "%DEST%\vnc-watchdog.bat" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -Command \"while($true){if(!(Get-Process VncDirect -EA SilentlyContinue)){Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'};Start-Sleep 5}\"" /sc onlogon /rl limited /f >nul 2>&1
 echo     Scheduled task "VNC Watchdog" created.
 :skip_watchdog
 

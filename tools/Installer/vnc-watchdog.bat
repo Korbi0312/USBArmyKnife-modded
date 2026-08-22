@@ -1,8 +1,4 @@
 @echo off
-if "%1"=="" (
-    start "" /min cmd /c "%~f0" hidden
-    exit /b
-)
 set "DEST=C:\AgentInstall"
 set "EXE=%DEST%\VncDirect\VncDirect.exe"
 
