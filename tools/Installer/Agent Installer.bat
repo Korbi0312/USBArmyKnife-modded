@@ -186,8 +186,14 @@ netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=
 echo     Firewall rules "VNC Block Localhost" created.
 :skip_firewall_block
 
-REM --- 7. Start services ---
-echo [6/6] Starting Agent and VNC Server...
+REM --- 7. Disable UAC prompts (needed for VNC to show admin dialogs) ---
+echo [6/7] Disabling UAC prompts...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 0 /f >nul 2>&1
+echo     UAC prompts disabled. Restart required to take effect.
+
+REM --- 8. Start services ---
+echo [7/7] Starting Agent and VNC Server...
 start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd=%DEST%
 

@@ -90,13 +90,13 @@ echo.
 echo === Full Uninstall ===
 echo.
 
-echo [1/5] Stopping running processes...
+echo [1/6] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
 wmic process where "commandline like '%%vnc-watchdog%%'" call terminate >nul 2>&1
 timeout /t 2 /nobreak >nul
 
-echo [2/5] Removing autostart...
+echo [2/6] Removing autostart...
 if exist "%STARTUP%\USBArmyKnifeAgent.vbs" (
     del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1
     echo    [+] USBArmyKnifeAgent.vbs removed.
@@ -121,7 +121,7 @@ if %errorlevel% equ 0 (
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
 
-echo [3/5] Removing firewall rules...
+echo [3/6] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if %errorlevel% equ 0 (
     netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1
@@ -138,7 +138,7 @@ if %errorlevel% equ 0 (
     echo    [-] Firewall rules "VNC Block Localhost" not found.
 )
 
-echo [4/5] Deleting files...
+echo [4/6] Deleting files...
 if not exist "%DEST%" goto files_deleted
 rmdir /s /q "%DEST%" >nul 2>&1
 if not exist "%DEST%" (
@@ -149,7 +149,12 @@ if not exist "%DEST%" (
 )
 :files_deleted
 
-echo [5/5] Done.
+echo [5/6] Re-enabling UAC...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 5 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [+] UAC prompts re-enabled. Restart required.
+
+echo [6/6] Done.
 echo.
 echo ========================================
 echo   Uninstall complete!
