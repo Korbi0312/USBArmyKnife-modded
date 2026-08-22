@@ -51,7 +51,7 @@ echo [2/6] Downloading files from GitHub...
 
 set "FAIL=0"
 
-echo    [1/7] VncDirect.exe (~67MB, may take a moment)...
+echo    [1/6] VncDirect.exe (~67MB, may take a moment)...
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect/VncDirect.exe' -OutFile '%DIR%VncDirect.exe' -UseBasicParsing -TimeoutSec 300" 2>nul
 if not exist "%DIR%VncDirect.exe" (
     echo    [!] FAILED to download VncDirect.exe
@@ -60,7 +60,7 @@ if not exist "%DIR%VncDirect.exe" (
     echo    [OK]
 )
 
-echo    [2/7] AgentLauncher.exe...
+echo    [2/6] AgentLauncher.exe...
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%DIR%AgentLauncher.exe' -UseBasicParsing -TimeoutSec 300" 2>nul
 if not exist "%DIR%AgentLauncher.exe" (
     echo    [!] FAILED to download AgentLauncher.exe
@@ -69,7 +69,7 @@ if not exist "%DIR%AgentLauncher.exe" (
     echo    [OK]
 )
 
-echo    [3/7] turbojpeg.dll...
+echo    [3/6] turbojpeg.dll...
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect/turbojpeg.dll' -OutFile '%DIR%turbojpeg.dll' -UseBasicParsing -TimeoutSec 60" 2>nul
 if not exist "%DIR%turbojpeg.dll" (
     echo    [!] FAILED to download turbojpeg.dll
@@ -78,7 +78,7 @@ if not exist "%DIR%turbojpeg.dll" (
     echo    [OK]
 )
 
-echo    [4/7] vcruntime140.dll...
+echo    [4/6] vcruntime140.dll...
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect/vcruntime140.dll' -OutFile '%DIR%vcruntime140.dll' -UseBasicParsing -TimeoutSec 60" 2>nul
 if not exist "%DIR%vcruntime140.dll" (
     echo    [!] FAILED to download vcruntime140.dll
@@ -87,7 +87,7 @@ if not exist "%DIR%vcruntime140.dll" (
     echo    [OK]
 )
 
-echo    [5/7] vnc-web.zip (noVNC web UI)...
+echo    [5/6] vnc-web.zip (noVNC web UI)...
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vnc-web.zip' -OutFile '%DIR%vnc-web.zip' -UseBasicParsing -TimeoutSec 60" 2>nul
 if not exist "%DIR%vnc-web.zip" (
     echo    [!] FAILED to download vnc-web.zip
@@ -96,7 +96,7 @@ if not exist "%DIR%vnc-web.zip" (
     echo    [OK]
 )
 
-echo    [6/7] vnc-watchdog.bat...
+echo    [6/6] vnc-watchdog.bat...
 powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vnc-watchdog.bat' -OutFile '%DIR%vnc-watchdog.bat' -UseBasicParsing -TimeoutSec 30" 2>nul
 if not exist "%DIR%vnc-watchdog.bat" (
     echo    [!] FAILED to download vnc-watchdog.bat
@@ -104,11 +104,6 @@ if not exist "%DIR%vnc-watchdog.bat" (
 ) else (
     echo    [OK]
 )
-
-echo    [7/7] install.bat and uninstall.bat...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/install.bat' -OutFile '%DIR%install.bat' -UseBasicParsing -TimeoutSec 30" 2>nul
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/uninstall.bat' -OutFile '%DIR%uninstall.bat' -UseBasicParsing -TimeoutSec 30" 2>nul
-echo    [OK]
 
 if "%FAIL%"=="1" (
     echo.
@@ -196,17 +191,7 @@ if %tries% lss 10 (
     echo     VNC Server listening on port 7002.
 )
 
-REM --- Cleanup downloaded files ---
-echo.
-echo Cleaning up downloaded files...
-del "%DIR%VncDirect.exe" >nul 2>&1
-del "%DIR%AgentLauncher.exe" >nul 2>&1
-del "%DIR%turbojpeg.dll" >nul 2>&1
-del "%DIR%vcruntime140.dll" >nul 2>&1
-del "%DIR%vnc-web.zip" >nul 2>&1
-del "%DIR%vnc-watchdog.bat" >nul 2>&1
-del "%DIR%install.bat" >nul 2>&1
-del "%DIR%uninstall.bat" >nul 2>&1
+REM --- Done ---
 
 echo.
 echo ========================================
