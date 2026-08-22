@@ -28,8 +28,14 @@ if %errorlevel% equ 0 set "HAS_AUTOSTART=1"
 
 set "HAS_PASSWORD=0"
 if exist "%SETTINGS%" (
-    findstr /i "\"password\" *: *\"[^\"]\+\"" "%SETTINGS%" >nul 2>&1
-    if %errorlevel% equ 0 set "HAS_PASSWORD=1"
+    findstr /i /C:"password" "%SETTINGS%" >nul 2>&1
+    if %errorlevel% equ 0 (
+        findstr /i /C:"\"password\":  \"\"" "%SETTINGS%" >nul 2>&1
+        if %errorlevel% neq 0 (
+            findstr /i /C:"\"password\":  null" "%SETTINGS%" >nul 2>&1
+            if %errorlevel% neq 0 set "HAS_PASSWORD=1"
+        )
+    )
 )
 
 cls
@@ -419,8 +425,14 @@ echo ========================================
 echo.
 set "HAS_PASSWORD=0"
 if exist "%SETTINGS%" (
-    findstr /i "\"password\" *: *\"[^\"]\+\"" "%SETTINGS%" >nul 2>&1
-    if %errorlevel% equ 0 set "HAS_PASSWORD=1"
+    findstr /i /C:"password" "%SETTINGS%" >nul 2>&1
+    if %errorlevel% equ 0 (
+        findstr /i /C:"\"password\":  \"\"" "%SETTINGS%" >nul 2>&1
+        if %errorlevel% neq 0 (
+            findstr /i /C:"\"password\":  null" "%SETTINGS%" >nul 2>&1
+            if %errorlevel% neq 0 set "HAS_PASSWORD=1"
+        )
+    )
 )
 echo Press Y to return to menu or wait 10 seconds to exit...
 choice /t 10 /d N /c YN /n >nul 2>&1
