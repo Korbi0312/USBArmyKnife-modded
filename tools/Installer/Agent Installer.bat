@@ -197,26 +197,33 @@ set /a tries=0
 :checkport
 set /a tries+=1
 powershell -NoProfile -Command "if (Get-NetTCPConnection -LocalPort 7002 -State Listen -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }" >nul 2>&1
-if not %errorlevel% equ 0 (
-    if %tries% lss 15 (
-        timeout /t 1 /nobreak >nul
-        goto checkport
-    )
-)
+if %errorlevel% equ 0 goto portok
 if %tries% lss 15 (
-    echo     VNC Server listening on port 7002.
-) else (
-    echo     [!] VNC Server did not start within 15 seconds.
-    echo         Check if port 7002 is already in use.
+    timeout /t 1 /nobreak >nul
+    goto checkport
 )
+echo     [!] VNC Server did not start within 15 seconds.
+echo         Check if port 7002 is already in use.
+goto cleanup
 
+:portok
+echo     VNC Server listening on port 7002.
+
+:cleanup
 REM --- Cleanup temp download folder ---
 echo.
 echo Cleaning up temporary files...
 if exist "%TEMPDIR%" rmdir /s /q "%TEMPDIR%" >nul 2>&1
 
-REM --- Done ---
+REM --- Get LAN IP ---
+set "VIP="
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /r "IPv4"') do (
+    set "VIP=%%a"
+    goto gotip
+)
+:gotip
 
+REM --- Done ---
 echo.
 echo ========================================
 echo   Installation complete!
@@ -224,17 +231,12 @@ echo ========================================
 echo.
 echo PC Name:   %COMPUTERNAME%
 echo IP Addresses:
-for /f "usebackq tokens=2 delims=:" %%i in (`ipconfig ^| findstr /r "IPv4"`) do echo     %%i
+for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /r "IPv4"') do echo     %%i
 echo.
 if not "%VNCPASSWD%"=="" (
     echo VNC Password: %VNCPASSWD%
     echo.
 )
-for /f "usebackq tokens=2 delims=:" %%a in (`ipconfig ^| findstr /r "IPv4"`) do (
-    set "VIP=%%a"
-    goto :gotip
-)
-:gotip
 echo VNC URL: http://%VIP%/7002/
 echo.
 echo Window closes in 10 seconds...
