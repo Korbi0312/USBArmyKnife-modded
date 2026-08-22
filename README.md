@@ -58,7 +58,7 @@ This project implements a variety of attacks based around an easily concealable 
 | Feature | Description |
 | ------- | ----------- |
 | **PC-based VNC** | VncDirect hosts noVNC on port 7002 on your PC. The dongle deploys the agent — everything else runs on the PC. No relay through the dongle, full performance. |
-| **PC Installer / Uninstaller** | `install.bat` downloads all files from GitHub, installs to `C:\AgentInstall`, sets up autostart + firewall. `uninstall.bat` with 3 options: remove autostart, full uninstall, or change VNC password. Auto-closes after 10 seconds. |
+| **PC Installer / Uninstaller** | `Agent Installer.bat` downloads all files from GitHub individually, installs to `C:\AgentInstall`, sets up scheduled tasks + firewall + VNC watchdog. `Agent Uninstaller.bat` with 3 options: remove autostart, full uninstall, or change VNC password. |
 | **VNC Web UI (Dark Theme)** | Gold-accented dark theme matching the dashboard. FPS slider (30–240), quality selector (1440p–360p), scale selector (Fenster/100%/75%/50%/25%), remote control toggle (mouse+keyboard), resize grip. |
 | **VNC Password Protection** | Password check on the VNC page — set via installer or uninstaller, verified on connect. |
 | **Remote Access (Tailscale)** | Access your PC's VNC from anywhere via Tailscale VPN — no port forwarding needed. The VNC page detects your Tailscale IP and shows a remote link. |
@@ -109,7 +109,7 @@ This project implements a variety of attacks based around an easily concealable 
 
 1. Download the firmware zip from the [Releases](https://github.com/Korbi0312/USBArmyKnife-modded/releases) page
 2. Flash using the [web installer](https://esp.huhn.me/) or [esptool](https://github.com/espressif/esptool)
-3. Install the agent: copy `install.bat` from `tools/Installer/`, right-click → Run as administrator
+3. Install the agent: download `Agent Installer.bat` from `tools/`, right-click → Run as administrator
 
 ### Option 2: Build from Source
 
@@ -122,19 +122,18 @@ platformio run -t upload --upload-port COM4 --environment LILYGO-T-Dongle-S3
 
 ### Agent Installation
 
-All files needed for the PC agent are in [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer).
+All files needed for the PC agent are in [`tools/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools).
 
 #### Option A: Installer (Recommended)
 
-1. Go to [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer)
-2. Download `install.bat` (click the file → "Download raw file")
-3. Save it anywhere on your PC (e.g. Desktop)
-4. Right-click → **Run as administrator**
-5. Enter a VNC password (optional, press Enter to skip)
-6. The installer downloads all remaining files from GitHub, installs to `C:\AgentInstall`, sets up autostart and firewall
-7. After installation, open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
+1. Download [`Agent Installer.bat`](https://raw.githubusercontent.com/Korbi0312/USBArmyKnife-modded/master/tools/Agent%20Installer.bat) (right-click → "Save link as...")
+2. Save it anywhere on your PC (e.g. Desktop)
+3. Right-click → **Run as administrator**
+4. Enter a VNC password (optional, press Enter to skip)
+5. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up scheduled tasks, firewall and VNC watchdog
+6. After installation, open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
 
-To uninstall, run `uninstall.bat` and choose:
+To uninstall, run `Agent Uninstaller.bat` and choose:
 - **[1] Remove Autostart** — keeps files, removes startup entries
 - **[2] Full Uninstall** — removes everything
 - **[3] Change VNC Password** — set or clear the VNC password
@@ -143,43 +142,26 @@ To uninstall, run `uninstall.bat` and choose:
 
 If the installer fails (e.g. no internet, corporate firewall), set up the agent manually:
 
-1. Go to [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer)
-2. Download **all files** from that folder (click each file → "Download raw file")
-3. Create `C:\AgentInstall` on your PC
-4. Copy these files into `C:\AgentInstall`:
+1. Download all files from [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer)
+2. Create `C:\AgentInstall` and `C:\AgentInstall\VncDirect\vnc` on your PC
+3. Copy files into `C:\AgentInstall`:
    - `AgentLauncher.exe`
-   - `PortableApp.dll`
-   - `turbojpeg.dll`
-   - `vcruntime140.dll`
-   - `WmiLight.Native.dll`
-5. Download `VncDirect.zip` from the same folder, extract it to `C:\AgentInstall\VncDirect\`
-6. Create the VBS autostart files in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\`:
-
-   **VncDirect.vbs:**
-   ```vbs
-   Set fso = CreateObject("Scripting.FileSystemObject")
-   exe = "C:\AgentInstall\VncDirect\VncDirect.exe"
-   If fso.FileExists(exe) Then
-       CreateObject("WScript.Shell").Run """" & exe & """ port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0", 0, False
-   End If
+   - `vnc-watchdog.bat`
+4. Copy `VncDirect.exe`, `turbojpeg.dll`, `vcruntime140.dll` into `C:\AgentInstall\VncDirect\`
+5. Extract `vnc-web.zip` into `C:\AgentInstall\VncDirect\` (creates the `vnc\` folder)
+6. Create the scheduled tasks (run as admin):
    ```
-
-   **USBArmyKnifeAgent.vbs:**
-   ```vbs
-   Set fso = CreateObject("Scripting.FileSystemObject")
-   exe = "C:\AgentInstall\AgentLauncher.exe"
-   If fso.FileExists(exe) Then
-       CreateObject("WScript.Shell").Run """" & exe & """ vid=cafe pid=403f cwd=C:\AgentInstall", 0, False
-   End If
+   schtasks /create /tn "USBArmyKnife Agent" /tr "C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall" /sc onlogon /rl limited /f
+   schtasks /create /tn "Security Script" /tr "C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall" /sc onlogon /rl limited /f
+   schtasks /create /tn "VNC Watchdog" /tr "C:\AgentInstall\vnc-watchdog.bat" /sc onlogon /rl limited /f
    ```
-
 7. Add firewall rule (run as admin):
    ```
    netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002
    ```
 8. Start the services:
    ```
-   C:\AgentInstall\VncDirect\VncDirect.exe port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=240 scale=0
+   C:\AgentInstall\VncDirect\VncDirect.exe port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=360 scale=0
    C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall
    ```
 
@@ -215,8 +197,12 @@ Once the agent is deployed to the victim's machine, you can view their screen in
 
 1. Open `http://<your-pc-ip>:7002` in any browser
 2. The VNC interface connects to the agent running on the victim's PC
-3. Use the settings bar to adjust FPS (30–240), quality (1440p–360p), and scaling
-4. Toggle mouse+keyboard control on/off with the Remote Control button
+3. Toggle mouse+keyboard control on/off with the Remote Control button
+4. The canvas auto-scales to your browser window size
+
+### VNC Watchdog
+
+A scheduled task automatically restarts VNC if it crashes. The watchdog checks every 5 seconds.
 
 ### Remote Access via Tailscale
 
