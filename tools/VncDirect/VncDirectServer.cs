@@ -101,6 +101,7 @@ namespace Agent.VncDirect
 
         private static IPAddress GetLanIpAddress()
         {
+            IPAddress? fallback = null;
             try
             {
                 foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
@@ -108,15 +109,25 @@ namespace Agent.VncDirect
                     if (ni.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up) continue;
                     if (ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Loopback) continue;
                     if (ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Tunnel) continue;
+                    var name = ni.Name.ToLowerInvariant();
+                    if (name.Contains("virtualbox") || name.Contains("vmware") || name.Contains("hyper-v")) continue;
                     foreach (var addr in ni.GetIPProperties().UnicastAddresses)
                     {
-                        if (addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                            return addr.Address;
+                        if (addr.Address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) continue;
+                        var ip = addr.Address.ToString();
+                        if (ip.StartsWith("192.168.56.")) continue;
+                        if (ip.StartsWith("10.0.") || ip.StartsWith("172.16.") || ip.StartsWith("172.17.")) continue;
+                        if (ip.StartsWith("192.168.") || ip.StartsWith("10.") || ip.StartsWith("172."))
+                        {
+                            if (fallback == null) fallback = addr.Address;
+                            if (ni.GetIPProperties().GatewayAddresses.Count > 0)
+                                return addr.Address;
+                        }
                     }
                 }
             }
             catch { }
-            return System.Net.IPAddress.Any;
+            return fallback ?? System.Net.IPAddress.Any;
         }
 
         public void Stop()
