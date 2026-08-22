@@ -6,7 +6,7 @@ The PC agent enables VNC screen viewing and remote control.
 
 ### Quick Install (Recommended)
 
-1. Download [`install.bat`](install.bat) (click → "Download raw file")
+1. Download [`Agent Installer.bat`](Agent%20Installer.bat) (click → "Download raw file")
 2. Save it anywhere on your PC
 3. Right-click → **Run as administrator**
 4. Enter a VNC password (optional, press Enter to skip)
@@ -21,7 +21,7 @@ The PC agent enables VNC screen viewing and remote control.
 
 ### Uninstall
 
-Run [`uninstall.bat`](uninstall.bat) and choose:
+Run [`Agent Uninstaller.bat`](Agent%20Uninstaller.bat) and choose:
 - **[1] Remove Autostart** — keeps files, removes startup entries
 - **[2] Full Uninstall** — removes autostart, all files and firewall rule
 - **[3] Change VNC Password** — set or clear the VNC password
