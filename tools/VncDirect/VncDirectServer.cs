@@ -91,11 +91,32 @@ namespace Agent.VncDirect
 
         public void Start()
         {
-            httpServer = new HttpServer(port);
+            var bindIp = GetLanIpAddress();
+            httpServer = new HttpServer(bindIp, port);
             httpServer.OnGet += OnGet;
             httpServer.OnPost += OnPost;
             httpServer.AddWebSocketService<VncBehavior>("/websockify", () => new VncBehavior(this));
             httpServer.Start();
+        }
+
+        private static IPAddress GetLanIpAddress()
+        {
+            try
+            {
+                foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (ni.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up) continue;
+                    if (ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Loopback) continue;
+                    if (ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Tunnel) continue;
+                    foreach (var addr in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                            return addr.Address;
+                    }
+                }
+            }
+            catch { }
+            return System.Net.IPAddress.Any;
         }
 
         public void Stop()
@@ -103,22 +124,33 @@ namespace Agent.VncDirect
             httpServer?.Stop();
         }
 
+        private static bool IsLocalhost(WebSocketSharp.Net.HttpListenerRequest request)
+        {
+            var urlHost = request.Url?.Host ?? "";
+            var userHost = request.UserHostName ?? "";
+            var headerHost = request.Headers["Host"] ?? "";
+            var remoteIp = request.RemoteEndPoint?.Address?.ToString() ?? "";
+
+            return urlHost == "localhost" || urlHost == "127.0.0.1" || urlHost == "::1"
+                || userHost == "localhost" || userHost.StartsWith("127.0.0.1") || userHost.StartsWith("[::1]")
+                || headerHost.StartsWith("localhost") || headerHost.StartsWith("127.0.0.1")
+                || remoteIp == "127.0.0.1" || remoteIp == "::1";
+        }
+
+        private void BlockLocalhost(WebSocketSharp.Net.HttpListenerResponse response)
+        {
+            response.StatusCode = 403;
+            var msg = System.Text.Encoding.UTF8.GetBytes("Access denied");
+            response.ContentLength64 = msg.Length;
+            response.OutputStream.Write(msg, 0, msg.Length);
+            response.Close();
+        }
+
         private void OnGet(object? sender, HttpRequestEventArgs e)
         {
             var request = e.Request;
             var response = e.Response;
             var path = request.Url?.AbsolutePath ?? "/";
-
-            var remoteIp = request.RemoteEndPoint?.Address?.ToString() ?? "";
-            if (remoteIp == "127.0.0.1" || remoteIp == "::1" || remoteIp == "localhost")
-            {
-                response.StatusCode = 403;
-                var msg = System.Text.Encoding.UTF8.GetBytes("Access denied: localhost not allowed");
-                response.ContentLength64 = msg.Length;
-                response.OutputStream.Write(msg, 0, msg.Length);
-                response.Close();
-                return;
-            }
 
             if (path == "/api/settings")
             {
@@ -175,17 +207,6 @@ namespace Agent.VncDirect
             var request = e.Request;
             var response = e.Response;
             var path = request.Url?.AbsolutePath ?? "/";
-
-            var remoteIp = request.RemoteEndPoint?.Address?.ToString() ?? "";
-            if (remoteIp == "127.0.0.1" || remoteIp == "::1" || remoteIp == "localhost")
-            {
-                response.StatusCode = 403;
-                var msg = System.Text.Encoding.UTF8.GetBytes("Access denied: localhost not allowed");
-                response.ContentLength64 = msg.Length;
-                response.OutputStream.Write(msg, 0, msg.Length);
-                response.Close();
-                return;
-            }
 
             if (path == "/api/settings")
             {
