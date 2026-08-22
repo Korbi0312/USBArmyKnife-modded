@@ -120,6 +120,11 @@ if %errorlevel% equ 0 (
     schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
+schtasks /query /tn "VNC Direct" >nul 2>&1
+if %errorlevel% equ 0 (
+    schtasks /delete /tn "VNC Direct" /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Direct" removed.
+)
 
 echo [3/6] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
@@ -206,6 +211,11 @@ if %errorlevel% equ 0 (
     schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
+schtasks /query /tn "VNC Direct" >nul 2>&1
+if %errorlevel% equ 0 (
+    schtasks /delete /tn "VNC Direct" /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Direct" removed.
+)
 
 echo [3/3] Done.
 echo.
@@ -251,6 +261,14 @@ if %errorlevel% neq 0 (
     echo    [+] Scheduled task "VNC Watchdog" created.
 ) else (
     echo    [-] Scheduled task "VNC Watchdog" already exists.
+)
+
+schtasks /query /tn "VNC Direct" >nul 2>&1
+if %errorlevel% neq 0 (
+    schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onlogon /rl limited /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Direct" created.
+) else (
+    echo    [-] Scheduled task "VNC Direct" already exists.
 )
 
 echo.
