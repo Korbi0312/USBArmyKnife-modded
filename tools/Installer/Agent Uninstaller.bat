@@ -221,9 +221,10 @@ echo [3/3] Done.
 echo.
 echo Autostart successfully removed.
 echo.
-echo Window closes in 10 seconds...
-timeout /t 10 /nobreak >nul
-exit /b 0
+echo.
+echo Press Enter to return to menu or close window to exit...
+pause >nul
+goto show_menu
 
 :ADD_AUTOSTART
 echo.
@@ -274,9 +275,10 @@ if %errorlevel% neq 0 (
 echo.
 echo Autostart successfully set up.
 echo.
-echo Window closes in 10 seconds...
-timeout /t 10 /nobreak >nul
-exit /b 0
+echo.
+echo Press Enter to return to menu or close window to exit...
+pause >nul
+goto show_menu
 
 REM ============================================================
 REM  OPTION 3: Toggle VNC Server
@@ -324,9 +326,9 @@ set "IP=%IP: =%"
 echo   VNC URL: http://%IP%:7002/
 echo ========================================
 echo.
-echo Window closes in 10 seconds...
-timeout /t 10 /nobreak >nul
-exit /b 0
+echo Press Enter to return to menu or close window to exit...
+pause >nul
+goto show_menu
 
 :STOP_VNC
 echo.
@@ -344,9 +346,9 @@ if %errorlevel% neq 0 (
     echo    [!] Failed to stop VNC Server.
 )
 echo.
-echo Window closes in 10 seconds...
-timeout /t 10 /nobreak >nul
-exit /b 0
+echo Press Enter to return to menu or close window to exit...
+pause >nul
+goto show_menu
 
 REM ============================================================
 REM  OPTION 4: Manage Password
@@ -411,6 +413,6 @@ if "%HAS_PASSWORD%"=="1" (
 )
 echo ========================================
 echo.
-echo Window closes in 10 seconds...
-timeout /t 10 /nobreak >nul
-exit /b 0
+echo Press Enter to return to menu or close window to exit...
+pause >nul
+goto show_menu
