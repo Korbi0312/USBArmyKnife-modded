@@ -260,7 +260,6 @@ if not "%VNCPASSWD%"=="" (
 )
 echo VNC URL: http://%VIP%:7002/
 echo.
-echo PC restarts in 30 seconds...
-shutdown /r /t 30 /c "Installation complete. Restarting to apply changes."
-timeout /t 30 /nobreak >nul
+echo Window closes in 20 seconds...
+timeout /t 20 /nobreak >nul
 endlocal
