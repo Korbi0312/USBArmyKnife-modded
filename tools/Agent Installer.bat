@@ -222,6 +222,8 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /r "IPv4"') do (
     goto gotip
 )
 :gotip
+REM Trim leading space from IP
+set "VIP=%VIP: =%"
 
 REM --- Done ---
 echo.
@@ -237,7 +239,7 @@ if not "%VNCPASSWD%"=="" (
     echo VNC Password: %VNCPASSWD%
     echo.
 )
-echo VNC URL: http://%VIP%/7002/
+echo VNC URL: http://%VIP%:7002/
 echo.
 echo Window closes in 10 seconds...
 timeout /t 10 /nobreak >nul
