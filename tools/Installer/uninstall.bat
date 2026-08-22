@@ -68,6 +68,7 @@ echo.
 echo [1/3] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
+wmic process where "commandline like '%%vnc-watchdog%%'" call terminate >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 echo [2/3] Removing autostart entries...
@@ -135,7 +136,9 @@ echo.
 echo [1/5] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
-timeout /t 1 /nobreak >nul
+taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq *vnc-watchdog*" >nul 2>&1
+wmic process where "commandline like '%%vnc-watchdog%%'" call terminate >nul 2>&1
+timeout /t 2 /nobreak >nul
 
 echo [2/5] Removing autostart...
 REM Remove old VBS files (from previous installer versions)
@@ -174,16 +177,15 @@ if %errorlevel% equ 0 (
 )
 
 echo [4/5] Deleting files...
-if exist "%DEST%" (
-    rmdir /s /q "%DEST%" >nul 2>&1
-    if exist "%DEST%" (
-        echo    [!] Could not fully delete %DEST% (files still in use?)
-    ) else (
-        echo    [+] %DEST% deleted completely.
-    )
+if not exist "%DEST%" goto :files_deleted
+rmdir /s /q "%DEST%" >nul 2>&1
+if not exist "%DEST%" (
+    echo    [+] %DEST% deleted completely.
 ) else (
-    echo    [-] %DEST% not found.
+    echo    [!] Could not fully delete %DEST% - some files may still be in use.
+    echo        Try deleting C:\AgentInstall manually.
 )
+:files_deleted
 
 echo [5/5] Done.
 echo.
