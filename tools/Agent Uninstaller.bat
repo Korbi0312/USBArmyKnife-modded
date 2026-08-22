@@ -288,6 +288,10 @@ if %errorlevel% equ 0 (
 
 echo.
 echo ========================================
+for /f %%a in ('powershell -NoProfile -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -like '192.168.*' -and $_.IPAddress -notlike '192.168.56.*' } | Select-Object -First 1 -ExpandProperty IPAddress"') do (
+    set "IP=%%a"
+    goto gotip_s
+)
 for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /r "IPv4"') do (
     set "IP=%%a"
     goto gotip_s

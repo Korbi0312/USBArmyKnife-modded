@@ -217,12 +217,16 @@ if exist "%TEMPDIR%" rmdir /s /q "%TEMPDIR%" >nul 2>&1
 
 REM --- Get LAN IP ---
 set "VIP="
+for /f %%a in ('powershell -NoProfile -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -like '192.168.*' -and $_.IPAddress -notlike '192.168.56.*' } | Select-Object -First 1 -ExpandProperty IPAddress"') do (
+    set "VIP=%%a"
+    goto gotip
+)
+REM Fallback: any IP from ipconfig
 for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /r "IPv4"') do (
     set "VIP=%%a"
     goto gotip
 )
 :gotip
-REM Trim leading space from IP
 set "VIP=%VIP: =%"
 
 REM --- Done ---
