@@ -1,5 +1,5 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 title USBArmyKnife Agent Uninstaller
 
 set "DEST=C:\AgentInstall"
@@ -8,7 +8,7 @@ set "SETTINGS=%DEST%\VncDirect\vnc-settings.json"
 
 REM --- Elevation check ---
 net session >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo Administrator privileges required...
     powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
@@ -18,24 +18,18 @@ if %errorlevel% neq 0 (
 REM --- Refresh state ---
 set "VNC_RUNNING=0"
 tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
-if %errorlevel% equ 0 set "VNC_RUNNING=1"
+if !errorlevel! equ 0 set "VNC_RUNNING=1"
 
 set "HAS_AUTOSTART=0"
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if %errorlevel% equ 0 set "HAS_AUTOSTART=1"
+if !errorlevel! equ 0 set "HAS_AUTOSTART=1"
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if %errorlevel% equ 0 set "HAS_AUTOSTART=1"
+if !errorlevel! equ 0 set "HAS_AUTOSTART=1"
 
 set "HAS_PASSWORD=0"
 if exist "%SETTINGS%" (
-    findstr /i /C:"password" "%SETTINGS%" >nul 2>&1
-    if %errorlevel% equ 0 (
-        findstr /i /C:"\"password\":  \"\"" "%SETTINGS%" >nul 2>&1
-        if %errorlevel% neq 0 (
-            findstr /i /C:"\"password\":  null" "%SETTINGS%" >nul 2>&1
-            if %errorlevel% neq 0 set "HAS_PASSWORD=1"
-        )
-    )
+    powershell -NoProfile -Command "try { $j = Get-Content '%SETTINGS%' -Raw | ConvertFrom-Json; if ($j.password -ne '' -and $j.password -ne $null) { exit 0 } } catch {}; exit 1"
+    if !errorlevel! equ 0 set "HAS_PASSWORD=1"
 )
 
 cls
@@ -112,36 +106,36 @@ if exist "%STARTUP%\VncDirect.vbs" (
     echo    [+] VncDirect.vbs removed.
 )
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
     echo    [+] Scheduled task "USBArmyKnife Agent" removed.
 )
 schtasks /query /tn "Security Script" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "Security Script" /f >nul 2>&1
     echo    [+] Scheduled task "Security Script" removed.
 )
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
 schtasks /query /tn "VNC Direct" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "VNC Direct" /f >nul 2>&1
     echo    [+] Scheduled task "VNC Direct" removed.
 )
 
 echo [3/6] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1
     echo    [+] Firewall rule "VNC Direct 7002" removed.
 ) else (
     echo    [-] Firewall rule "VNC Direct 7002" not found.
 )
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     netsh advfirewall firewall delete rule name="VNC Block Localhost" >nul 2>&1
     netsh advfirewall firewall delete rule name="VNC Block Localhost v6" >nul 2>&1
     echo    [+] Firewall rules "VNC Block Localhost" removed.
@@ -203,22 +197,22 @@ if exist "%STARTUP%\VncDirect.vbs" (
     echo    [+] VncDirect.vbs removed.
 )
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
     echo    [+] Scheduled task "USBArmyKnife Agent" removed.
 )
 schtasks /query /tn "Security Script" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "Security Script" /f >nul 2>&1
     echo    [+] Scheduled task "Security Script" removed.
 )
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
 schtasks /query /tn "VNC Direct" >nul 2>&1
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     schtasks /delete /tn "VNC Direct" /f >nul 2>&1
     echo    [+] Scheduled task "VNC Direct" removed.
 )
@@ -226,11 +220,7 @@ if %errorlevel% equ 0 (
 echo [3/3] Done.
 echo.
 echo Autostart successfully removed.
-echo.
-echo.
-echo Press any key to return to menu...
-pause >nul
-goto show_menu
+goto :wait_menu
 
 :ADD_AUTOSTART
 echo.
@@ -247,7 +237,7 @@ if not exist "%DEST%\AgentLauncher.exe" (
 
 echo Creating scheduled tasks...
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
     echo    [+] Scheduled task "USBArmyKnife Agent" created.
 ) else (
@@ -255,7 +245,7 @@ if %errorlevel% neq 0 (
 )
 
 schtasks /query /tn "Security Script" >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
     echo    [+] Scheduled task "Security Script" created.
 ) else (
@@ -263,7 +253,7 @@ if %errorlevel% neq 0 (
 )
 
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -Command \"while($true){if(!(Get-Process VncDirect -EA SilentlyContinue)){Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'};Start-Sleep 5}\"" /sc onlogon /rl limited /f >nul 2>&1
     echo    [+] Scheduled task "VNC Watchdog" created.
 ) else (
@@ -271,20 +261,16 @@ if %errorlevel% neq 0 (
 )
 
 schtasks /query /tn "VNC Direct" >nul 2>&1
-if %errorlevel% neq 0 (
-    schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1
-    echo    [+] Scheduled task "VNC Direct" created (starts at boot).
+if !errorlevel! neq 0 (
+    schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onlogon /rl highest /it /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Direct" created.
 ) else (
     echo    [-] Scheduled task "VNC Direct" already exists.
 )
 
 echo.
 echo Autostart successfully set up.
-echo.
-echo.
-echo Press any key to return to menu...
-pause >nul
-goto show_menu
+goto :wait_menu
 
 REM ============================================================
 REM  OPTION 3: Toggle VNC Server
@@ -311,7 +297,7 @@ start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps
 timeout /t 3 /nobreak >nul
 
 tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
-if %errorlevel% equ 0 (
+if !errorlevel! equ 0 (
     echo    [+] VNC Server started successfully.
 ) else (
     echo    [!] Failed to start VNC Server.
@@ -331,10 +317,7 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /r "IPv4"') do (
 set "IP=%IP: =%"
 echo   VNC URL: http://%IP%:7002/
 echo ========================================
-echo.
-echo Press any key to return to menu...
-pause >nul
-goto show_menu
+goto :wait_menu
 
 :STOP_VNC
 echo.
@@ -346,15 +329,12 @@ taskkill /F /IM VncDirect.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo    [+] VNC Server stopped.
 ) else (
     echo    [!] Failed to stop VNC Server.
 )
-echo.
-echo Press any key to return to menu...
-pause >nul
-goto show_menu
+goto :wait_menu
 
 REM ============================================================
 REM  OPTION 4: Manage Password
@@ -418,18 +398,20 @@ if "%HAS_PASSWORD%"=="1" (
     echo   Password set successfully!
 )
 echo ========================================
+goto :wait_menu
+
+REM ============================================================
+REM  WAIT MENU: Any key returns, 10s timeout closes
+REM ============================================================
+:wait_menu
 echo.
-set "HAS_PASSWORD=0"
-if exist "%SETTINGS%" (
-    findstr /i /C:"password" "%SETTINGS%" >nul 2>&1
-    if %errorlevel% equ 0 (
-        findstr /i /C:"\"password\":  \"\"" "%SETTINGS%" >nul 2>&1
-        if %errorlevel% neq 0 (
-            findstr /i /C:"\"password\":  null" "%SETTINGS%" >nul 2>&1
-            if %errorlevel% neq 0 set "HAS_PASSWORD=1"
-        )
-    )
-)
-echo Press any key to return to menu...
+echo Press any key to return to menu or wait 10 seconds to exit...
+set "_SIGNAL=%TEMP%\vak_%RANDOM%.txt"
+type nul > "!_SIGNAL!"
+start "" /b cmd /c "timeout /t 10 /nobreak >nul 2>&1 & if exist \"!_SIGNAL!\" ( del \"!_SIGNAL!\" & powershell -NoProfile -WindowStyle Hidden -Command \"Stop-Process -Id ((Get-CimInstance Win32_Process -Filter 'ProcessId=$PID').ParentProcessId) -Force -ErrorAction SilentlyContinue\" )"
 pause >nul
-goto show_menu
+if exist "!_SIGNAL!" (
+    del "!_SIGNAL!" >nul 2>&1
+    goto show_menu
+)
+exit /b 0
