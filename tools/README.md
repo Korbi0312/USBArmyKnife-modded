@@ -2,31 +2,40 @@
 
 ## Agent Installation
 
-The PC agent enables VNC screen viewing and remote control. All installation files are in [`Installer/`](Installer/).
+The PC agent enables VNC screen viewing and remote control.
 
 ### Quick Install (Recommended)
 
-1. Go to [`Installer/`](Installer/) on GitHub
-2. Download `install.bat` (click the file → "Download raw file")
-3. Save it anywhere on your PC
-4. Right-click → **Run as administrator**
-5. Enter a VNC password (optional, press Enter to skip)
-6. Done — the installer downloads all files from GitHub and sets up everything
+1. Download [`install.bat`](install.bat) (click → "Download raw file")
+2. Save it anywhere on your PC
+3. Right-click → **Run as administrator**
+4. Enter a VNC password (optional, press Enter to skip)
+5. Done — the installer downloads all files from GitHub and sets up everything
 
-### Manual Install (if installer doesn't work)
-
-1. Go to [`Installer/`](Installer/) on GitHub
-2. Download **all files** from that folder
-3. Create `C:\AgentInstall` and copy the files into it
-4. Extract `VncDirect.zip` to `C:\AgentInstall\VncDirect\`
-5. Create VBS autostart files and firewall rule — see [README](../README.md#agent-installation) for full steps
+**What it installs:**
+- `VncDirect.exe` — VNC web server (noVNC on port 7002)
+- `AgentLauncher.exe` — USB Army Knife agent for screen capture
+- `vnc-watchdog.bat` — auto-restart if VNC crashes
+- Scheduled tasks for autostart on login
+- Firewall rule for port 7002
 
 ### Uninstall
 
-Run `uninstall.bat` and choose:
+Run [`uninstall.bat`](uninstall.bat) and choose:
 - **[1] Remove Autostart** — keeps files, removes startup entries
-- **[2] Full Uninstall** — removes everything
+- **[2] Full Uninstall** — removes autostart, all files and firewall rule
 - **[3] Change VNC Password** — set or clear the VNC password
+
+**What it removes:**
+- Scheduled tasks ("USBArmyKnife Agent", "Security Script", "VNC Watchdog")
+- Firewall rule "VNC Direct 7002"
+- All files in `C:\AgentInstall\`
+
+### Manual Install (if installer doesn't work)
+
+1. Download all files from [`Installer/`](Installer/) on GitHub
+2. Create `C:\AgentInstall` and copy the files into it
+3. Extract `VncDirect.zip` to `C:\AgentInstall\VncDirect\`
 
 ## Compile from Source
 
