@@ -222,9 +222,10 @@ echo.
 echo Autostart successfully removed.
 echo.
 echo.
-echo Press Enter to return to menu or close window to exit...
-pause >nul
-goto show_menu
+echo Press Enter to return to menu or wait 10 seconds to exit...
+timeout /t 10 >nul 2>&1
+if %errorlevel% equ 1 goto show_menu
+exit /b 0
 
 :ADD_AUTOSTART
 echo.
@@ -276,9 +277,10 @@ echo.
 echo Autostart successfully set up.
 echo.
 echo.
-echo Press Enter to return to menu or close window to exit...
-pause >nul
-goto show_menu
+echo Press Enter to return to menu or wait 10 seconds to exit...
+timeout /t 10 >nul 2>&1
+if %errorlevel% equ 1 goto show_menu
+exit /b 0
 
 REM ============================================================
 REM  OPTION 3: Toggle VNC Server
@@ -326,9 +328,10 @@ set "IP=%IP: =%"
 echo   VNC URL: http://%IP%:7002/
 echo ========================================
 echo.
-echo Press Enter to return to menu or close window to exit...
-pause >nul
-goto show_menu
+echo Press Enter to return to menu or wait 10 seconds to exit...
+timeout /t 10 >nul 2>&1
+if %errorlevel% equ 1 goto show_menu
+exit /b 0
 
 :STOP_VNC
 echo.
@@ -346,9 +349,10 @@ if %errorlevel% neq 0 (
     echo    [!] Failed to stop VNC Server.
 )
 echo.
-echo Press Enter to return to menu or close window to exit...
-pause >nul
-goto show_menu
+echo Press Enter to return to menu or wait 10 seconds to exit...
+timeout /t 10 >nul 2>&1
+if %errorlevel% equ 1 goto show_menu
+exit /b 0
 
 REM ============================================================
 REM  OPTION 4: Manage Password
@@ -413,6 +417,12 @@ if "%HAS_PASSWORD%"=="1" (
 )
 echo ========================================
 echo.
-echo Press Enter to return to menu or close window to exit...
-pause >nul
-goto show_menu
+set "HAS_PASSWORD=0"
+if exist "%SETTINGS%" (
+    findstr /i "\"password\" *: *\"[^\"]\+\"" "%SETTINGS%" >nul 2>&1
+    if %errorlevel% equ 0 set "HAS_PASSWORD=1"
+)
+echo Press Enter to return to menu or wait 10 seconds to exit...
+timeout /t 10 >nul 2>&1
+if %errorlevel% equ 1 goto show_menu
+exit /b 0
