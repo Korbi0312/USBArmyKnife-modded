@@ -228,10 +228,9 @@ echo.
 echo Autostart successfully removed.
 echo.
 echo.
-echo Press Y to return to menu or wait 10 seconds to exit...
-choice /t 10 /d N /c YN /n >nul 2>&1
-if %errorlevel% equ 1 goto show_menu
-exit /b 0
+echo Press any key to return to menu...
+pause >nul
+goto show_menu
 
 :ADD_AUTOSTART
 echo.
@@ -283,10 +282,9 @@ echo.
 echo Autostart successfully set up.
 echo.
 echo.
-echo Press Y to return to menu or wait 10 seconds to exit...
-choice /t 10 /d N /c YN /n >nul 2>&1
-if %errorlevel% equ 1 goto show_menu
-exit /b 0
+echo Press any key to return to menu...
+pause >nul
+goto show_menu
 
 REM ============================================================
 REM  OPTION 3: Toggle VNC Server
@@ -334,10 +332,9 @@ set "IP=%IP: =%"
 echo   VNC URL: http://%IP%:7002/
 echo ========================================
 echo.
-echo Press Y to return to menu or wait 10 seconds to exit...
-choice /t 10 /d N /c YN /n >nul 2>&1
-if %errorlevel% equ 1 goto show_menu
-exit /b 0
+echo Press any key to return to menu...
+pause >nul
+goto show_menu
 
 :STOP_VNC
 echo.
@@ -355,10 +352,9 @@ if %errorlevel% neq 0 (
     echo    [!] Failed to stop VNC Server.
 )
 echo.
-echo Press Y to return to menu or wait 10 seconds to exit...
-choice /t 10 /d N /c YN /n >nul 2>&1
-if %errorlevel% equ 1 goto show_menu
-exit /b 0
+echo Press any key to return to menu...
+pause >nul
+goto show_menu
 
 REM ============================================================
 REM  OPTION 4: Manage Password
@@ -434,7 +430,6 @@ if exist "%SETTINGS%" (
         )
     )
 )
-echo Press Y to return to menu or wait 10 seconds to exit...
-choice /t 10 /d N /c YN /n >nul 2>&1
-if %errorlevel% equ 1 goto show_menu
-exit /b 0
+echo Press any key to return to menu...
+pause >nul
+goto show_menu

@@ -173,8 +173,8 @@ echo     Scheduled task "VNC Watchdog" created.
 
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if %errorlevel% equ 0 goto skip_vnc_direct
-schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onlogon /rl limited /f >nul 2>&1
-echo     Scheduled task "VNC Direct" created (starts at login).
+schtasks /create /tn "VNC Direct" /tr "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /sc onlogon /rl highest /it /f >nul 2>&1
+echo     Scheduled task "VNC Direct" created (starts at login, interactive).
 :skip_vnc_direct
 
 REM --- 6. Firewall rules ---
