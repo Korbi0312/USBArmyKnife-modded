@@ -145,46 +145,46 @@ if not exist "%DEST%\VncDirect\vnc\index.html" (
 echo    Files installed.
 
 REM --- Save password ---
-if not "%VNCPASSWD%"=="" (
-    echo [+] Saving password...
-    powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-settings.json') { try { $raw = Get-Content '%DEST%\VncDirect\vnc-settings.json' -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; $j['password'] = '%VNCPASSWD%'; $j | ConvertTo-Json | Set-Content '%DEST%\VncDirect\vnc-settings.json' -Encoding UTF8"
-)
+if "%VNCPASSWD%"=="" goto skip_password
+echo [+] Saving password...
+powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-settings.json') { try { $raw = Get-Content '%DEST%\VncDirect\vnc-settings.json' -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; $j['password'] = '%VNCPASSWD%'; $j | ConvertTo-Json | Set-Content '%DEST%\VncDirect\vnc-settings.json' -Encoding UTF8"
+:skip_password
 
 REM --- 5. Set up autostart ---
 echo [4/6] Setting up autostart...
 
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if %errorlevel% neq 0 (
-    schtasks /create /tn "USBArmyKnife Agent" /tr "\"%DEST%\AgentLauncher.exe\" vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
-    echo     Scheduled task "USBArmyKnife Agent" created.
-)
+if %errorlevel% equ 0 goto skip_agent
+schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
+echo     Scheduled task "USBArmyKnife Agent" created.
+:skip_agent
 
 schtasks /query /tn "Security Script" >nul 2>&1
-if %errorlevel% neq 0 (
-    schtasks /create /tn "Security Script" /tr "\"%DEST%\AgentLauncher.exe\" vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
-    echo     Scheduled task "Security Script" created.
-)
+if %errorlevel% equ 0 goto skip_security
+schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
+echo     Scheduled task "Security Script" created.
+:skip_security
 
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if %errorlevel% neq 0 (
-    schtasks /create /tn "VNC Watchdog" /tr "%DEST%\vnc-watchdog.bat" /sc onlogon /rl limited /f >nul 2>&1
-    echo     Scheduled task "VNC Watchdog" created.
-)
+if %errorlevel% equ 0 goto skip_watchdog
+schtasks /create /tn "VNC Watchdog" /tr "%DEST%\vnc-watchdog.bat" /sc onlogon /rl limited /f >nul 2>&1
+echo     Scheduled task "VNC Watchdog" created.
+:skip_watchdog
 
 REM --- 6. Firewall rules ---
 echo [5/6] Setting up firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
-if %errorlevel% neq 0 (
-    netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul
-    echo     Firewall rule "VNC Direct 7002" (allow) created.
-)
+if %errorlevel% equ 0 goto skip_firewall_allow
+netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul
+echo     Firewall rule "VNC Direct 7002" (allow) created.
+:skip_firewall_allow
 
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
-if %errorlevel% neq 0 (
-    netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul
-    netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul
-    echo     Firewall rules "VNC Block Localhost" created.
-)
+if %errorlevel% equ 0 goto skip_firewall_block
+netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul
+netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul
+echo     Firewall rules "VNC Block Localhost" created.
+:skip_firewall_block
 
 REM --- 7. Start services ---
 echo [6/6] Starting Agent and VNC Server...
