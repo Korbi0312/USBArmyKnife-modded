@@ -163,12 +163,19 @@ if %errorlevel% neq 0 (
     echo     Scheduled task "VNC Watchdog" created.
 )
 
-REM --- 5. Firewall rule ---
-echo [5/6] Setting up firewall rule...
+REM --- 5. Firewall rules ---
+echo [5/6] Setting up firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if %errorlevel% neq 0 (
     netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul
-    echo     Firewall rule created.
+    echo     Firewall rule "VNC Direct 7002" (allow) created.
+)
+
+netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
+if %errorlevel% neq 0 (
+    netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul
+    netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul
+    echo     Firewall rules "VNC Block Localhost" created.
 )
 
 REM --- 6. Start services ---
@@ -216,7 +223,12 @@ if not "%VNCPASSWD%"=="" (
     echo VNC Password: %VNCPASSWD%
     echo.
 )
-echo VNC URL: http://localhost:7002/
+for /f "usebackq tokens=2 delims=:" %%a in (`ipconfig ^| findstr /r "IPv4"`) do (
+    set "VIP=%%a"
+    goto :gotip
+)
+:gotip
+echo VNC URL: http://%VIP%/7002/
 echo.
 echo Window closes in 10 seconds...
 timeout /t 10 /nobreak >nul

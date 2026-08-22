@@ -24,7 +24,7 @@ echo       Checks if autostart exists and removes it.
 echo       Files stay installed.
 echo.
 echo   [2] Full Uninstall
-echo       Removes autostart, all files and firewall rule.
+echo       Removes autostart, all files and firewall rules.
 echo.
 
 REM Check if password exists
@@ -167,13 +167,21 @@ if %errorlevel% equ 0 (
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
 
-echo [3/5] Removing firewall rule...
+echo [3/5] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if %errorlevel% equ 0 (
     netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1
     echo    [+] Firewall rule "VNC Direct 7002" removed.
 ) else (
-    echo    [-] Firewall rule not found.
+    echo    [-] Firewall rule "VNC Direct 7002" not found.
+)
+netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
+if %errorlevel% equ 0 (
+    netsh advfirewall firewall delete rule name="VNC Block Localhost" >nul 2>&1
+    netsh advfirewall firewall delete rule name="VNC Block Localhost v6" >nul 2>&1
+    echo    [+] Firewall rules "VNC Block Localhost" removed.
+) else (
+    echo    [-] Firewall rules "VNC Block Localhost" not found.
 )
 
 echo [4/5] Deleting files...
@@ -245,7 +253,7 @@ echo Restarting VNC server to apply changes...
 taskkill /F /IM VncDirect.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
 if exist "%DEST%\VncDirect\VncDirect.exe" (
-    start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=240 scale=0
+    start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
     echo    VNC server restarted.
 ) else (
     echo    VNC server not found. Please restart manually.

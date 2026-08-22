@@ -167,13 +167,21 @@ if %errorlevel% equ 0 (
     echo    [+] Scheduled task "VNC Watchdog" removed.
 )
 
-echo [3/5] Removing firewall rule...
+echo [3/5] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if %errorlevel% equ 0 (
     netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1
     echo    [+] Firewall rule "VNC Direct 7002" removed.
 ) else (
-    echo    [-] Firewall rule not found.
+    echo    [-] Firewall rule "VNC Direct 7002" not found.
+)
+netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
+if %errorlevel% equ 0 (
+    netsh advfirewall firewall delete rule name="VNC Block Localhost" >nul 2>&1
+    netsh advfirewall firewall delete rule name="VNC Block Localhost v6" >nul 2>&1
+    echo    [+] Firewall rules "VNC Block Localhost" removed.
+) else (
+    echo    [-] Firewall rules "VNC Block Localhost" not found.
 )
 
 echo [4/5] Deleting files...
