@@ -191,6 +191,16 @@ if %tries% lss 10 (
     echo     VNC Server listening on port 7002.
 )
 
+REM --- Cleanup downloaded files ---
+echo.
+echo Cleaning up downloaded files...
+del "%DIR%VncDirect.exe" >nul 2>&1
+del "%DIR%AgentLauncher.exe" >nul 2>&1
+del "%DIR%turbojpeg.dll" >nul 2>&1
+del "%DIR%vcruntime140.dll" >nul 2>&1
+del "%DIR%vnc-web.zip" >nul 2>&1
+del "%DIR%vnc-watchdog.bat" >nul 2>&1
+
 REM --- Done ---
 
 echo.
