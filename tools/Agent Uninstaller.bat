@@ -66,17 +66,20 @@ if "%HAS_PASSWORD%"=="1" (
     echo       No password is set.
 )
 echo.
+echo   [5] Exit
+echo.
 echo ========================================
 echo.
 
-set /p "CHOICE=Select option (1-4): "
+set /p "CHOICE=Select option (1-5): "
 
 if "%CHOICE%"=="1" goto UNINSTALL_ALL
 if "%CHOICE%"=="2" goto TOGGLE_AUTOSTART
 if "%CHOICE%"=="3" goto TOGGLE_VNC
 if "%CHOICE%"=="4" goto MANAGE_PASSWORD
+if "%CHOICE%"=="5" exit /b 0
 echo.
-echo Invalid input. Please select 1-4.
+echo Invalid input. Please select 1-5.
 timeout /t 3 /nobreak >nul
 goto show_menu
 
