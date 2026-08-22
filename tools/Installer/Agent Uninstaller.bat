@@ -14,7 +14,8 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-REM --- Check current state ---
+:show_menu
+REM --- Refresh state ---
 set "VNC_RUNNING=0"
 tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
 if %errorlevel% equ 0 set "VNC_RUNNING=1"
@@ -31,7 +32,6 @@ if exist "%SETTINGS%" (
     if %errorlevel% equ 0 set "HAS_PASSWORD=1"
 )
 
-:show_menu
 cls
 echo.
 echo ========================================
@@ -222,8 +222,8 @@ echo.
 echo Autostart successfully removed.
 echo.
 echo.
-echo Press Enter to return to menu or wait 10 seconds to exit...
-timeout /t 10 >nul 2>&1
+echo Press Y to return to menu or wait 10 seconds to exit...
+choice /t 10 /d N /c YN /n >nul 2>&1
 if %errorlevel% equ 1 goto show_menu
 exit /b 0
 
@@ -277,8 +277,8 @@ echo.
 echo Autostart successfully set up.
 echo.
 echo.
-echo Press Enter to return to menu or wait 10 seconds to exit...
-timeout /t 10 >nul 2>&1
+echo Press Y to return to menu or wait 10 seconds to exit...
+choice /t 10 /d N /c YN /n >nul 2>&1
 if %errorlevel% equ 1 goto show_menu
 exit /b 0
 
@@ -328,8 +328,8 @@ set "IP=%IP: =%"
 echo   VNC URL: http://%IP%:7002/
 echo ========================================
 echo.
-echo Press Enter to return to menu or wait 10 seconds to exit...
-timeout /t 10 >nul 2>&1
+echo Press Y to return to menu or wait 10 seconds to exit...
+choice /t 10 /d N /c YN /n >nul 2>&1
 if %errorlevel% equ 1 goto show_menu
 exit /b 0
 
@@ -349,8 +349,8 @@ if %errorlevel% neq 0 (
     echo    [!] Failed to stop VNC Server.
 )
 echo.
-echo Press Enter to return to menu or wait 10 seconds to exit...
-timeout /t 10 >nul 2>&1
+echo Press Y to return to menu or wait 10 seconds to exit...
+choice /t 10 /d N /c YN /n >nul 2>&1
 if %errorlevel% equ 1 goto show_menu
 exit /b 0
 
@@ -422,7 +422,7 @@ if exist "%SETTINGS%" (
     findstr /i "\"password\" *: *\"[^\"]\+\"" "%SETTINGS%" >nul 2>&1
     if %errorlevel% equ 0 set "HAS_PASSWORD=1"
 )
-echo Press Enter to return to menu or wait 10 seconds to exit...
-timeout /t 10 >nul 2>&1
+echo Press Y to return to menu or wait 10 seconds to exit...
+choice /t 10 /d N /c YN /n >nul 2>&1
 if %errorlevel% equ 1 goto show_menu
 exit /b 0
