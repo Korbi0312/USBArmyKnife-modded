@@ -24,7 +24,7 @@ echo       Checks if autostart exists and removes it.
 echo       Files stay installed.
 echo.
 echo   [2] Full Uninstall
-echo       Removes autostart, all files and firewall rules.
+echo       Removes autostart, all files and firewall rule.
 echo.
 
 REM Check if password exists
@@ -253,7 +253,7 @@ echo Restarting VNC server to apply changes...
 taskkill /F /IM VncDirect.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
 if exist "%DEST%\VncDirect\VncDirect.exe" (
-    start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+    start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=240 scale=0
     echo    VNC server restarted.
 ) else (
     echo    VNC server not found. Please restart manually.
