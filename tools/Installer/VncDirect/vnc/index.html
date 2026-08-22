@@ -86,6 +86,7 @@
             displayH = Math.round(fbH * scale);
             canvas.style.width = displayW + 'px';
             canvas.style.height = displayH + 'px';
+            canvas.style.cursor = 'crosshair';
         }
 
         function patchMouseInput() {
@@ -128,6 +129,9 @@
                 resizeSession: false,
                 showDotCursor: true
             });
+            if (rfb._display && rfb._display._rescale) {
+                rfb._display._rescale = function() {};
+            }
             const obs = new MutationObserver(() => {
                 const c = document.querySelector('#screen canvas');
                 if (c) c.style.cursor = 'crosshair';
