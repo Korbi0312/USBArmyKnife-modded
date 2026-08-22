@@ -1,5 +1,5 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 title USBArmyKnife Agent Installer
 
 REM ============================================================
@@ -233,7 +233,10 @@ echo ========================================
 echo.
 echo PC Name:   %COMPUTERNAME%
 echo IP Addresses:
-for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /r "IPv4"') do echo     %%i
+for /f "tokens=2 delims=:" %%i in ('ipconfig ^| findstr /r "IPv4"') do (
+    set "LINE=%%i"
+    echo     !LINE: =!
+)
 echo.
 if not "%VNCPASSWD%"=="" (
     echo VNC Password: %VNCPASSWD%
