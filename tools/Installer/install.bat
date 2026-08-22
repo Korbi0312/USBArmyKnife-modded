@@ -4,9 +4,9 @@ title USBArmyKnife Installer
 
 REM ============================================================
 REM  USBArmyKnife Installer
-REM  Downloads files from GitHub to the installer's directory,
-REM  copies to C:\AgentInstall, sets up autostart/firewall,
-REM  then deletes the downloaded files.
+REM  Downloads individual files from GitHub to the installer's
+REM  directory, copies to C:\AgentInstall, sets up autostart/
+REM  firewall, then deletes the downloaded files.
 REM ============================================================
 
 set "DEST=C:\AgentInstall"
@@ -46,46 +46,100 @@ taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
 
-REM --- 2. Download files to installer directory ---
+REM --- 2. Download files individually ---
 echo [2/6] Downloading files from GitHub...
 
-echo    Downloading VncDirect.zip...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect.zip' -OutFile '%DIR%VncDirect.zip' -UseBasicParsing" >nul 2>&1
-if not exist "%DIR%VncDirect.zip" (
-    echo    [!] FAILED to download VncDirect.zip
-    echo    Check your internet connection and try again.
-    pause
-    exit /b 1
+set "FAIL=0"
+
+echo    [1/7] VncDirect.exe (~67MB, may take a moment)...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect/VncDirect.exe' -OutFile '%DIR%VncDirect.exe' -UseBasicParsing -TimeoutSec 300" 2>nul
+if not exist "%DIR%VncDirect.exe" (
+    echo    [!] FAILED to download VncDirect.exe
+    set "FAIL=1"
+) else (
+    echo    [OK]
 )
 
-echo    Downloading agent files...
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%DIR%AgentLauncher.exe' -UseBasicParsing" 2>nul
+echo    [2/7] AgentLauncher.exe...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%DIR%AgentLauncher.exe' -UseBasicParsing -TimeoutSec 300" 2>nul
 if not exist "%DIR%AgentLauncher.exe" (
     echo    [!] FAILED to download AgentLauncher.exe
-    echo    Check your internet connection.
+    set "FAIL=1"
+) else (
+    echo    [OK]
+)
+
+echo    [3/7] turbojpeg.dll...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect/turbojpeg.dll' -OutFile '%DIR%turbojpeg.dll' -UseBasicParsing -TimeoutSec 60" 2>nul
+if not exist "%DIR%turbojpeg.dll" (
+    echo    [!] FAILED to download turbojpeg.dll
+    set "FAIL=1"
+) else (
+    echo    [OK]
+)
+
+echo    [4/7] vcruntime140.dll...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/VncDirect/vcruntime140.dll' -OutFile '%DIR%vcruntime140.dll' -UseBasicParsing -TimeoutSec 60" 2>nul
+if not exist "%DIR%vcruntime140.dll" (
+    echo    [!] FAILED to download vcruntime140.dll
+    set "FAIL=1"
+) else (
+    echo    [OK]
+)
+
+echo    [5/7] vnc-web.zip (noVNC web UI)...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vnc-web.zip' -OutFile '%DIR%vnc-web.zip' -UseBasicParsing -TimeoutSec 60" 2>nul
+if not exist "%DIR%vnc-web.zip" (
+    echo    [!] FAILED to download vnc-web.zip
+    set "FAIL=1"
+) else (
+    echo    [OK]
+)
+
+echo    [6/7] vnc-watchdog.bat...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vnc-watchdog.bat' -OutFile '%DIR%vnc-watchdog.bat' -UseBasicParsing -TimeoutSec 30" 2>nul
+if not exist "%DIR%vnc-watchdog.bat" (
+    echo    [!] FAILED to download vnc-watchdog.bat
+    set "FAIL=1"
+) else (
+    echo    [OK]
+)
+
+echo    [7/7] install.bat and uninstall.bat...
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/install.bat' -OutFile '%DIR%install.bat' -UseBasicParsing -TimeoutSec 30" 2>nul
+powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/uninstall.bat' -OutFile '%DIR%uninstall.bat' -UseBasicParsing -TimeoutSec 30" 2>nul
+echo    [OK]
+
+if "%FAIL%"=="1" (
+    echo.
+    echo    [!] One or more downloads failed. Check internet connection.
+    echo    Retry or download files manually from:
+    echo    %BASE%
     pause
     exit /b 1
 )
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/PortableApp.dll' -OutFile '%DIR%PortableApp.dll' -UseBasicParsing" 2>nul
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/turbojpeg.dll' -OutFile '%DIR%turbojpeg.dll' -UseBasicParsing" 2>nul
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/vcruntime140.dll' -OutFile '%DIR%vcruntime140.dll' -UseBasicParsing" 2>nul
-powershell -NoProfile -Command "Invoke-WebRequest -Uri '%BASE%/WmiLight.Native.dll' -OutFile '%DIR%WmiLight.Native.dll' -UseBasicParsing" 2>nul
 
-echo    Downloads complete.
+echo    All downloads complete.
 
-REM --- 3. Copy files to destination ---
+REM --- 3. Install files ---
 echo [3/6] Installing to %DEST%...
 if not exist "%DEST%" mkdir "%DEST%"
+if not exist "%DEST%\VncDirect" mkdir "%DEST%\VncDirect"
 
+copy /y "%DIR%VncDirect.exe" "%DEST%\VncDirect\VncDirect.exe" >nul
+copy /y "%DIR%turbojpeg.dll" "%DEST%\VncDirect\turbojpeg.dll" >nul
+copy /y "%DIR%vcruntime140.dll" "%DEST%\VncDirect\vcruntime140.dll" >nul
 copy /y "%DIR%AgentLauncher.exe" "%DEST%\AgentLauncher.exe" >nul
-copy /y "%DIR%PortableApp.dll" "%DEST%\PortableApp.dll" >nul
-copy /y "%DIR%turbojpeg.dll" "%DEST%\turbojpeg.dll" >nul
-copy /y "%DIR%vcruntime140.dll" "%DEST%\vcruntime140.dll" >nul
-copy /y "%DIR%WmiLight.Native.dll" "%DEST%\WmiLight.Native.dll" >nul
 copy /y "%DIR%vnc-watchdog.bat" "%DEST%\vnc-watchdog.bat" >nul
 
-REM Extract VncDirect.zip
-powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%' -Force" >nul 2>&1
+echo    Extracting noVNC web UI...
+powershell -NoProfile -Command "Expand-Archive -Path '%DIR%vnc-web.zip' -DestinationPath '%DEST%\VncDirect' -Force" 2>nul
+if not exist "%DEST%\VncDirect\vnc\index.html" (
+    echo    [!] FAILED to extract vnc-web.zip
+    pause
+    exit /b 1
+)
+echo    Files installed.
 
 REM --- Save password ---
 if not "%VNCPASSWD%"=="" (
@@ -124,7 +178,7 @@ if %errorlevel% neq 0 (
 
 REM --- 6. Start services ---
 echo [6/6] Starting Agent and VNC Server...
-start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=240 scale=0
+start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd=%DEST%
 
 REM Wait for port
@@ -142,15 +196,17 @@ if %tries% lss 10 (
     echo     VNC Server listening on port 7002.
 )
 
-REM --- Cleanup downloaded files from installer directory ---
+REM --- Cleanup downloaded files ---
 echo.
 echo Cleaning up downloaded files...
+del "%DIR%VncDirect.exe" >nul 2>&1
 del "%DIR%AgentLauncher.exe" >nul 2>&1
-del "%DIR%PortableApp.dll" >nul 2>&1
 del "%DIR%turbojpeg.dll" >nul 2>&1
 del "%DIR%vcruntime140.dll" >nul 2>&1
-del "%DIR%WmiLight.Native.dll" >nul 2>&1
-del "%DIR%VncDirect.zip" >nul 2>&1
+del "%DIR%vnc-web.zip" >nul 2>&1
+del "%DIR%vnc-watchdog.bat" >nul 2>&1
+del "%DIR%install.bat" >nul 2>&1
+del "%DIR%uninstall.bat" >nul 2>&1
 
 echo.
 echo ========================================
@@ -165,6 +221,8 @@ if not "%VNCPASSWD%"=="" (
     echo VNC Password: %VNCPASSWD%
     echo.
 )
+echo VNC URL: http://localhost:7002/
+echo.
 echo Window closes in 10 seconds...
 timeout /t 10 /nobreak >nul
 endlocal
