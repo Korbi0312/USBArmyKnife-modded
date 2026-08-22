@@ -7,137 +7,56 @@
     <style>
         :root {
             --bg: #0a0a0f;
-            --bg-card: rgba(255,255,255,0.03);
-            --bg-input: #1a1a1a;
             --border: rgba(212,175,55,0.15);
             --border-card: rgba(255,255,255,0.06);
             --accent: #d4af37;
-            --accent-dim: rgba(212,175,55,0.3);
             --text: #e0e0e0;
             --text-dim: #888;
-            --text-heading: #f0e6c5;
             --green: #28a745;
             --red: #dc3545;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; display: flex; flex-direction: column; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
 
-        /* ── Top Bar ─────────────────────────────────────────────── */
         #topbar {
-            height: 42px;
-            background: #111118;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            gap: 12px;
-            z-index: 10;
+            height: 42px; background: #111118; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; padding: 0 12px; gap: 12px; z-index: 10;
         }
-        #topbar .logo {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        #topbar .status-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--red);
-            flex-shrink: 0;
-            transition: background 0.3s;
-        }
-        #topbar .status-dot.connected { background: var(--green); }
-        #topbar .status-text {
-            font-size: 12px;
-            color: var(--text-dim);
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        #topbar .status-text.connected { color: var(--text); }
+        .logo { font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; transition: background 0.3s; }
+        .status-dot.connected { background: var(--green); }
+        .status-text { font-size: 12px; color: var(--text-dim); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .status-text.connected { color: var(--text); }
 
-        /* ── Settings Bar ────────────────────────────────────────── */
         #settingsbar {
-            height: 38px;
-            background: #0d0d14;
-            border-bottom: 1px solid var(--border-card);
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            gap: 6px;
-            overflow-x: auto;
-            flex-shrink: 0;
+            height: 38px; background: #0d0d14; border-bottom: 1px solid var(--border-card);
+            display: flex; align-items: center; padding: 0 12px; gap: 6px; overflow-x: auto; flex-shrink: 0;
         }
-        .sb-group {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 0 8px;
-            border-right: 1px solid rgba(255,255,255,0.06);
-            height: 24px;
-        }
+        .sb-group { display: flex; align-items: center; gap: 5px; padding: 0 8px; border-right: 1px solid rgba(255,255,255,0.06); height: 24px; }
         .sb-group:last-child { border-right: none; }
         .sb-btn {
-            background: rgba(255,255,255,0.06);
-            color: var(--text);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px;
-            padding: 3px 10px;
-            font-size: 11px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.15s;
+            background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px; padding: 3px 10px; font-size: 11px; cursor: pointer; white-space: nowrap; transition: all 0.15s;
         }
-        .sb-btn:hover { background: rgba(255,255,255,0.12); border-color: var(--accent-dim); }
+        .sb-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(212,175,55,0.3); }
         .sb-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
-        .sb-remote {
-            margin-left: auto;
-            font-size: 10px;
-            color: var(--text-dim);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
-        }
+        .sb-remote { margin-left: auto; font-size: 10px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
 
-        /* ── Screen ──────────────────────────────────────────────── */
         #screen {
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
-            position: relative;
-            background: #000;
+            flex: 1; min-height: 0; overflow: hidden; position: relative; background: #000;
+            display: flex; align-items: center; justify-content: center;
         }
-        #screen canvas {
-            display: block;
-            image-rendering: auto;
-            cursor: crosshair;
-        }
+        #screen canvas { display: block; cursor: crosshair; }
 
-        /* ── Bottom Bar ──────────────────────────────────────────── */
         #bottombar {
-            height: 32px;
-            background: #111118;
-            border-top: 1px solid var(--border-card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-shrink: 0;
+            height: 32px; background: #111118; border-top: 1px solid var(--border-card);
+            display: flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0;
         }
         .bb-btn {
-            background: rgba(255,255,255,0.06);
-            color: var(--text);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px;
-            padding: 4px 14px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.15s;
+            background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer; transition: all 0.15s;
         }
-        .bb-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: var(--accent-dim); }
+        .bb-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); border-color: rgba(212,175,55,0.3); }
         .bb-btn.danger:hover { border-color: var(--red); color: var(--red); }
     </style>
 
@@ -147,8 +66,8 @@
         let rfb;
         let desktopName;
         let remoteControl = true;
-        let fbWidth = 0;
-        let fbHeight = 0;
+        let fbW = 0, fbH = 0;
+        let displayW = 0, displayH = 0;
 
         function setStatus(text, connected) {
             document.getElementById('statusText').textContent = text;
@@ -156,129 +75,81 @@
             document.getElementById('statusDot').classList.toggle('connected', connected);
         }
 
-        function connectedToServer(e) {
-            setStatus('Verbunden — ' + desktopName, true);
-            patchMouseInput();
-        }
-
-        function disconnectedFromServer(e) {
-            if (e.detail.clean) {
-                setStatus('Verbindung getrennt', false);
-            } else {
-                setStatus('Verbindung abgebrochen', false);
-            }
-        }
-
-        function credentialsAreRequired(e) {
-            const password = prompt('Passwort erforderlich:');
-            rfb.sendCredentials({ password: password });
-        }
-
-        function updateDesktopName(e) {
-            desktopName = e.detail.name;
+        function scaleCanvasToContainer() {
+            const canvas = rfb?._canvas;
+            if (!canvas || fbW <= 0 || fbH <= 0) return;
+            const screen = document.getElementById('screen');
+            const r = screen.getBoundingClientRect();
+            if (r.width <= 0 || r.height <= 0) return;
+            const scale = Math.min(r.width / fbW, r.height / fbH);
+            displayW = Math.round(fbW * scale);
+            displayH = Math.round(fbH * scale);
+            canvas.style.width = displayW + 'px';
+            canvas.style.height = displayH + 'px';
         }
 
         function patchMouseInput() {
-            if (!rfb) return;
-
-            fbWidth = rfb._fbWidth;
-            fbHeight = rfb._fbHeight;
-
-            const screen = document.getElementById('screen');
-
             rfb._sendMouse = function(x, y, mask) {
                 if (this._rfbConnectionState !== 'connected') return;
                 if (this._viewOnly) return;
-
-                const canvas = this._canvas;
-                if (!canvas) return;
-
-                const rect = canvas.getBoundingClientRect();
-                const cssW = rect.width;
-                const cssH = rect.height;
-
-                if (cssW <= 0 || cssH <= 0) return;
-
-                const fbX = Math.round((x / cssW) * fbWidth);
-                const fbY = Math.round((y / cssH) * fbHeight);
-
-                RFB.messages.pointerEvent(this._sock,
-                    Math.max(0, Math.min(fbX, fbWidth - 1)),
-                    Math.max(0, Math.min(fbY, fbHeight - 1)),
-                    mask);
+                if (!this._canvas || displayW <= 0 || displayH <= 0) return;
+                const fbX = Math.min(Math.round((x / displayW) * fbW), fbW - 1);
+                const fbY = Math.min(Math.round((y / displayH) * fbH), fbH - 1);
+                RFB.messages.pointerEvent(this._sock, fbX, fbY, mask);
             };
-
             rfb._handleWheel = function(ev) {
                 if (this._rfbConnectionState !== 'connected') return;
                 if (this._viewOnly) return;
-
                 ev.stopPropagation();
                 ev.preventDefault();
-
-                const canvas = this._canvas;
-                if (!canvas) return;
-
-                const rect = canvas.getBoundingClientRect();
-                const pos = {
-                    x: Math.max(0, Math.min(ev.clientX - rect.left, rect.width - 1)),
-                    y: Math.max(0, Math.min(ev.clientY - rect.top, rect.height - 1))
-                };
-
+                const rect = this._canvas.getBoundingClientRect();
+                const x = Math.max(0, Math.min(ev.clientX - rect.left, rect.width - 1));
+                const y = Math.max(0, Math.min(ev.clientY - rect.top, rect.height - 1));
                 let dY = ev.deltaY;
                 if (ev.deltaMode !== 0) dY *= 33;
-
                 if (dY > 0) {
-                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask | 0x8);
-                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask & ~0x8);
+                    this._sendMouse(x, y, this._mouseButtonMask | 0x8);
+                    this._sendMouse(x, y, this._mouseButtonMask & ~0x8);
                 } else if (dY < 0) {
-                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask | 0x10);
-                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask & ~0x10);
+                    this._sendMouse(x, y, this._mouseButtonMask | 0x10);
+                    this._sendMouse(x, y, this._mouseButtonMask & ~0x10);
                 }
             };
-
-            const canvas = rfb._canvas;
-            if (canvas) {
-                canvas.removeEventListener('wheel', rfb._eventHandlers.handleWheel);
-                canvas.addEventListener('wheel', rfb._eventHandlers.handleWheel);
-            }
-
-            setTimeout(() => {
-                const c = document.querySelector('#screen canvas');
-                if (c) c.style.cursor = 'crosshair';
-            }, 50);
         }
 
         function connect() {
-            if (rfb) {
-                try { rfb.disconnect(); } catch (e) {}
-                rfb = null;
-            }
-
+            if (rfb) { try { rfb.disconnect(); } catch(e) {} rfb = null; }
             const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-            const url = scheme + '://' + window.location.hostname + ':' + window.location.port
-                      + '/websockify';
-
+            const url = scheme + '://' + window.location.hostname + ':' + window.location.port + '/websockify';
             setStatus('Verbinde...', false);
             rfb = new RFB(document.getElementById('screen'), url, {
                 viewOnly: !remoteControl,
-                scaleViewport: true,
+                scaleViewport: false,
                 resizeSession: false,
                 showDotCursor: true
             });
-
-            const observer = new MutationObserver(() => {
-                const canvas = document.querySelector('#screen canvas');
-                if (canvas) canvas.style.cursor = 'crosshair';
+            const obs = new MutationObserver(() => {
+                const c = document.querySelector('#screen canvas');
+                if (c) c.style.cursor = 'crosshair';
             });
-            observer.observe(document.getElementById('screen'), { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
-
-            rfb.addEventListener('connect', connectedToServer);
-            rfb.addEventListener('credentialsrequired', credentialsAreRequired);
-            rfb.addEventListener('desktopname', updateDesktopName);
-            rfb.addEventListener('disconnect', disconnectedFromServer);
+            obs.observe(document.getElementById('screen'), { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+            rfb.addEventListener('connect', () => {
+                fbW = rfb._fbWidth;
+                fbH = rfb._fbHeight;
+                scaleCanvasToContainer();
+                patchMouseInput();
+                setStatus('Verbunden - ' + desktopName + ' (' + fbW + 'x' + fbH + ')', true);
+            });
+            rfb.addEventListener('credentialsrequired', () => {
+                rfb.sendCredentials({ password: prompt('Passwort erforderlich:') });
+            });
+            rfb.addEventListener('desktopname', (e) => { desktopName = e.detail.name; });
+            rfb.addEventListener('disconnect', (e) => {
+                setStatus(e.detail.clean ? 'Verbindung getrennt' : 'Verbindung abgebrochen', false);
+            });
         }
 
-        function reconnect() { connect(); }
+        new ResizeObserver(() => scaleCanvasToContainer()).observe(document.getElementById('screen'));
 
         document.getElementById('btnRemote').addEventListener('click', () => {
             remoteControl = !remoteControl;
@@ -287,25 +158,14 @@
             btn.classList.toggle('active', remoteControl);
             if (rfb) rfb.viewOnly = !remoteControl;
         });
-
-        document.getElementById('btnReconnect').addEventListener('click', reconnect);
-
+        document.getElementById('btnReconnect').addEventListener('click', connect);
         document.getElementById('btnDisconnect').addEventListener('click', () => {
-            if (rfb) { try { rfb.disconnect(); } catch (e) {} rfb = null; }
+            if (rfb) { try { rfb.disconnect(); } catch(e) {} rfb = null; }
             setStatus('getrennt', false);
         });
-
         document.getElementById('btnCtrlAltDel').addEventListener('click', () => {
             if (rfb) rfb.sendCtrlAltDel();
         });
-
-        async function verifyPassword(pw) {
-            try {
-                const resp = await fetch('/api/verify-password?pw=' + encodeURIComponent(pw), { cache: 'no-store' });
-                const data = await resp.json();
-                return data.ok === true;
-            } catch (e) { return false; }
-        }
 
         let hasPassword = false;
         try {
@@ -313,33 +173,30 @@
             const data = await resp.json();
             hasPassword = data && data.hasPassword === true;
         } catch (e) {}
-
         if (hasPassword) {
-            let attempts = 0;
-            let authenticated = false;
-            while (attempts < 3 && !authenticated) {
+            let ok = false;
+            for (let i = 0; i < 3 && !ok; i++) {
                 const pw = prompt('VNC-Passwort erforderlich:');
                 if (pw === null) { setStatus('Abgebrochen', false); break; }
-                authenticated = await verifyPassword(pw);
-                if (!authenticated) {
-                    attempts++;
-                    if (attempts < 3) alert('Falsches Passwort. Nochmal versuchen.');
-                }
+                try {
+                    const r = await fetch('/api/verify-password?pw=' + encodeURIComponent(pw), { cache: 'no-store' });
+                    const d = await r.json();
+                    ok = d.ok === true;
+                } catch (e) {}
+                if (!ok && i < 2) alert('Falsches Passwort.');
             }
-            if (authenticated) connect();
+            if (ok) connect();
         } else {
             connect();
         }
     </script>
 </head>
-
 <body>
     <div id="topbar">
         <span class="logo">USB ARMY KNIFE</span>
         <div class="status-dot" id="statusDot"></div>
         <span class="status-text" id="statusText">Verbinde...</span>
     </div>
-
     <div id="settingsbar">
         <div class="sb-group">
             <button class="sb-btn active" id="btnRemote">Mouse+Keyboard: AN</button>
@@ -349,9 +206,7 @@
         </div>
         <span class="sb-remote" id="remoteLink"></span>
     </div>
-
     <div id="screen"></div>
-
     <div id="bottombar">
         <button class="bb-btn" id="btnCtrlAltDel">Strg+Alt+Entf</button>
         <button class="bb-btn danger" id="btnDisconnect">Trennen</button>
