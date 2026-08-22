@@ -265,8 +265,8 @@ if %errorlevel% neq 0 (
 
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if %errorlevel% neq 0 (
-    schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onlogon /rl limited /f >nul 2>&1
-    echo    [+] Scheduled task "VNC Direct" created.
+    schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Direct" created (starts at boot).
 ) else (
     echo    [-] Scheduled task "VNC Direct" already exists.
 )
