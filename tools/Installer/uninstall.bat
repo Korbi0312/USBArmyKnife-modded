@@ -103,6 +103,15 @@ if %errorlevel% equ 0 (
     echo    [-] Scheduled task "Security Script" not found.
 )
 
+schtasks /query /tn "VNC Watchdog" >nul 2>&1
+if %errorlevel% equ 0 (
+    schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Watchdog" removed.
+    set "found=1"
+) else (
+    echo    [-] Scheduled task "VNC Watchdog" not found.
+)
+
 echo [3/3] Done.
 echo.
 if "%found%"=="0" (
@@ -147,6 +156,12 @@ schtasks /query /tn "Security Script" >nul 2>&1
 if %errorlevel% equ 0 (
     schtasks /delete /tn "Security Script" /f >nul 2>&1
     echo    [+] Scheduled task "Security Script" removed.
+)
+
+schtasks /query /tn "VNC Watchdog" >nul 2>&1
+if %errorlevel% equ 0 (
+    schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
+    echo    [+] Scheduled task "VNC Watchdog" removed.
 )
 
 echo [3/5] Removing firewall rule...

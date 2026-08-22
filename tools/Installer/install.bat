@@ -82,6 +82,7 @@ copy /y "%DIR%PortableApp.dll" "%DEST%\PortableApp.dll" >nul
 copy /y "%DIR%turbojpeg.dll" "%DEST%\turbojpeg.dll" >nul
 copy /y "%DIR%vcruntime140.dll" "%DEST%\vcruntime140.dll" >nul
 copy /y "%DIR%WmiLight.Native.dll" "%DEST%\WmiLight.Native.dll" >nul
+copy /y "%DIR%vnc-watchdog.bat" "%DEST%\vnc-watchdog.bat" >nul
 
 REM Extract VncDirect.zip
 powershell -NoProfile -Command "Expand-Archive -Path '%DIR%VncDirect.zip' -DestinationPath '%DEST%' -Force" >nul 2>&1
@@ -105,6 +106,12 @@ schtasks /query /tn "Security Script" >nul 2>&1
 if %errorlevel% neq 0 (
     schtasks /create /tn "Security Script" /tr "\"%DEST%\AgentLauncher.exe\" vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
     echo     Scheduled task "Security Script" created.
+)
+
+schtasks /query /tn "VNC Watchdog" >nul 2>&1
+if %errorlevel% neq 0 (
+    schtasks /create /tn "VNC Watchdog" /tr "%DEST%\vnc-watchdog.bat" /sc onlogon /rl limited /f >nul 2>&1
+    echo     Scheduled task "VNC Watchdog" created.
 )
 
 REM --- 5. Firewall rule ---
