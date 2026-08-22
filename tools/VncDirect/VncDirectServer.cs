@@ -109,6 +109,17 @@ namespace Agent.VncDirect
             var response = e.Response;
             var path = request.Url?.AbsolutePath ?? "/";
 
+            var remoteIp = request.RemoteEndPoint?.Address?.ToString() ?? "";
+            if (remoteIp == "127.0.0.1" || remoteIp == "::1" || remoteIp == "localhost")
+            {
+                response.StatusCode = 403;
+                var msg = System.Text.Encoding.UTF8.GetBytes("Access denied: localhost not allowed");
+                response.ContentLength64 = msg.Length;
+                response.OutputStream.Write(msg, 0, msg.Length);
+                response.Close();
+                return;
+            }
+
             if (path == "/api/settings")
             {
                 var tailscaleIp = DetectTailscaleIp();
@@ -164,6 +175,17 @@ namespace Agent.VncDirect
             var request = e.Request;
             var response = e.Response;
             var path = request.Url?.AbsolutePath ?? "/";
+
+            var remoteIp = request.RemoteEndPoint?.Address?.ToString() ?? "";
+            if (remoteIp == "127.0.0.1" || remoteIp == "::1" || remoteIp == "localhost")
+            {
+                response.StatusCode = 403;
+                var msg = System.Text.Encoding.UTF8.GetBytes("Access denied: localhost not allowed");
+                response.ContentLength64 = msg.Length;
+                response.OutputStream.Write(msg, 0, msg.Length);
+                response.Close();
+                return;
+            }
 
             if (path == "/api/settings")
             {
