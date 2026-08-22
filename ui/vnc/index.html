@@ -79,20 +79,6 @@
             height: 24px;
         }
         .sb-group:last-child { border-right: none; }
-        .sb-label {
-            font-size: 10px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        .sb-val {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--accent);
-            min-width: 30px;
-            text-align: center;
-        }
         .sb-btn {
             background: rgba(255,255,255,0.06);
             color: var(--text);
@@ -115,7 +101,6 @@
             text-overflow: ellipsis;
             max-width: 200px;
         }
-        .sb-remote a { color: var(--accent); text-decoration: none; }
 
         /* ── Screen ──────────────────────────────────────────────── */
         #screen {
@@ -162,8 +147,9 @@
         let rfb;
         let desktopName;
         let remoteControl = true;
+        let fbWidth = 0;
+        let fbHeight = 0;
 
-        // ── VNC Connection ────────────────────────────────────────
         function setStatus(text, connected) {
             document.getElementById('statusText').textContent = text;
             document.getElementById('statusText').classList.toggle('connected', connected);
@@ -172,6 +158,7 @@
 
         function connectedToServer(e) {
             setStatus('Verbunden — ' + desktopName, true);
+            patchMouseInput();
         }
 
         function disconnectedFromServer(e) {
@@ -189,6 +176,76 @@
 
         function updateDesktopName(e) {
             desktopName = e.detail.name;
+        }
+
+        function patchMouseInput() {
+            if (!rfb) return;
+
+            fbWidth = rfb._fbWidth;
+            fbHeight = rfb._fbHeight;
+
+            const screen = document.getElementById('screen');
+
+            rfb._sendMouse = function(x, y, mask) {
+                if (this._rfbConnectionState !== 'connected') return;
+                if (this._viewOnly) return;
+
+                const canvas = this._canvas;
+                if (!canvas) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const cssW = rect.width;
+                const cssH = rect.height;
+
+                if (cssW <= 0 || cssH <= 0) return;
+
+                const fbX = Math.round((x / cssW) * fbWidth);
+                const fbY = Math.round((y / cssH) * fbHeight);
+
+                RFB.messages.pointerEvent(this._sock,
+                    Math.max(0, Math.min(fbX, fbWidth - 1)),
+                    Math.max(0, Math.min(fbY, fbHeight - 1)),
+                    mask);
+            };
+
+            rfb._handleWheel = function(ev) {
+                if (this._rfbConnectionState !== 'connected') return;
+                if (this._viewOnly) return;
+
+                ev.stopPropagation();
+                ev.preventDefault();
+
+                const canvas = this._canvas;
+                if (!canvas) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const pos = {
+                    x: Math.max(0, Math.min(ev.clientX - rect.left, rect.width - 1)),
+                    y: Math.max(0, Math.min(ev.clientY - rect.top, rect.height - 1))
+                };
+
+                let dY = ev.deltaY;
+                if (ev.deltaMode !== 0) dY *= 33;
+
+                if (dY > 0) {
+                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask | 0x8);
+                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask & ~0x8);
+                } else if (dY < 0) {
+                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask | 0x10);
+                    this._sendMouse(pos.x, pos.y, this._mouseButtonMask & ~0x10);
+                }
+            };
+
+            const canvas = rfb._canvas;
+            if (canvas) {
+                canvas.removeEventListener('wheel', rfb._eventHandlers.handleWheel);
+                canvas.addEventListener('wheel', rfb._eventHandlers.handleWheel);
+            }
+
+            setTimeout(() => {
+                const c = document.querySelector('#screen canvas');
+                if (c) c.style.cursor = 'crosshair';
+            }, 50);
         }
 
         function connect() {
@@ -209,31 +266,20 @@
                 showDotCursor: true
             });
 
-            // Force crosshair cursor on canvas (noVNC sets cursor:none)
             const observer = new MutationObserver(() => {
                 const canvas = document.querySelector('#screen canvas');
-                if (canvas) {
-                    canvas.style.cursor = 'crosshair';
-                }
+                if (canvas) canvas.style.cursor = 'crosshair';
             });
             observer.observe(document.getElementById('screen'), { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
-            // Also set immediately
-            setTimeout(() => {
-                const canvas = document.querySelector('#screen canvas');
-                if (canvas) canvas.style.cursor = 'crosshair';
-            }, 100);
 
-            rfb.addEventListener('connect', () => {
-                connectedToServer();
-            });
+            rfb.addEventListener('connect', connectedToServer);
             rfb.addEventListener('credentialsrequired', credentialsAreRequired);
             rfb.addEventListener('desktopname', updateDesktopName);
-            rfb.addEventListener('disconnect', (e) => disconnectedFromServer(e));
+            rfb.addEventListener('disconnect', disconnectedFromServer);
         }
 
         function reconnect() { connect(); }
 
-        // ── UI Events ─────────────────────────────────────────────
         document.getElementById('btnRemote').addEventListener('click', () => {
             remoteControl = !remoteControl;
             const btn = document.getElementById('btnRemote');
@@ -253,7 +299,6 @@
             if (rfb) rfb.sendCtrlAltDel();
         });
 
-        // ── Password check ───────────────────────────────────────
         async function verifyPassword(pw) {
             try {
                 const resp = await fetch('/api/verify-password?pw=' + encodeURIComponent(pw), { cache: 'no-store' });
@@ -262,7 +307,6 @@
             } catch (e) { return false; }
         }
 
-        // ── Init ──────────────────────────────────────────────────
         let hasPassword = false;
         try {
             const resp = await fetch('/api/settings', { cache: 'no-store' });
@@ -290,14 +334,12 @@
 </head>
 
 <body>
-    <!-- Top Bar -->
     <div id="topbar">
         <span class="logo">USB ARMY KNIFE</span>
         <div class="status-dot" id="statusDot"></div>
         <span class="status-text" id="statusText">Verbinde...</span>
     </div>
 
-    <!-- Settings Bar -->
     <div id="settingsbar">
         <div class="sb-group">
             <button class="sb-btn active" id="btnRemote">Mouse+Keyboard: AN</button>
@@ -308,10 +350,8 @@
         <span class="sb-remote" id="remoteLink"></span>
     </div>
 
-    <!-- VNC Screen -->
     <div id="screen"></div>
 
-    <!-- Bottom Bar -->
     <div id="bottombar">
         <button class="bb-btn" id="btnCtrlAltDel">Strg+Alt+Entf</button>
         <button class="bb-btn danger" id="btnDisconnect">Trennen</button>
