@@ -244,6 +244,7 @@ if "%HAS_PASSWORD%"=="1" (
 echo.
 echo Enter new password (leave empty to clear password):
 echo.
+set "NEWPASS="
 set /p "NEWPASS=Password: "
 
 echo.
