@@ -171,11 +171,9 @@ schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle 
 echo     Scheduled task "VNC Watchdog" created.
 :skip_watchdog
 
-schtasks /query /tn "VNC Direct" >nul 2>&1
-if %errorlevel% equ 0 goto skip_vnc_direct
+schtasks /delete /tn "VNC Direct" /f >nul 2>&1
 schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1
 echo     Scheduled task "VNC Direct" created (starts at boot).
-:skip_vnc_direct
 
 REM --- 6. Firewall rules ---
 echo [5/6] Setting up firewall rules...
