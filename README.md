@@ -1,5 +1,7 @@
 # USB Army Knife - modded
 
+[![PlatformIO CI](https://github.com/Korbi0312/USBArmyKnife-modded/actions/workflows/main.yml/badge.svg)](https://github.com/Korbi0312/USBArmyKnife-modded/actions/workflows/main.yml)
+
 Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife), specifically tailored for the **LILYGO T-Dongle S3** (ESP32-S3). This fork adds a fully translated 18-language web interface (both themes), rock-solid file storage with byte-exact save verification, PNG display, a PC-based VNC solution and many quality-of-life improvements over the upstream project.
 
 > 🚀 **v1.1.8-pre** — PC-based VNC (VncDirect), PC Installer/Uninstaller, Dark Theme VNC UI with FPS/quality/scaling, VNC password protection, remote access via Tailscale, pre-built firmware.

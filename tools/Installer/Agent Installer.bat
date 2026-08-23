@@ -1,3 +1,4 @@
+REM SPDX-License-Identifier: MIT
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 title USBArmyKnife Agent Installer

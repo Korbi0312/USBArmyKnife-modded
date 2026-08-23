@@ -1,8 +1,11 @@
+# SPDX-License-Identifier: MIT
 name: PlatformIO CI
 
 on:
   push:
     branches: [ "master" ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ "master" ]
 
@@ -35,3 +38,20 @@ jobs:
           path: |
             .pio/build/LILYGO-T-Dongle-S3/*.bin
             .pio/build/LILYGO-T-Dongle-S3/*.elf
+
+      - name: Create Release ZIP with Tools
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          mkdir -p release/Agent
+          cp .pio/build/LILYGO-T-Dongle-S3/*.bin release/Agent/
+          cp tools/Installer/"Agent Installer.bat" release/
+          cp tools/Installer/"Agent Uninstaller.bat" release/
+          cd release
+          zip -r ../USBArmyKnife-modded-${{ github.ref_name }}.zip .
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: USBArmyKnife-modded-${{ github.ref_name }}.zip
+          generate_release_notes: true

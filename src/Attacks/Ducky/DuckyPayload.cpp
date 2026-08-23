@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #include "DuckyPayload.h"
 
 #include <DuckyParse.h>

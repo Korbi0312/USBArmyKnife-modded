@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 #ifndef NO_TFT
 #include "HardwareTFT.h"
 
