@@ -172,10 +172,9 @@ echo     Scheduled task "VNC Watchdog" created.
 :skip_watchdog
 
 schtasks /delete /tn "VNC Direct" /f >nul 2>&1
-schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1
 schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
-schtasks /create /tn "VNC Direct User" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onlogon /rl highest /f >nul 2>&1
-echo     Scheduled tasks "VNC Direct" (boot) and "VNC Direct User" (login) created.
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /t REG_SZ /d "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /f >nul 2>&1
+echo     VNC Direct autostart via Registry (starts at login with desktop access).
 
 REM --- 6. Firewall rules ---
 echo [5/6] Setting up firewall rules...

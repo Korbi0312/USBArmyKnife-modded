@@ -106,6 +106,8 @@ schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task "VNC Direct" removed. )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task "VNC Direct User" removed. )
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
+if !errorlevel! equ 0 ( echo    [+] Registry autostart removed. )
 
 echo [3/6] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
@@ -161,6 +163,8 @@ schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task removed. )
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
+if !errorlevel! equ 0 ( echo    [+] Registry autostart removed. )
 
 echo [3/3] Done.
 echo.
@@ -186,9 +190,11 @@ if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\Agent
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -Command \"while($true){if(!(Get-Process VncDirect -EA SilentlyContinue)){Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'};Start-Sleep 5}\"" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "VNC Direct" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1 & echo    [+] Task "VNC Direct" (boot) created. ) else ( echo    [-] "VNC Direct" already exists. )
+if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "VNC Direct User" /tr "%DEST%\VncDirect\VncDirect.exe port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0" /sc onlogon /rl highest /f >nul 2>&1 & echo    [+] Task "VNC Direct User" (login) created. ) else ( echo    [-] "VNC Direct User" already exists. )
+if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 )
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /t REG_SZ /d "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /f >nul 2>&1
+echo    [+] VNC Direct autostart via Registry.
 
 echo.
 echo Autostart successfully set up.
