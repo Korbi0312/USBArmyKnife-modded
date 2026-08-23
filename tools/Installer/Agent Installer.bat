@@ -174,23 +174,39 @@ echo     VNC Direct removed from autostart.
 REM --- 6. Firewall rules ---
 echo [5/6] Setting up firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
-if %errorlevel% equ 0 goto skip_firewall_allow
-netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul
-echo     Firewall rule "VNC Direct 7002" (allow) created.
-:skip_firewall_allow
+if %errorlevel% equ 0 (
+    echo     Firewall rule "VNC Direct 7002" already exists.
+) else (
+    netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo     [+] Firewall rule "VNC Direct 7002" (allow) created.
+    ) else (
+        echo     [-] Failed to create firewall rule. Run as Admin.
+    )
+)
 
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
-if %errorlevel% equ 0 goto skip_firewall_block
-netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul
-netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul
-echo     Firewall rules "VNC Block Localhost" created.
-:skip_firewall_block
+if %errorlevel% equ 0 (
+    echo     Firewall rule "VNC Block Localhost" already exists.
+) else (
+    netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1
+    netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo     [+] Firewall rules "VNC Block Localhost" created.
+    ) else (
+        echo     [-] Failed to create firewall block rules. Run as Admin.
+    )
+)
 
 REM --- 7. Disable UAC prompts (needed for VNC to show admin dialogs) ---
 echo [6/7] Disabling UAC prompts...
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 0 /f >nul 2>&1
-echo     UAC prompts disabled. Restart required to take effect.
+if !errorlevel! equ 0 (
+    echo     [+] UAC prompts disabled. Restart required to take effect.
+) else (
+    echo     [-] Failed to disable UAC. Run as Admin.
+)
 
 REM --- 8. Start services ---
 echo [7/7] Starting Agent and VNC Server...

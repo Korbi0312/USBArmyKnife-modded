@@ -204,6 +204,12 @@ if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 )
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 echo    [+] VNC Direct removed from autostart.
 
+echo Creating firewall rules...
+netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
+if !errorlevel! neq 0 ( netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1 & echo    [+] Firewall rule "VNC Direct 7002" created. ) else ( echo    [-] Firewall rule already exists. )
+netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
+if !errorlevel! neq 0 ( netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1 & netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1 & echo    [+] Firewall block rules created. ) else ( echo    [-] Firewall block rules already exist. )
+
 echo.
 echo Autostart successfully set up.
 goto wait_menu
