@@ -178,22 +178,16 @@ echo [5/7] Setting up firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if %errorlevel% equ 0 goto skip_firewall_allow
 netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1
-if %errorlevel% equ 0 (
-    echo     [+] Firewall rule "VNC Direct 7002" (allow) created.
-) else (
-    echo     [-] Failed to create firewall allow rule. Run as Admin.
-)
+if %errorlevel% equ 0 goto skip_firewall_allow
+echo     [-] Failed to create firewall allow rule. Run as Admin.
 :skip_firewall_allow
 
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
 if %errorlevel% equ 0 goto skip_firewall_block
 netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1
 netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1
-if %errorlevel% equ 0 (
-    echo     [+] Firewall rules "VNC Block Localhost" created.
-) else (
-    echo     [-] Failed to create firewall block rules. Run as Admin.
-)
+if %errorlevel% equ 0 goto skip_firewall_block
+echo     [-] Failed to create firewall block rules. Run as Admin.
 :skip_firewall_block
 
 REM --- 6. Disable UAC prompts (needed for VNC to show admin dialogs) ---
