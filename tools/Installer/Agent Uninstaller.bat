@@ -107,7 +107,6 @@ if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo   
 schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task "VNC Direct User" removed. )
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
-if !errorlevel! equ 0 ( echo    [+] Registry autostart removed. )
 
 echo [3/6] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
@@ -164,7 +163,6 @@ if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo   
 schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task removed. )
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
-if !errorlevel! equ 0 ( echo    [+] Registry autostart removed. )
 
 echo [3/3] Done.
 echo.
