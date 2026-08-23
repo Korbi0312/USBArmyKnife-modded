@@ -182,7 +182,7 @@ if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\Agent
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -Command \"while($true){if(!(Get-Process VncDirect -EA SilentlyContinue)){Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'};Start-Sleep 5}\"" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "VNC Direct" /tr "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /sc onlogon /rl highest /it /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
+if !errorlevel! neq 0 ( schtasks /create /tn "VNC Direct" /tr "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1 & echo    [+] Task created (starts at boot). ) else ( echo    [-] Already exists. )
 
 echo.
 echo Autostart successfully set up.
