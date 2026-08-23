@@ -246,6 +246,11 @@ echo Enter new password (leave empty to clear password):
 echo.
 set /p "NEWPASS=Password: "
 
+echo.
+echo Stopping VNC server...
+taskkill /F /IM VncDirect.exe >nul 2>&1
+timeout /t 2 /nobreak >nul
+
 if not "%NEWPASS%"=="" (
     echo.
     echo Saving password...
@@ -265,13 +270,13 @@ if not "%NEWPASS%"=="" (
         "if (Test-Path $s) { try { $raw = Get-Content $s -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; " ^
         "$j['password'] = ''; " ^
         "$j | ConvertTo-Json | Set-Content $s -Encoding UTF8"
+    timeout /t 1 /nobreak >nul
     echo    Password cleared.
 )
 
 echo.
 echo Restarting VNC server...
-taskkill /F /IM VncDirect.exe >nul 2>&1
-timeout /t 2 /nobreak >nul
+timeout /t 1 /nobreak >nul
 if exist "%DEST%\VncDirect\VncDirect.exe" (
     start "" "%DEST%\VncDirect\VncDirect.exe" port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0
     echo    VNC server restarted.
