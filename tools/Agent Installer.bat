@@ -165,9 +165,19 @@ schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pi
 echo     Scheduled task "Security Script" created.
 :skip_security
 
+REM --- Write watchdog script ---
+(
+echo while ($true) {
+echo     if (!(Get-Process VncDirect -EA SilentlyContinue)) {
+echo         Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'
+echo     }
+echo     Start-Sleep 5
+echo }
+) > "%DEST%\vnc-watchdog.ps1"
+
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if %errorlevel% equ 0 goto skip_watchdog
-schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -Command \"while($true){if(!(Get-Process VncDirect -EA SilentlyContinue)){Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'};Start-Sleep 5}\"" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \"%DEST%\vnc-watchdog.ps1\"" /sc onlogon /rl limited /f >nul 2>&1
 echo     Scheduled task "VNC Watchdog" created.
 :skip_watchdog
 
