@@ -191,8 +191,8 @@ schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 )
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /t REG_SZ /d "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /f >nul 2>&1
-echo    [+] VNC Direct autostart via Registry.
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
+echo    [+] VNC Direct removed from autostart.
 
 echo.
 echo Autostart successfully set up.

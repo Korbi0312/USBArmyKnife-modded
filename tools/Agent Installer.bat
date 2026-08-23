@@ -176,8 +176,8 @@ echo     Scheduled task "VNC Watchdog" created.
 
 schtasks /delete /tn "VNC Direct" /f >nul 2>&1
 schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /t REG_SZ /d "\"%DEST%\VncDirect\VncDirect.exe\" port=7002 cwd=\"%DEST%\VncDirect\vnc\" fps=360 scale=0" /f >nul 2>&1
-echo     VNC Direct autostart via Registry (login).
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
+echo     VNC Direct removed from autostart.
 
 REM --- 6. Firewall rules ---
 echo [5/6] Setting up firewall rules...
