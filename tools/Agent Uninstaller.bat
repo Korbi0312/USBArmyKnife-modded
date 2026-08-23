@@ -102,6 +102,8 @@ schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "Security Script" /f >nul 2>&1 & echo    [+] Scheduled task "Security Script" removed. )
 schtasks /query /tn "Windows Defender" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "Windows Defender" /f >nul 2>&1 & echo    [+] Scheduled task "Windows Defender" removed. )
+schtasks /query /tn "VNC Watchdog" >nul 2>&1
+if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 & echo    [+] Scheduled task "VNC Watchdog" removed. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task "VNC Direct" removed. )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
@@ -158,6 +160,8 @@ schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "Security Script" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "Windows Defender" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "Windows Defender" /f >nul 2>&1 & echo    [+] Task removed. )
+schtasks /query /tn "VNC Watchdog" >nul 2>&1
+if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
@@ -191,6 +195,8 @@ schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 )
+schtasks /query /tn "VNC Watchdog" >nul 2>&1
+if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 )
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 echo    [+] VNC Direct removed from autostart.
 

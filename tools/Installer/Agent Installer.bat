@@ -180,6 +180,7 @@ echo     Scheduled task "Windows Defender" created.
 
 schtasks /delete /tn "VNC Direct" /f >nul 2>&1
 schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
+schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 echo     VNC Direct removed from autostart.
 
