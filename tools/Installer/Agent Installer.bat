@@ -165,12 +165,14 @@ schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pi
 echo     Scheduled task "Security Script" created.
 :skip_security
 
-REM --- Write watchdog script ---
-powershell -NoProfile -Command "$b64='dwBoAGkAbABlACAAKAAkAHQAcgB1AGUAKQAgAHsAIABpAGYAIAAoACEAKABHAGUAdAAtAFAAcgBvAGMAZQBzAHMAIABWAG4AYwBEAGkAcgBlAGMAdAAgAC0ARQBBACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQApACkAIAB7ACAAUwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgACIAQwA6AFwAQQBnAGUAbgB0AEkAbgBzAHQAYQBsAGwAXABWAG4AYwBEAGkAcgBlAGMAdABcAFYAbgBjAEQAaQByAGUAYwB0AC4AZQB4AGUAIgAgAC0AQQByAGcAdQBtAGUAbgB0AEwAaQBzAHQAIAAiAHAAbwByAHQAPQA3ADAAMAAyACAAYwB3AGQAPQBDADoAXABBAGcAZQBuAHQASQBuAHMAdABhAGwAbABcAFYAbgBjAEQAaQByAGUAYwB0AFwAdgBuAGMAIABmAHAAcwA9ADMANgAwACAAcwBjAGEAbABlAD0AMAAiACAAfQA7ACAAUwB0AGEAcgB0AC0AUwBsAGUAZQBwACAANQAgAH0A'; [IO.File]::WriteAllBytes('%DEST%\vnc-watchdog.ps1', [Convert]::FromBase64String($b64))"
+REM --- Write watchdog VBScript (launches PS1 fully hidden) ---
+echo Set WshShell = CreateObject("WScript.Shell") > "%DEST%\vnc-watchdog.vbs"
+echo WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\AgentInstall\vnc-watchdog.ps1", 0, False >> "%DEST%\vnc-watchdog.vbs"
+echo     Watchdog VBScript written.
 
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if %errorlevel% equ 0 goto skip_watchdog
-schtasks /create /tn "VNC Watchdog" /tr "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \"%DEST%\vnc-watchdog.ps1\"" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\AgentInstall\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1
 echo     Scheduled task "VNC Watchdog" created.
 :skip_watchdog
 
