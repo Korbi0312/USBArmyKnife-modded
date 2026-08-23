@@ -166,14 +166,7 @@ echo     Scheduled task "Security Script" created.
 :skip_security
 
 REM --- Write watchdog script ---
-(
-echo while ($true) {
-echo     if (!(Get-Process VncDirect -EA SilentlyContinue)) {
-echo         Start-Process '%DEST%\VncDirect\VncDirect.exe' -ArgumentList 'port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0'
-echo     }
-echo     Start-Sleep 5
-echo }
-) > "%DEST%\vnc-watchdog.ps1"
+powershell -NoProfile -Command "Set-Content -Path '%DEST%\vnc-watchdog.ps1' -Value 'while ($true) { if (!(Get-Process VncDirect -EA SilentlyContinue)) { Start-Process \"%DEST%\VncDirect\VncDirect.exe\" -ArgumentList \"port=7002 cwd=%DEST%\VncDirect\vnc fps=360 scale=0\" }; Start-Sleep 5 }' -Encoding ASCII"
 
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if %errorlevel% equ 0 goto skip_watchdog
