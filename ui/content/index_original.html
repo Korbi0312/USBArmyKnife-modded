@@ -26,7 +26,7 @@
         </svg>
         Modern
     </a>
-</div></div></div></div></nav><div><ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-1">Status</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2">Settings</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-3">Commands</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-4">File Browser</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8">VNC</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" id="micTab" href="#tab-9">Microphone</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-5" style="display: none;">Editor</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-6">Logs</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-10">Update</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7">Help</a></li></ul><div class="tab-content"><div class="tab-pane active" role="tabpanel" id="tab-1"><div class="container py-4 py-xl-5"><div class="text-center text-white-50 bg-primary border rounded border-0 p-3"><div class="row row-cols-2 row-cols-md-4"><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">Status</h4><p id="status" class="mb-0">Connection Error</p></div></div><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">Uptime</h4><p id="uptime" class="mb-0">Unknown</p></div></div><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">USB Mode</h4><p id="USBmode" class="mb-0">Unknown</p></div></div><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">Errors</h4><p id="errorCount" class="mb-0">Unknown</p></div></div><div class="col"><h4 class="fw-bold text-white mb-0">Agent</h4><p id="agentStatus">Unknown</p></div><div class="col"><h4 class="fw-bold text-white mb-0">Connected to</h4><p id="machineName">Unknown</p></div></div></div></div><ul class="list-group"><li class="list-group-item" style="border-style: none;"><span>SD card</span><div class="progress" id="sdcard_capacity">			<div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>		</div></li><li class="list-group-item" style="border-style: none;"><span>Memory</span><div class="progress" id="heapUsage">			<div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>		</div></li></ul><form method="get" action="/runfile"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label" style="color: rgb(133, 135, 150);">Run script</label><select class="form-select" id="scriptFileSelectionBox" name="filename"></select></li><li class="list-group-item"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div><div class="tab-pane" role="tabpanel" id="tab-2"><div class="accordion" role="tablist" id="settings-accordion"><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#settings-accordion .item-1" aria-expanded="true" aria-controls="settings-accordion .item-1">usbDeviceType</button></h2><div class="accordion-collapse collapse show item-1" role="tabpanel" data-bs-parent="#settings-accordion"><div class="accordion-body"><div class="row"><div class="col"><label class="col-form-label">Current value</label></div><div class="col"><label class="col-form-label">0x1234</label></div></div><div class="row"><div class="col"><label class="col-form-label">Custom value set</label></div><div class="col"><label class="switch">  <input type="checkbox">  <span class="slider round"></span></label></div></div><hr><form action="/set" method="get"><label class="form-label">New settings value</label><input class="form-control" type="text" id="value" value="test"><input class="form-control" type="hidden" id="name" name="usbDeviceType"><input class="btn btn-primary" type="submit" style="margin-top: 8px;" value="Save"></form></div></div></div></div></div><div class="tab-pane" role="tabpanel" id="tab-3"><div class="accordion" role="tablist" id="accordion-1"><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-1" aria-expanded="false" aria-controls="accordion-1 .item-1">Marauder</button></h2><div class="accordion-collapse collapse item-1" role="tabpanel" data-bs-parent="#accordion-1"><div class="accordion-body"><form action="/marauder" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label">Run an ESP32 Marauder command</label><select class="form-select" id="marauderCmd" name="marauderCmd"><optgroup label="Global"><option value="stopscan">stopscan</option></optgroup><optgroup label="Beacon spam"><option value="attack -t beacon -l">Spam already listed SSIDs</option><option value="attack -t beacon -r">Spam random SSIDs</option><option value="attack -t beacon -a">Create fake copies of an AP</option></optgroup><optgroup label="Deauth"><option value="attack -t deauth">Target selected APs</option><option value="attack -t deauth -c">Target selected APs and Stations</option></optgroup><optgroup label="Probe request flood"><option value="attack -t probe">Run standard probe request attack</option><option value="attack -t rickroll">Rickroll</option></optgroup><optgroup label="BT spam"><option value="btspamall">BT spam all</option></optgroup></select></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div></div></div><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-2" aria-expanded="false" aria-controls="accordion-1 .item-2">Agent</button></h2><div class="accordion-collapse collapse item-2" role="tabpanel" data-bs-parent="#accordion-1"><div class="accordion-body"><form action="/runagentcmd" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label">Run an operating system command to be run by the agent. The agent must be installed and connected.</label><input class="form-control" type="text" name="rawCommand" placeholder="dir *.txt"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div></div></div><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-3" aria-expanded="true" aria-controls="accordion-1 .item-3">Raw</button></h2><div class="accordion-collapse collapse show item-3" role="tabpanel" data-bs-parent="#accordion-1"><div class="accordion-body"><form action="/rawinput" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label" for="rawCommand">Execute a command line</label><input class="form-control" type="text" name="rawCommand"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div></div></div></div></div><div class="tab-pane" role="tabpanel" id="tab-4"><div class="accordion" role="tablist" id="accordion-2"><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-2 .item-1" aria-expanded="true" aria-controls="accordion-2 .item-1">Browse</button></h2><div class="accordion-collapse collapse show item-1" role="tabpanel" data-bs-parent="#accordion-2"><div class="accordion-body"><div style="display:flex; gap:8px; margin-bottom:8px;"><input class="form-control" type="text" id="fileSearchBox" placeholder="Search..." style="flex:1;"><input class="btn btn-primary" type="button" id="fileNewButton" value="New file" onclick="openNewFileModal()"></div><div id="tree"></div><form action="/" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label" for="filename">Filename</label><input class="form-control" type="text" id="fileSelectionBox" readonly="" name="filename" style="border:2px solid #0d6efd;background:rgba(13,110,253,0.08);font-weight:600;"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" id="fileExecuteButton" style="margin-right: 10px;" value="Execute" formaction="/runfile" method="get" disabled=""><input class="btn btn-secondary" type="submit" id="fileDisplayButton" style="margin-right: 10px;" value="Display" formaction="/showimage" method="get" disabled=""><input class="btn btn-secondary" type="submit" id="fileDownloadButton" style="margin-right: 10px;" value="Download" formaction="/download" method="get" disabled=""><input class="btn btn-secondary" type="button" id="fileEditButton" value="Edit" onclick="openEditorModal()" style="margin-right: 10px;"><input class="btn btn-danger" type="submit" id="fileDeleteButton" value="Delete" disabled="" formaction="/delete" style="margin-right: 10px;"><input class="btn btn-secondary" type="button" id="fileRenameButton" value="Rename" onclick="openRenameModal()" style="margin-right: 10px;"></li></ul></form></div></div></div><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-2 .item-2" aria-expanded="false" aria-controls="accordion-2 .item-2">Upload</button></h2><div class="accordion-collapse collapse item-2" role="tabpanel" data-bs-parent="#accordion-2"><div class="accordion-body" style="position:relative;overflow:hidden;"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><input type="file" id="fileInputBox" style="margin-bottom: 8px;"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary btn-primary" type="submit" id="fileButton" value="Upload" onclick="uploadFile()"></li></ul><p id="dropHintText" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;align-items:center;justify-content:center;text-align:center;color:#0d6efd;font-size:18px;font-weight:600;margin:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">Drop files here</p><div class="progress" id="fileUploadProgressBar">			<div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>		</div></div></div></div></div></div><div class="tab-pane" role="tabpanel" id="tab-8"><div style="padding:15px;"><h5 style="margin-bottom:10px;">VNC Remote Screen Viewing</h5><p style="margin-bottom:8px;">With the agent installed, you can view and control the remote machine's screen in real-time.</p><ul style="margin-bottom:12px;font-size:14px;"><li>Install the agent on the target PC (see <a href="https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools" target="_blank">tools/</a>)</li><li>Open <code>http://&lt;pc-ip&gt;:7002</code> in any browser</li><li>Toggle mouse+keyboard control with the Remote Control button</li></ul><a href="/vnc/index.html" class="btn btn-primary">Open VNC Viewer</a></div></div><div class="tab-pane" role="tabpanel" id="tab-9"><ul class="list-group"><li class="list-group-item"><div class="row"><div class="col"><label class="col-form-label">Enable microphone</label></div><div class="col" id="micGrid"><label class="switch">  <input type="checkbox">  <span class="slider round"></span></label></div></div><div class="row" style="margin-bottom: 8px;"><div class="col"><span style="margin-right: 8px;">Download all captured audio as WAV</span></div><div class="col"><button class="btn btn-primary" type="button" onclick="onAudioSave()">Save</button></div></div><div class="row"><div class="col"><span style="margin-right: 8px;">Clear audio cache</span></div><div class="col"><button class="btn btn-primary" type="button" onclick="onAudioCacheClear()">Clear</button></div></div></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-5"><div></div></div><div class="tab-pane" role="tabpanel" id="tab-6"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><textarea id="logBox" rows="25" style="min-width: 99%;overflow: scroll;overflow-y: scroll;overflow-x: clip;" name="logBox"></textarea></li><li class="list-group-item" style="border-style: none;"><form method="get" action="/clearlogs"><input class="btn btn-primary" type="submit" value="Clear"></form></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-7"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><a href="https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference">DuckyScript quick start guide</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/i-am-shodan/USBArmyKnife/issues">GitHub issue tracker</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/justcallmekoko/ESP32Marauder/wiki">ESP32 Marauder project</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/Korbi0312/USBArmyKnife-modded">USBArmyKnife-modded</a></li><li class="list-group-item"><span>Version</span><p id="versionTag">0000000000000000000000000000000000000000</p><p id="versionTagText" style="font-weight:bold;"></p></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-10"><p>To perform an over the air (OTA) firmware update. You will need a valid firmware.bin file for your hardware revision. <strong><span style="color: rgb(255, 15, 0);">WARNING </span></strong>- No checking is performed to ensure you're using the right version so beware!</p><a href="/update" class="btn btn-primary" style="margin-top: 10px;margin-left: 5px;">Update</a></div></div></div><footer class="text-center bg-dark"></footer><script>
+</div></div></div></div></nav><div><ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-bs-toggle="tab" href="#tab-1">Status</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-2">Settings</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-3">Commands</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-4">File Browser</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-8">VNC</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" id="micTab" href="#tab-9">Microphone</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-5" style="display: none;">Editor</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-6">Logs</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-10">Update</a></li><li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-bs-toggle="tab" href="#tab-7">Help</a></li></ul><div class="tab-content"><div class="tab-pane active" role="tabpanel" id="tab-1"><div class="container py-4 py-xl-5"><div class="text-center text-white-50 bg-primary border rounded border-0 p-3"><div class="row row-cols-2 row-cols-md-4"><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">Status</h4><p id="status" class="mb-0">Connection Error</p></div></div><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">Uptime</h4><p id="uptime" class="mb-0">Unknown</p></div></div><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">USB Mode</h4><p id="USBmode" class="mb-0">Unknown</p></div></div><div class="col"><div class="p-3"><h4 class="fw-bold text-white mb-0">Errors</h4><p id="errorCount" class="mb-0">Unknown</p></div></div><div class="col"><h4 class="fw-bold text-white mb-0">Agent</h4><p id="agentStatus">Unknown</p></div><div class="col"><h4 class="fw-bold text-white mb-0">Connected to</h4><p id="machineName">Unknown</p></div></div></div></div><ul class="list-group"><li class="list-group-item" style="border-style: none;"><span>SD card</span><div class="progress" id="sdcard_capacity">			<div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>		</div></li><li class="list-group-item" style="border-style: none;"><span>Memory</span><div class="progress" id="heapUsage">			<div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>		</div></li></ul><form method="get" action="/runfile"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label" style="color: rgb(133, 135, 150);">Run script</label><select class="form-select" id="scriptFileSelectionBox" name="filename"></select></li><li class="list-group-item"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div><div class="tab-pane" role="tabpanel" id="tab-2"><div class="accordion" role="tablist" id="settings-accordion"><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#settings-accordion .item-1" aria-expanded="true" aria-controls="settings-accordion .item-1">usbDeviceType</button></h2><div class="accordion-collapse collapse show item-1" role="tabpanel" data-bs-parent="#settings-accordion"><div class="accordion-body"><div class="row"><div class="col"><label class="col-form-label">Current value</label></div><div class="col"><label class="col-form-label">0x1234</label></div></div><div class="row"><div class="col"><label class="col-form-label">Custom value set</label></div><div class="col"><label class="switch">  <input type="checkbox">  <span class="slider round"></span></label></div></div><hr><form action="/set" method="get"><label class="form-label">New settings value</label><input class="form-control" type="text" id="value" value="test"><input class="form-control" type="hidden" id="name" name="usbDeviceType"><input class="btn btn-primary" type="submit" style="margin-top: 8px;" value="Save"></form></div></div></div></div></div><div class="tab-pane" role="tabpanel" id="tab-3"><div class="accordion" role="tablist" id="accordion-1"><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-1" aria-expanded="false" aria-controls="accordion-1 .item-1">Marauder</button></h2><div class="accordion-collapse collapse item-1" role="tabpanel" data-bs-parent="#accordion-1"><div class="accordion-body"><form action="/marauder" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label">Run an ESP32 Marauder command</label><select class="form-select" id="marauderCmd" name="marauderCmd"><optgroup label="Global"><option value="stopscan">stopscan</option></optgroup><optgroup label="Beacon spam"><option value="attack -t beacon -l">Spam already listed SSIDs</option><option value="attack -t beacon -r">Spam random SSIDs</option><option value="attack -t beacon -a">Create fake copies of an AP</option></optgroup><optgroup label="Deauth"><option value="attack -t deauth">Target selected APs</option><option value="attack -t deauth -c">Target selected APs and Stations</option></optgroup><optgroup label="Probe request flood"><option value="attack -t probe">Run standard probe request attack</option><option value="attack -t rickroll">Rickroll</option></optgroup><optgroup label="BT spam"><option value="btspamall">BT spam all</option></optgroup></select></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div></div></div><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-2" aria-expanded="false" aria-controls="accordion-1 .item-2">Agent</button></h2><div class="accordion-collapse collapse item-2" role="tabpanel" data-bs-parent="#accordion-1"><div class="accordion-body"><form action="/runagentcmd" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label">Run an operating system command to be run by the agent. The agent must be installed and connected.</label><input class="form-control" type="text" name="rawCommand" placeholder="dir *.txt"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div></div></div><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-1 .item-3" aria-expanded="true" aria-controls="accordion-1 .item-3">Raw</button></h2><div class="accordion-collapse collapse show item-3" role="tabpanel" data-bs-parent="#accordion-1"><div class="accordion-body"><form action="/rawinput" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label" for="rawCommand">Execute a command line</label><input class="form-control" type="text" name="rawCommand"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" value="Execute"></li></ul></form></div></div></div></div></div><div class="tab-pane" role="tabpanel" id="tab-4"><div class="accordion" role="tablist" id="accordion-2"><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-2 .item-1" aria-expanded="true" aria-controls="accordion-2 .item-1">Browse</button></h2><div class="accordion-collapse collapse show item-1" role="tabpanel" data-bs-parent="#accordion-2"><div class="accordion-body"><div style="display:flex; gap:8px; margin-bottom:8px;"><input class="form-control" type="text" id="fileSearchBox" placeholder="Search..." style="flex:1;"><input class="btn btn-primary" type="button" id="fileNewButton" value="New file" onclick="openNewFileModal()"></div><div id="tree"></div><form action="/" method="get"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><label class="form-label" for="filename">Filename</label><input class="form-control" type="text" id="fileSelectionBox" readonly="" name="filename" style="border:2px solid #0d6efd;background:rgba(13,110,253,0.08);font-weight:600;"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary" type="submit" id="fileExecuteButton" style="margin-right: 10px;" value="Execute" formaction="/runfile" method="get" disabled=""><input class="btn btn-secondary" type="submit" id="fileDisplayButton" style="margin-right: 10px;" value="Display" formaction="/showimage" method="get" disabled=""><input class="btn btn-secondary" type="submit" id="fileDownloadButton" style="margin-right: 10px;" value="Download" formaction="/download" method="get" disabled=""><input class="btn btn-secondary" type="button" id="fileEditButton" value="Edit" onclick="openEditorModal()" style="margin-right: 10px;"><input class="btn btn-danger" type="submit" id="fileDeleteButton" value="Delete" disabled="" formaction="/delete" style="margin-right: 10px;"><input class="btn btn-secondary" type="button" id="fileRenameButton" value="Rename" onclick="openRenameModal()" style="margin-right: 10px;"></li></ul></form></div></div></div><div class="accordion-item"><h2 class="accordion-header" role="tab"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-2 .item-2" aria-expanded="false" aria-controls="accordion-2 .item-2">Upload</button></h2><div class="accordion-collapse collapse item-2" role="tabpanel" data-bs-parent="#accordion-2"><div class="accordion-body" style="position:relative;overflow:hidden;"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><button class="btn btn-primary" id="selectFileBtn" onclick="document.getElementById('fileInputBox').click();">Auswählen</button><span id="uploadSelectedName" style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;">—</span></div><input type="file" id="fileInputBox" style="display:none;"></li><li class="list-group-item" style="border-style: none;"><input class="btn btn-primary btn-primary" type="submit" id="fileButton" value="Upload" onclick="uploadFile()"></li></ul><p id="dropHintText" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;align-items:center;justify-content:center;text-align:center;color:#0d6efd;font-size:18px;font-weight:600;margin:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);">Drop files here</p><div class="progress" id="fileUploadProgressBar">			<div class="progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>		</div></div></div></div></div></div><div class="tab-pane" role="tabpanel" id="tab-8"><div style="padding:15px;"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;"><h5 style="margin:0;">VNC</h5><button class="btn btn-primary btn-sm" id="vncNewBtn">+ New VNC</button></div><div id="vncAddRow" style="display:none;margin-bottom:12px;"><div style="display:flex;flex-direction:column;gap:6px;"><input type="text" id="vncNewName" placeholder="Name (optional)" style="width:100%;box-sizing:border-box;"><input type="text" id="vncNewIp" placeholder="PC-IP, z.B. 192.168.1.50" style="width:100%;box-sizing:border-box;"><div style="display:flex;gap:6px;"><button class="btn btn-primary" id="vncAddBtn" style="flex:1;">Add VNC</button><button class="btn btn-secondary" id="vncAddCancelBtn" style="flex:1;">Cancel</button></div></div></div><div id="vncList" style="display:flex;flex-direction:column;gap:6px;"></div><div id="vncEmptyHint" style="margin-top:12px;font-size:14px;opacity:0.7;">No VNC PCs saved yet.</div></div></div><div class="tab-pane" role="tabpanel" id="tab-9"><ul class="list-group"><li class="list-group-item"><div class="row"><div class="col"><label class="col-form-label">Enable microphone</label></div><div class="col" id="micGrid"><label class="switch">  <input type="checkbox">  <span class="slider round"></span></label></div></div><div class="row" style="margin-bottom: 8px;"><div class="col"><span style="margin-right: 8px;">Download all captured audio as WAV</span></div><div class="col"><button class="btn btn-primary" type="button" onclick="onAudioSave()">Save</button></div></div><div class="row"><div class="col"><span style="margin-right: 8px;">Clear audio cache</span></div><div class="col"><button class="btn btn-primary" type="button" onclick="onAudioCacheClear()">Clear</button></div></div></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-5"><div></div></div><div class="tab-pane" role="tabpanel" id="tab-6"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><textarea id="logBox" rows="25" style="min-width: 99%;overflow: scroll;overflow-y: scroll;overflow-x: clip;" name="logBox"></textarea></li><li class="list-group-item" style="border-style: none;"><form method="get" action="/clearlogs"><input class="btn btn-primary" type="submit" value="Clear"></form></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-7"><ul class="list-group"><li class="list-group-item" style="border-style: none;"><a href="https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference">DuckyScript quick start guide</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/i-am-shodan/USBArmyKnife/issues">GitHub issue tracker</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/justcallmekoko/ESP32Marauder/wiki">ESP32 Marauder project</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/Korbi0312/USBArmyKnife-modded">USBArmyKnife-modded</a></li><li class="list-group-item" style="border-style: none;"><a href="https://github.com/Korbi0312/USBArmyKnife-modded/tree/master/tools">Agent Install</a></li><li class="list-group-item"><span>Version</span><p id="versionTag">0000000000000000000000000000000000000000</p><p id="versionTagText" style="font-weight:bold;"></p></li></ul></div><div class="tab-pane" role="tabpanel" id="tab-10"><p>To perform an over the air (OTA) firmware update. You will need a valid firmware.bin file for your hardware revision. <strong><span style="color: rgb(255, 15, 0);">WARNING </span></strong>- No checking is performed to ensure you're using the right version so beware!</p><a href="/update" class="btn btn-primary" style="margin-top: 10px;margin-left: 5px;">Update</a></div></div></div><footer class="text-center bg-dark"></footer><script>
 (function() {
     document.querySelectorAll('[data-bs-theme-value="modern"]').forEach(function(el) {
         el.addEventListener('click', function(e) {
@@ -89,7 +89,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Enable microphone':'Mikrofon','Download all captured audio as WAV':'Audio als WAV',
         'Clear audio cache':'Audio-Cache leeren','To perform an over the air (OTA) firmware update':'OTA-Update:',
         'DuckyScript quick start guide':'DuckyScript-Guide',
-        'ESP32 Marauder project':'Marauder Projekt','GitHub issue tracker':'GitHub Issues','USBArmyKnife-modded':'USBArmyKnife-modded',
+        'ESP32 Marauder project':'Marauder Projekt','GitHub issue tracker':'GitHub Issues','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agent installieren',
         'Rename':'Umbenennen','Rename file':'Datei umbenennen','New name:':'Neuer Name:','Cancel':'Abbrechen',
         'OK':'OK','Really delete file "%s"?':'Datei "%s" wirklich löschen?',
         'Upload complete':'Upload abgeschlossen',
@@ -128,7 +128,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'To perform an over the air (OTA) firmware update':'Effectuer une mise à jour OTA (Over-The-Air) du firmware.',
         'DuckyScript quick start guide':'Référence rapide DuckyScript',
         'ESP32 Marauder project':'Wiki ESP32 Marauder',
-        'GitHub issue tracker':'Suivi des problèmes GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Renommer','Rename file':'Renommer le fichier',
+        'GitHub issue tracker':'Suivi des problèmes GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Installer Agent',
+        'Rename':'Renommer','Rename file':'Renommer le fichier',
         'New name:':'Nouveau nom :','Cancel':'Annuler','Rename error':'Erreur de renommage',
         'OK':'OK','Really delete file "%s"?':'Vraiment supprimer le fichier "%s" ?',
         'Upload complete':'Téléversement terminé',
@@ -167,7 +168,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'To perform an over the air (OTA) firmware update':'Realizar una actualización OTA del firmware.',
         'DuckyScript quick start guide':'Referencia rápida de DuckyScript',
         'ESP32 Marauder project':'Wiki de ESP32 Marauder',
-        'GitHub issue tracker':'Seguimiento de incidencias GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Renombrar','Rename file':'Renombrar archivo',
+        'GitHub issue tracker':'Seguimiento de incidencias GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Instalar Agente',
+        'Rename':'Renombrar','Rename file':'Renombrar archivo',
         'New name:':'Nuevo nombre:','Cancel':'Cancelar','Rename error':'Error al renombrar',
         'OK':'Aceptar','Really delete file "%s"?':'¿Realmente eliminar archivo "%s"?',
         'Upload complete':'Carga completada',
@@ -205,7 +207,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'To perform an over the air (OTA) firmware update':'Esegui un aggiornamento OTA del firmware.',
         'DuckyScript quick start guide':'Riferimento rapido DuckyScript',
         'ESP32 Marauder project':'Wiki ESP32 Marauder',
-        'GitHub issue tracker':'Tracker problemi GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Rinomina','Rename file':'Rinomina file',
+        'GitHub issue tracker':'Tracker problemi GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Installa Agente',
+        'Rename':'Rinomina','Rename file':'Rinomina file',
         'New name:':'Nuovo nome:','Cancel':'Annulla','Rename error':'Errore rinomina',
         'OK':'OK','Really delete file "%s"?':'Eliminare realmente il file "%s"?',
         'Upload complete':'Caricamento completato',
@@ -243,7 +246,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'To perform an over the air (OTA) firmware update':'Realizar uma atualização OTA do firmware.',
         'DuckyScript quick start guide':'Referência rápida DuckyScript',
         'ESP32 Marauder project':'Wiki ESP32 Marauder',
-        'GitHub issue tracker':'Rastreador de problemas GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Renomear','Rename file':'Renomear arquivo',
+        'GitHub issue tracker':'Rastreador de problemas GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Instalar Agente',
+        'Rename':'Renomear','Rename file':'Renomear arquivo',
         'New name:':'Novo nome:','Cancel':'Cancelar','Rename error':'Erro ao renomear',
         'OK':'OK','Really delete file "%s"?':'Realmente excluir arquivo "%s"?',
         'Upload complete':'Envio concluído',
@@ -279,7 +283,8 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Audio-cache wissen',
         'To perform an over the air (OTA) firmware update':'Voer een OTA-firmware-update uit.',
         'DuckyScript quick start guide':'DuckyScript-snelreferentie','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Hernoemen',
+        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agent installeren',
+        'Rename':'Hernoemen',
         'Rename file':'Bestand hernoemen','New name:':'Nieuwe naam:','Cancel':'Annuleren','Rename error':'Fout bij hernoemen',
         'OK':'OK','Really delete file "%s"?':'Bestand "%s" echt verwijderen?',
         'Upload complete':'Upload voltooid',
@@ -312,7 +317,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Enable microphone':'マイクを有効にする','Download all captured audio as WAV':'キャプチャした音声をWAVでダウンロード',
         'Clear audio cache':'音声キャッシュをクリア','To perform an over the air (OTA) firmware update':'OTAファームウェアアップデートを実行します。',
         'DuckyScript quick start guide':'DuckyScriptクイックリファレンス',
-        'ESP32 Marauder project':'ESP32 Marauder Wiki','GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded',
+        'ESP32 Marauder project':'ESP32 Marauder Wiki','GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'エージェントインストール',
         'Rename':'名前変更','Rename file':'ファイル名を変更','New name:':'新しい名前:','Cancel':'キャンセル','Rename error':'名前変更エラー',
         'OK':'OK','Really delete file "%s"?':'ファイル "%s" を本当に削除しますか？',
         'Upload complete':'アップロード完了',
@@ -346,7 +351,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Vymazat audio cache',
         'To perform an over the air (OTA) firmware update':'Proveďte OTA aktualizaci firmwaru.',
         'DuckyScript quick start guide':'Rychlý přehled DuckyScript','ESP32 Marauder project':'Wiki ESP32 Marauder',
-        'GitHub issue tracker':'Sledování problémů GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Přejmenovat',
+        'GitHub issue tracker':'Sledování problémů GitHub','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Instalace Agenta','Rename':'Přejmenovat',
         'Rename file':'Přejmenovat soubor','New name:':'Nový název:','Cancel':'Zrušit','Rename error':'Chyba přejmenování',
         'OK':'OK','Really delete file "%s"?':'Opravdu smazat soubor "%s"?',
         'Upload complete':'Nahrávání dokončeno',
@@ -382,7 +387,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Ryd lydcache',
         'To perform an over the air (OTA) firmware update':'Udfør en OTA firmwareopdatering.',
         'DuckyScript quick start guide':'DuckyScript-hurtigreference','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Omdøb',
+        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agentinstallation','Rename':'Omdøb',
         'Rename file':'Omdøb fil','New name:':'Nyt navn:','Cancel':'Annuller','Rename error':'Fejl ved omdøbning',
         'OK':'OK','Really delete file "%s"?':'Virkelig slet fil "%s"?',
         'Upload complete':'Upload fuldført',
@@ -419,7 +424,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Tyhjennä äänivälimuisti',
         'To perform an over the air (OTA) firmware update':'Suorita OTA-laiteohjelmistopäivitys.',
         'DuckyScript quick start guide':'DuckyScript-pikaopas','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Nimeä uudelleen',
+        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agentin asennus','Rename':'Nimeä uudelleen',
         'Rename file':'Nimeä tiedosto uudelleen','New name:':'Uusi nimi:','Cancel':'Peruuta',
         'OK':'OK','Really delete file "%s"?':'Poistetaanko tiedosto "%s" todella?',
         'Upload complete':'Lähetys valmis',
@@ -456,7 +461,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Očisti audio predmemoriju',
         'To perform an over the air (OTA) firmware update':'Izvršite OTA ažuriranje firmvera.',
         'DuckyScript quick start guide':'DuckyScript brzi vodič','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub praćenje problema','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Preimenuj',
+        'GitHub issue tracker':'GitHub praćenje problema','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Instalacija agenta','Rename':'Preimenuj',
         'Rename file':'Preimenuj datoteku','New name:':'Novo ime:','Cancel':'Odustani','Rename error':'Pogreška preimenovanja',
         'OK':'OK','Really delete file "%s"?':'Stvarno izbrisati datoteku "%s"?',
         'Upload complete':'Prijenos dovršen',
@@ -494,7 +499,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Hang gyorsítótár törlése',
         'To perform an over the air (OTA) firmware update':'Végezzen OTA firmware-frissítést.',
         'DuckyScript quick start guide':'DuckyScript gyorsreferencia','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub probléma-követő','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Átnevezés',
+        'GitHub issue tracker':'GitHub probléma-követő','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agent telepítése','Rename':'Átnevezés',
         'Rename file':'Fájl átnevezése','New name:':'Új név:','Cancel':'Mégse','Rename error':'Hiba átnevezéskor',
         'OK':'OK','Really delete file "%s"?':'Tényleg törli a fájlt "%s"?',
         'Upload complete':'Feltöltés befejezve',
@@ -531,7 +536,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Tøm lydbuffer',
         'To perform an over the air (OTA) firmware update':'Utfør en OTA-fastvareoppdatering.',
         'DuckyScript quick start guide':'DuckyScript-hurtigreferanse','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Gi nytt navn',
+        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agentinstallasjon','Rename':'Gi nytt navn',
         'Rename file':'Gi nytt navn','New name:':'Nytt navn:','Cancel':'Avbryt','Rename error':'Feil ved omdøping',
         'OK':'OK','Really delete file "%s"?':'Virkelig slett fil "%s"?',
         'Upload complete':'Opplasting fullført',
@@ -567,7 +572,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Rensa ljudcache',
         'To perform an over the air (OTA) firmware update':'Utför en OTA-firmwareuppdatering.',
         'DuckyScript quick start guide':'DuckyScript-snabbreferens','ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Byt namn',
+        'GitHub issue tracker':'GitHub Issue Tracker','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agentinstallation','Rename':'Byt namn',
         'Rename file':'Byt namn på fil','New name:':'Nytt namn:','Cancel':'Avbryt','Rename error':'Fel vid namnbyte',
         'OK':'OK','Really delete file "%s"?':'Vill du verkligen ta bort filen "%s"?',
         'Upload complete':'Uppladdning klar',
@@ -605,7 +610,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'To perform an over the air (OTA) firmware update':'Izvedite OTA posodobitev vdelane programske opreme.',
         'DuckyScript quick start guide':'DuckyScript hitri pregled',
         'ESP32 Marauder project':'Wiki ESP32 Marauder',
-        'GitHub issue tracker':'GitHub sledilnik težav','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Preimenuj','Rename file':'Preimenuj datoteko',
+        'GitHub issue tracker':'GitHub sledilnik težav','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Namestitev agenta','Rename':'Preimenuj','Rename file':'Preimenuj datoteko',
         'New name:':'Novo ime:','Cancel':'Prekliči','Rename error':'Napaka pri preimenovanju',
         'OK':'OK','Really delete file "%s"?':'Res izbrišem datoteko "%s"?',
         'Upload complete':'Prenos končan',
@@ -643,7 +648,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'Clear audio cache':'Vymazať zvukovú vyrovnávaciu pamäť',
         'To perform an over the air (OTA) firmware update':'Vykonajte OTA aktualizáciu firmvéru.',
         'DuckyScript quick start guide':'Rýchly prehľad DuckyScript','ESP32 Marauder project':'Wiki ESP32 Marauder',
-        'GitHub issue tracker':'GitHub sledovanie problémov','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Premenovať',
+        'GitHub issue tracker':'GitHub sledovanie problémov','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Inštalácia agenta','Rename':'Premenovať',
         'Rename file':'Premenovať súbor','New name:':'Nový názov:','Cancel':'Zrušiť','Rename error':'Chyba pri premenovaní',
         'OK':'OK','Really delete file "%s"?':'Naozaj zmazať súbor "%s"?',
         'Upload complete':'Nahrávanie dokončené',
@@ -681,7 +686,7 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
         'To perform an over the air (OTA) firmware update':'Bir OTA firmware güncellemesi gerçekleştirin.',
         'DuckyScript quick start guide':'DuckyScript Hızlı Referans',
         'ESP32 Marauder project':'ESP32 Marauder Wiki',
-        'GitHub issue tracker':'GitHub Sorun Takipçisi','USBArmyKnife-modded':'USBArmyKnife-modded','Rename':'Yeniden adlandır','Rename file':'Dosyayı yeniden adlandır',
+        'GitHub issue tracker':'GitHub Sorun Takipçisi','USBArmyKnife-modded':'USBArmyKnife-modded','Agent Install':'Agent Yükle','Rename':'Yeniden adlandır','Rename file':'Dosyayı yeniden adlandır',
         'New name:':'Yeni ad:','Cancel':'İptal','Rename error':'Yeniden adlandırma hatası',
         'OK':'Tamam','Really delete file "%s"?':'"%s" dosyası gerçekten silinsin mi?',
         'Upload complete':'Yükleme tamamlandı',
@@ -739,6 +744,14 @@ function onToggle(e){"true"==e.getAttribute("data-checked")?e.setAttribute("data
             dz=dz.closest('.accordion-body')||dz;
             var hint=document.getElementById('dropHintText');
             var dragDepth=0;
+            var fileInputBox = document.getElementById('fileInputBox');
+            if (fileInputBox) {
+                fileInputBox.addEventListener('change', function() {
+                    var name = this.files && this.files[0] ? this.files[0].name : '—';
+                    var el = document.getElementById('uploadSelectedName');
+                    if (el) el.textContent = name;
+                });
+            }
             function hasFiles(e){return e.dataTransfer&&e.dataTransfer.types&&[].indexOf.call(e.dataTransfer.types,'Files')>=0;}
             function dzWhite(){dz.style.outline='2px dashed #ffffff';dz.style.outlineOffset='4px';}
         function dzGold(){dz.style.outline='2px dashed #0d6efd';dz.style.outlineOffset='4px';dz.style.background='rgba(13,110,253,0.12)';}
@@ -1329,25 +1342,27 @@ setTimeout(report,2000);
     document.addEventListener('scroll', hideSettingTooltip, true);
     window.addEventListener('resize', hideSettingTooltip);
 
-    var origCreate = window.createSettingsEditor;
-    if (typeof origCreate === 'function') {
-        window.createSettingsEditor = function(setting) {
-            origCreate(setting);
-            setTimeout(function() {
-                var desc = getSettingDescription(setting.name);
-                if (!desc) return;
-                var btns = document.querySelectorAll('#settings-accordion .accordion-button');
-                var last = btns[btns.length - 1];
-                if (last && last.textContent.trim() === setting.name) {
-                    var span = document.createElement('span');
-                    span.className = 'setting-label';
-                    span.setAttribute('data-desc', desc);
-                    span.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.5);margin-left:8px;font-weight:normal;';
-                    span.textContent = '?';
-                    last.appendChild(span);
-                }
-            }, 50);
-        };
+    function addSettingTooltips() {
+        if (!sc) return;
+        var btns = sc.querySelectorAll('.accordion-button');
+        btns.forEach(function(btn) {
+            if (btn.querySelector('.setting-label')) return;
+            var name = btn.textContent.trim();
+            var desc = getSettingDescription(name);
+            if (!desc) return;
+            var span = document.createElement('span');
+            span.className = 'setting-label';
+            span.setAttribute('data-desc', desc);
+            span.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.5);margin-left:8px;font-weight:normal;';
+            span.textContent = '?';
+            btn.appendChild(span);
+        });
+    }
+
+    addSettingTooltips();
+    if (typeof MutationObserver !== 'undefined' && sc) {
+        var _obs = new MutationObserver(function() { addSettingTooltips(); });
+        _obs.observe(sc, { childList: true, subtree: true });
     }
 
     var fileContextMenu = document.getElementById('fileContextMenu');
@@ -1394,6 +1409,72 @@ setTimeout(report,2000);
     });
     document.addEventListener('scroll', hideFileContextMenu, true);
     window.addEventListener('resize', hideFileContextMenu);
+
+    function loadVncs() {
+        fetch('/data.json').then(function(r){return r.json();}).then(function(data){
+            var list = document.getElementById('vncList');
+            var empty = document.getElementById('vncEmptyHint');
+            if (!list) return;
+            var vncs = data.vncs || [];
+            list.innerHTML = '';
+            empty.style.display = vncs.length ? 'none' : '';
+            vncs.forEach(function(v) {
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(13,110,253,0.08);border-radius:8px;padding:8px 10px;';
+                var label = document.createElement('span');
+                label.style.cssText = 'font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;';
+                label.textContent = (v.name && v.name.length) ? v.name + ' (' + v.ip + ')' : v.ip;
+                var actions = document.createElement('span');
+                actions.style.cssText = 'display:flex;gap:6px;flex-shrink:0;';
+                var openBtn = document.createElement('a');
+                openBtn.href = 'http://' + encodeURIComponent(v.ip) + ':7002/';
+                openBtn.target = '_blank';
+                openBtn.className = 'btn btn-primary btn-sm';
+                openBtn.textContent = 'Open VNC';
+                var delBtn = document.createElement('button');
+                delBtn.className = 'btn btn-danger btn-sm';
+                delBtn.textContent = 'X';
+                delBtn.addEventListener('click', function() {
+                    if (!confirm('Delete: ' + v.ip + '?')) return;
+                    fetch('/api/vncs/delete?ip=' + encodeURIComponent(v.ip), {method:'POST'}).then(function(){loadVncs();});
+                });
+                actions.appendChild(openBtn);
+                actions.appendChild(delBtn);
+                row.appendChild(label);
+                row.appendChild(actions);
+                list.appendChild(row);
+            });
+        }).catch(function(e){console.error('VNC list:',e);});
+    }
+
+    var vncNewBtn = document.getElementById('vncNewBtn');
+    if (vncNewBtn) {
+        vncNewBtn.addEventListener('click', function() {
+            var row = document.getElementById('vncAddRow');
+            row.style.display = row.style.display === '' || row.style.display === 'none' ? '' : 'none';
+        });
+    }
+    var vncAddCancelBtn = document.getElementById('vncAddCancelBtn');
+    if (vncAddCancelBtn) {
+        vncAddCancelBtn.addEventListener('click', function() {
+            document.getElementById('vncAddRow').style.display = 'none';
+        });
+    }
+    var vncAddBtn = document.getElementById('vncAddBtn');
+    if (vncAddBtn) {
+        vncAddBtn.addEventListener('click', function() {
+            var ip = document.getElementById('vncNewIp').value.trim();
+            var name = document.getElementById('vncNewName').value.trim();
+            if (!ip) return;
+            fetch('/api/vncs?name=' + encodeURIComponent(name) + '&ip=' + encodeURIComponent(ip), {method:'POST'}).then(function(){
+                document.getElementById('vncNewIp').value = '';
+                document.getElementById('vncNewName').value = '';
+                document.getElementById('vncAddRow').style.display = 'none';
+                loadVncs();
+            }).catch(function(e){console.error('VNC add:',e);});
+        });
+    }
+    loadVncs();
 })();
 </script>
 </body></html>
