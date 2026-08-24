@@ -31,6 +31,9 @@ jobs:
       - name: Build LILYGO-T-Dongle-S3
         run: pio run --environment LILYGO-T-Dongle-S3
 
+      - name: Copy boot_app0.bin
+        run: cp ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin .pio/build/LILYGO-T-Dongle-S3/
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
