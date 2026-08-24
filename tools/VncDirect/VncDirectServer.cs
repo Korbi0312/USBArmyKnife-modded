@@ -91,8 +91,7 @@ namespace Agent.VncDirect
 
         public void Start()
         {
-            var bindIp = GetLanIpAddress();
-            httpServer = new HttpServer(bindIp, port);
+            httpServer = new HttpServer(IPAddress.Any, port);
             httpServer.OnGet += OnGet;
             httpServer.OnPost += OnPost;
             httpServer.AddWebSocketService<VncBehavior>("/websockify", () => new VncBehavior(this));
