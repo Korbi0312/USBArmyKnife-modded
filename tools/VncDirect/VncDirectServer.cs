@@ -91,11 +91,26 @@ namespace Agent.VncDirect
 
         public void Start()
         {
-            httpServer = new HttpServer(IPAddress.Any, port);
+            var bindIp = GetLanIpAddress();
+            httpServer = new HttpServer(bindIp, port);
             httpServer.OnGet += OnGet;
             httpServer.OnPost += OnPost;
             httpServer.AddWebSocketService<VncBehavior>("/websockify", () => new VncBehavior(this));
             httpServer.Start();
+
+            var tailscaleIp = DetectTailscaleIp();
+            if (tailscaleIp != null && tailscaleIp != bindIp?.ToString())
+            {
+                if (IPAddress.TryParse(tailscaleIp, out var tailscaleAddr))
+                {
+                    var tailscaleServer = new HttpServer(tailscaleAddr, port);
+                    tailscaleServer.OnGet += OnGet;
+                    tailscaleServer.OnPost += OnPost;
+                    tailscaleServer.AddWebSocketService<VncBehavior>("/websockify", () => new VncBehavior(this));
+                    tailscaleServer.Start();
+                    Log($"Tailscale server also listening on {tailscaleIp}:{port}");
+                }
+            }
         }
 
         private static IPAddress GetLanIpAddress()
