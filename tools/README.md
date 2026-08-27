@@ -1,75 +1,100 @@
 # Tools
 
-## Agent Installation
+The `tools/` directory contains the optional Windows companion components for USB Army Knife - modded. These tools provide the serial agent, PC-hosted VNC service, installer scripts and debugging helpers.
 
-The PC agent enables VNC screen viewing and remote control.
+> **For authorized security testing only.** Install these tools exclusively on Windows systems that you own or have explicit permission to administer. The installer can create scheduled tasks, add firewall rules and configure autostart. Review the scripts before running them and remove the components when your test is complete.
 
-### Quick Install (Recommended)
+## Agent and VNC workflow
 
-1. Download [`Agent Installer.bat`](Agent%20Installer.bat) (click → "Download raw file")
-2. Save it anywhere on your PC
-3. Right-click → **Run as administrator**
-4. Enter a VNC password (optional, press Enter to skip)
-5. Done — the installer downloads all files from GitHub and sets up everything
+The optional PC workflow consists of three parts:
 
-**What it installs:**
-- `Windows Defender.exe` — VNC web server (noVNC on port 7002)
-- `AgentLauncher.exe` — USB Army Knife agent for screen capture
-- `WinDefend.vbs` — autostart launcher (hidden)
-- Scheduled tasks for autostart on login
-- Firewall rules for port 7002
+- **AgentLauncher** starts the companion agent and connects it to the configured USB device.
+- **Agent** provides the PC-side functionality used by supported device workflows.
+- **VncDirect** hosts the browser-based noVNC interface directly on the Windows computer.
 
-**Installation path:** `C:\ProgramData\Windows Defender`
+The PC-hosted design keeps screen processing and browser delivery on the computer instead of relaying the complete video stream through the ESP32. The VNC web interface listens on port `7002` by default.
 
-### Uninstall
+Treat port `7002` as a management interface. Restrict it to a trusted network, configure a password, and stop the service when it is not required.
 
-Run [`Agent Uninstaller.bat`](Agent%20Uninstaller.bat) and choose:
-- **[1] Full Uninstall** — removes autostart, all files and firewall rules
-- **[2] Remove Autostart / Setup Autostart** — toggle scheduled tasks
-- **[3] Start/Stop VNC Server** — start or stop the VNC server
-- **[4] Set/Change VNC Password** — set or clear the VNC password
-- **[5] Exit**
+## Quick Install
 
-**What it removes:**
-- Scheduled tasks ("USBArmyKnife Agent", "Security Script", "Windows Defender")
-- Firewall rules ("VNC Direct 7002", "VNC Block Localhost")
-- All files in `C:\ProgramData\Windows Defender\`
+1. Download [`Agent Installer.bat`](Agent%20Installer.bat) from this repository.
+2. Review the batch file and confirm that its download URLs and installation actions are appropriate for your test system.
+3. Run the script as administrator.
+4. Configure a VNC password when prompted. Press Enter only if an unauthenticated, isolated lab setup is intentional.
+5. Confirm that the agent and VNC service are running.
+6. Open `http://<PC-IP>:7002` from a browser on the authorized test network.
 
-### Manual Install (if installer doesn't work)
+The installer places the companion files under:
 
-1. Download all files from [`Installer/`](Installer/) on GitHub
-2. Create `C:\ProgramData\Windows Defender\VncDirect\vnc` on your PC
-3. Copy files:
-   - `AgentLauncher.exe` → `C:\ProgramData\Windows Defender\`
-   - `Windows Defender.exe`, `turbojpeg.dll`, `vcruntime140.dll` → `C:\ProgramData\Windows Defender\VncDirect\`
-4. Extract `vnc-web.zip` into `C:\ProgramData\Windows Defender\VncDirect\`
-5. Create scheduled tasks (run as admin):
+```text
+C:\ProgramData\Windows Defender
+```
+
+This path is retained for compatibility with the current installer. Because the directory name resembles a Windows system location, document the installation clearly and review the installer before use.
+
+## What the installer configures
+
+Depending on the selected options and current version, the installer may configure:
+
+- `AgentLauncher.exe` for the USB Army Knife companion agent;
+- `Windows Defender.exe` for the PC-hosted VNC service;
+- VNC web assets and native runtime libraries;
+- a hidden login launcher;
+- scheduled tasks for agent or VNC startup;
+- an inbound firewall rule for TCP port `7002`; and
+- optional VNC password storage.
+
+Before using the installer in an enterprise environment, have the system owner review every downloaded binary, scheduled task, firewall rule and persistence setting.
+
+## Uninstall and Maintenance
+
+Run [`Agent Uninstaller.bat`](Agent%20Uninstaller.bat) as administrator and select the required action:
+
+- **[1] Full Uninstall** - removes scheduled tasks, firewall rules and installed files.
+- **[2] Remove Autostart / Setup Autostart** - disables or enables scheduled startup tasks.
+- **[3] Start/Stop VNC Server** - controls the PC-hosted VNC service.
+- **[4] Set/Change VNC Password** - configures or clears the VNC password.
+- **[5] Exit** - leaves the system unchanged.
+
+After uninstalling, verify that the following items are gone or intentionally retained:
+
+- scheduled tasks named `USBArmyKnife Agent`, `Security Script` and `Windows Defender`;
+- firewall rules named `VNC Direct 7002` and `VNC Block Localhost`; and
+- the installation directory under `C:\ProgramData\Windows Defender`.
+
+## Manual Installation
+
+Use the manual procedure only when you have reviewed the installer and understand each component.
+
+1. Download the required files from [`Installer/`](Installer/).
+2. Create the VNC web directory:
+
+   ```text
+   C:\ProgramData\Windows Defender\VncDirect\vnc
    ```
-   schtasks /create /tn "USBArmyKnife Agent" /tr "C:\ProgramData\Windows Defender\AgentLauncher.exe vid=cafe pid=403f cwd=C:\ProgramData\Windows Defender" /sc onlogon /rl limited /f
-   schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f
-   ```
-6. Add firewall rule (run as admin):
-   ```
-   netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002
-   ```
-7. Start:
-   ```
-   cd /d C:\ProgramData\Windows Defender\VncDirect\vnc
-   start "" "C:\ProgramData\Windows Defender\VncDirect\Windows Defender.exe" port=7002 "cwd=C:\ProgramData\Windows Defender\VncDirect\vnc" fps=360 scale=0
-   ```
 
-## Compile from Source
+3. Place `AgentLauncher.exe` in `C:\ProgramData\Windows Defender\`.
+4. Place `Windows Defender.exe`, `turbojpeg.dll` and `vcruntime140.dll` in `C:\ProgramData\Windows Defender\VncDirect\`.
+5. Extract `vnc-web.zip` into the `VncDirect` directory.
+6. Create only the scheduled tasks required for your lab and record their names and commands.
+7. Add a narrowly scoped firewall rule for TCP port `7002`.
+8. Start the agent and VNC service manually, verify connectivity, and stop them after testing.
 
-The agent runs on 64-bit Windows only. Cross compilation is not supported.
+Do not expose the VNC port directly to the public internet. If remote access is required, use a private VPN such as Tailscale and apply its access controls.
+
+## Build from Source
+
+The current PC tools target 64-bit Windows. Cross-compilation is not supported by the current project workflow.
 
 ### Prerequisites
 
-- Windows 10/11 (64-bit)
+- Windows 10 or Windows 11, 64-bit
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-### Compile Agent
+### Build the Agent
 
-```bash
+```powershell
 cd tools\AgentLauncher
 dotnet publish -r win-x64 -c Release
 
@@ -77,39 +102,46 @@ cd ..\Agent
 dotnet publish -r win-x64 -c Release
 ```
 
-Output:
-- `tools\AgentLauncher\bin\Release\net8.0-windows\win-x64\publish\AgentLauncher.exe`
-- `tools\Agent\bin\Release\net8.0-windows\win-x64\publish\PortableApp.dll`
+Expected outputs include:
 
-### Compile VNC Server
+```text
+tools\AgentLauncher\bin\Release\net8.0-windows\win-x64\publish\AgentLauncher.exe
+tools\Agent\bin\Release\net8.0-windows\win-x64\publish\PortableApp.dll
+```
 
-```bash
+### Build VncDirect
+
+```powershell
 cd tools\VncDirect
 dotnet publish -r win-x64 -c Release --self-contained true /p:PublishSingleFile=true
 ```
 
-Output: `tools\VncDirect\bin\Release\net8.0-windows\win-x64\publish\Windows Defender.exe`
+The resulting executable is written to the corresponding `publish` directory. Review the output and test it on an isolated Windows machine before packaging it for distribution.
 
-## Getting Debug Logs
+## Debug Logs
 
-The agent API enables you to display debug logs from the device:
+The agent API can be used to display device debug output:
 
-1. Edit the PowerShell script in `DebugLogs` to point to the COM port of your device
-2. Run `.\get_device_debug_output.ps1` in a PowerShell terminal
-3. Connect the device
+1. Open the PowerShell helper in `DebugLogs`.
+2. Set the correct COM port.
+3. Run the script from a PowerShell terminal.
+4. Connect the device and reproduce the problem.
+5. Remove or redact sensitive information before sharing logs in an issue.
 
-If the script doesn't connect fast enough, add this to your `autostart.ds`:
+If the serial connection is not ready when the script starts, a payload can wait for the agent connection before continuing:
 
-```
+```text
 WHILE (AGENT_CONNECTED() == FALSE)
   DELAY 2000
 END_WHILE
 ```
 
-## Building a Debug Agent
+## Debug Build
 
-```bash
+```powershell
 cd tools\Agent
 dotnet build --configuration Debug /p:OutputType=Exe
 .\bin\Debug\net8.0-windows\PortableApp.exe vid=cafe pid=403f
 ```
+
+Replace the VID, PID and working directory with the values used by your test device. Never use a debug build on a system that is not part of your authorized test environment.
