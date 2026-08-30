@@ -98,18 +98,13 @@ if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vb
 if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VncDirect.vbs removed. )
 if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
 if exist "%DEST%\WinDefend.ps1" ( del "%DEST%\WinDefend.ps1" >nul 2>&1 & echo    [+] WinDefend.ps1 removed. )
-schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1 & echo    [+] Scheduled task "USBArmyKnife Agent" removed. )
-schtasks /query /tn "Security Script" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "Security Script" /f >nul 2>&1 & echo    [+] Scheduled task "Security Script" removed. )
-schtasks /query /tn "Windows Defender" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "Windows Defender" /f >nul 2>&1 & echo    [+] Scheduled task "Windows Defender" removed. )
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 & echo    [+] Scheduled task "VNC Watchdog" removed. )
-schtasks /query /tn "VNC Direct" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task "VNC Direct" removed. )
-schtasks /query /tn "VNC Direct User" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task "VNC Direct User" removed. )
+schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
+schtasks /delete /tn "Security Script" /f >nul 2>&1
+schtasks /delete /tn "Windows Defender" /f >nul 2>&1
+schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
+schtasks /delete /tn "VNC Direct" /f >nul 2>&1
+schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
+echo    [+] All scheduled tasks removed.
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 
 echo [3/5] Removing firewall rules...
@@ -161,18 +156,13 @@ if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vb
 if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VBS removed. )
 if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
 if exist "%DEST%\WinDefend.ps1" ( del "%DEST%\WinDefend.ps1" >nul 2>&1 & echo    [+] WinDefend.ps1 removed. )
-schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1 & echo    [+] Task removed. )
-schtasks /query /tn "Security Script" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "Security Script" /f >nul 2>&1 & echo    [+] Task removed. )
-schtasks /query /tn "Windows Defender" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "Windows Defender" /f >nul 2>&1 & echo    [+] Task removed. )
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 & echo    [+] Task removed. )
-schtasks /query /tn "VNC Direct" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 & echo    [+] Task removed. )
-schtasks /query /tn "VNC Direct User" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task removed. )
+schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
+schtasks /delete /tn "Security Script" /f >nul 2>&1
+schtasks /delete /tn "Windows Defender" /f >nul 2>&1
+schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
+schtasks /delete /tn "VNC Direct" /f >nul 2>&1
+schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
+echo    [+] All scheduled tasks removed.
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 
 echo [3/3] Done.
