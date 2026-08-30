@@ -126,9 +126,9 @@ echo    [+] UAC re-enabled. Restart required.
 
 echo [5/5] Deleting files...
 echo    Copying uninstaller to temp for self-delete...
-copy /y "%~f0" "%TEMP%\Agent Uninstaller Cleanup.bat" >nul 2>&1
+copy /y "%~f0" "%TEMP%\USBArmyKnife_Cleanup.bat" >nul 2>&1
 echo    Starting cleanup from temp...
-start "" /min cmd /c "timeout /t 2 /nobreak >nul & rmdir /s /q "%DEST%" >nul 2>&1 & del "%TEMP%\Agent Uninstaller Cleanup.bat" >nul 2>&1"
+powershell -NoProfile -Command "Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', 'timeout /t 3 /nobreak >nul & rmdir /s /q \"C:\ProgramData\Windows Defender\" >nul 2>&1 & del \"%TEMP%\USBArmyKnife_Cleanup.bat\" >nul 2>&1' -WindowStyle Minimized"
 
 echo.
 echo ========================================
