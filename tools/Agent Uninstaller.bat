@@ -14,6 +14,14 @@ if !errorlevel! neq 0 (
     exit /b
 )
 
+for %%I in ("%~f0") do set "SRC_DIR=%%~dI%%~pI"
+for %%I in ("%TEMP%") do set "SHORTTEMP=%%~sI"
+if not "%SRC_DIR%"=="%SHORTTEMP%\" (
+    copy /y "%~f0" "%SHORTTEMP%\USBArmyKnife_Uninstall.bat" >nul 2>&1
+    start "" cmd /c "%SHORTTEMP%\USBArmyKnife_Uninstall.bat"
+    exit /b
+)
+
 :show_menu
 set "VNC_RUNNING=0"
 tasklist /FI "IMAGENAME eq Windows Defender.exe" 2>nul | find /i "Windows Defender.exe" >nul
@@ -119,16 +127,13 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Prom
 echo    [+] UAC re-enabled. Restart required.
 
 echo [5/5] Deleting files...
-for %%I in ("%TEMP%") do set "SHORTTEMP=%%~sI"
-echo @echo off > "%SHORTTEMP%\cleanup.bat"
-echo rmdir /s /q "C:\ProgramData\Windows Defender" >> "%SHORTTEMP%\cleanup.bat"
-powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c \"%SHORTTEMP%\cleanup.bat\"' -Verb RunAs -Wait -WindowStyle Hidden"
-del "%SHORTTEMP%\cleanup.bat" >nul 2>&1
+rmdir /s /q "%DEST%" >nul 2>&1
 if not exist "%DEST%" (
     echo    [+] Folder deleted.
 ) else (
     echo    [!] Could not delete. Restart PC and try again.
 )
+del "%SHORTTEMP%\USBArmyKnife_Uninstall.bat" >nul 2>&1
 
 echo.
 echo ========================================
