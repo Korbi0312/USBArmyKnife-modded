@@ -88,13 +88,13 @@ goto show_menu
 echo.
 echo === Full Uninstall ===
 echo.
-echo [1/6] Stopping running processes...
+echo [1/5] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
 taskkill /F /IM Windows Defender.exe >nul 2>&1
 wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
 timeout /t 2 /nobreak >nul
 
-echo [2/6] Removing autostart...
+echo [2/5] Removing autostart...
 if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1 & echo    [+] USBArmyKnifeAgent.vbs removed. )
 if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VncDirect.vbs removed. )
 if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
@@ -113,31 +113,30 @@ schtasks /query /tn "VNC Direct User" >nul 2>&1
 if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 & echo    [+] Task "VNC Direct User" removed. )
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 
-echo [3/6] Removing firewall rules...
+echo [3/5] Removing firewall rules...
 netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
 if !errorlevel! equ 0 ( netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1 & echo    [+] Firewall rule "VNC Direct 7002" removed. ) else ( echo    [-] not found. )
 netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
 if !errorlevel! equ 0 ( netsh advfirewall firewall delete rule name="VNC Block Localhost" >nul 2>&1 & netsh advfirewall firewall delete rule name="VNC Block Localhost v6" >nul 2>&1 & echo    [+] Firewall rules "VNC Block Localhost" removed. ) else ( echo    [-] not found. )
 
-echo [4/6] Deleting files...
-if exist "%DEST%" (
-    rmdir /s /q "%DEST%" >nul 2>&1
-    if not exist "%DEST%" ( echo    [+] %DEST% deleted. ) else ( echo    [!] Some files in use. Delete manually. )
-)
-
-echo [5/6] Re-enabling UAC...
+echo [4/5] Re-enabling UAC...
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 5 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 1 /f >nul 2>&1
 echo    [+] UAC re-enabled. Restart required.
 
-echo [6/6] Done.
+echo [5/5] Deleting files...
+echo    Copying uninstaller to temp for self-delete...
+copy /y "%~f0" "%TEMP%\Agent Uninstaller Cleanup.bat" >nul 2>&1
+echo    Starting cleanup from temp...
+start "" /min cmd /c "timeout /t 2 /nobreak >nul & rmdir /s /q "%DEST%" >nul 2>&1 & del "%TEMP%\Agent Uninstaller Cleanup.bat" >nul 2>&1"
+
 echo.
 echo ========================================
 echo   Uninstall complete!
-echo ========================================
+========================================
 echo.
-echo Window closes in 10 seconds...
-timeout /t 10 /nobreak >nul
+echo Window closes in 5 seconds...
+timeout /t 5 /nobreak >nul
 exit /b 0
 
 :TOGGLE_AUTOSTART
