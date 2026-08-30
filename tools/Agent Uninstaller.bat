@@ -152,8 +152,7 @@ echo === Removing Autostart ===
 echo.
 echo [1/3] Stopping processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
-taskkill /F /IM Windows Defender.exe >nul 2>&1
-wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
+powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
 timeout /t 1 /nobreak >nul
 
 echo [2/3] Removing entries...
