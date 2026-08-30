@@ -124,13 +124,15 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Prom
 echo    [+] UAC re-enabled. Restart required.
 
 echo [5/5] Deleting files...
-rmdir /s /q "%DEST%" >nul 2>&1
+powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c rmdir /s /q \"C:\ProgramData\Windows Defender\"' -Verb RunAs -Wait -WindowStyle Hidden"
 if exist "%DEST%" (
-    echo    [!] Could not delete folder. Trying from temp...
-    copy /y "%~f0" "%TEMP%\USBArmyKnife_Cleanup.bat" >nul 2>&1
-    powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c \"timeout /t 5 /nobreak >nul & rmdir /s /q \\\"C:\\ProgramData\\Windows Defender\\\" >nul 2>&1 & del \\\"%TEMP%\\USBArmyKnife_Cleanup.bat\\\" >nul 2>&1\"' -Verb RunAs -WindowStyle Minimized"
-) else (
+    echo    [!] Folder still exists. Cleaning individual files...
+    powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c del /f /q \"C:\ProgramData\Windows Defender\VncDirect\Windows Defender.exe\" & rmdir /s /q \"C:\ProgramData\Windows Defender\VncDirect\" & rmdir /q \"C:\ProgramData\Windows Defender\"' -Verb RunAs -Wait -WindowStyle Hidden"
+)
+if not exist "%DEST%" (
     echo    [+] Folder deleted.
+) else (
+    echo    [!] Could not delete. Restart PC and try again.
 )
 
 echo.
