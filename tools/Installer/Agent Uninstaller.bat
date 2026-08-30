@@ -90,8 +90,7 @@ echo === Full Uninstall ===
 echo.
 echo [1/5] Stopping running processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
-taskkill /F /IM Windows Defender.exe >nul 2>&1
-wmic process where "commandline like '%%WinDefend%%'" call terminate >nul 2>&1
+powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
 timeout /t 2 /nobreak >nul
 
 echo [2/5] Removing autostart...
@@ -125,10 +124,14 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Prom
 echo    [+] UAC re-enabled. Restart required.
 
 echo [5/5] Deleting files...
-echo    Copying uninstaller to temp for self-delete...
-copy /y "%~f0" "%TEMP%\USBArmyKnife_Cleanup.bat" >nul 2>&1
-echo    Starting cleanup from temp...
-powershell -NoProfile -Command "Start-Process -FilePath 'cmd.exe' -ArgumentList '/c', 'timeout /t 3 /nobreak >nul & rmdir /s /q \"C:\ProgramData\Windows Defender\" >nul 2>&1 & del \"%TEMP%\USBArmyKnife_Cleanup.bat\" >nul 2>&1' -WindowStyle Minimized"
+rmdir /s /q "%DEST%" >nul 2>&1
+if exist "%DEST%" (
+    echo    [!] Could not delete folder. Trying from temp...
+    copy /y "%~f0" "%TEMP%\USBArmyKnife_Cleanup.bat" >nul 2>&1
+    powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/c \"timeout /t 5 /nobreak >nul & rmdir /s /q \\\"C:\\ProgramData\\Windows Defender\\\" >nul 2>&1 & del \\\"%TEMP%\\USBArmyKnife_Cleanup.bat\\\" >nul 2>&1\"' -Verb RunAs -WindowStyle Minimized"
+) else (
+    echo    [+] Folder deleted.
+)
 
 echo.
 echo ========================================
