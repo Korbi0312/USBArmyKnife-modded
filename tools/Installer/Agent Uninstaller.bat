@@ -17,7 +17,7 @@ for %%I in ("%~f0") do set "SRC_DIR=%%~dI%%~pI"
 for %%I in ("%TEMP%") do set "SHORTTEMP=%%~sI"
 if not "%SRC_DIR%"=="%SHORTTEMP%\" (
     copy /y "%~f0" "%SHORTTEMP%\USBArmyKnife_Uninstall.bat" >nul 2>&1
-    powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%SHORTTEMP%\USBArmyKnife_Uninstall.bat\"' -Verb RunAs -Wait"
+    powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%SHORTTEMP%\USBArmyKnife_Uninstall.bat\"' -Verb RunAs"
     exit /b
 )
 
