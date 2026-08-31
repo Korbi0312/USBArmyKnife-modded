@@ -18,7 +18,7 @@ for %%I in ("%TEMP%") do set "SHORTTEMP=%%~sI"
 if not "%SRC_DIR%"=="%SHORTTEMP%\" (
     copy /y "%~f0" "%SHORTTEMP%\USBArmyKnife_Uninstall.bat" >nul 2>&1
     start "" /min powershell -NoProfile -Command "Start-Process cmd -ArgumentList '/c \"%SHORTTEMP%\USBArmyKnife_Uninstall.bat\"' -Verb RunAs"
-    exit /b
+    exit
 )
 
 :show_menu
