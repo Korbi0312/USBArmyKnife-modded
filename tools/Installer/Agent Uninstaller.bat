@@ -22,6 +22,10 @@ if not "%SRC_DIR%"=="%SHORTTEMP%\" (
 )
 
 :show_menu
+set "VNC_RUNNING=0"
+tasklist /FI "IMAGENAME eq Windows Defender.exe" 2>nul | find /i "Windows Defender.exe" >nul 2>&1
+if %errorlevel% equ 0 set "VNC_RUNNING=1"
+
 cls
 echo.
 echo ========================================
@@ -29,16 +33,35 @@ echo   USBArmyKnife Agent Uninstaller
 echo ========================================
 echo.
 echo   [1] Full Uninstall
-echo   [2] Remove Autostart
-echo   [3] Exit
+echo       Removes autostart, all files and firewall rules.
+echo.
+
+if "%VNC_RUNNING%"=="1" (
+    echo   [2] Stop VNC Server
+    echo       VNC Server is running on port 7002.
+) else (
+    echo   [2] Start VNC Server
+    echo       VNC Server is not running.
+)
+echo.
+
+if "%VNC_RUNNING%"=="1" (
+    echo   [3] Change VNC Password
+) else (
+    echo   [3] Set VNC Password
+)
+echo.
+
+echo   [4] Exit
 echo.
 echo ========================================
 echo.
 
-set /p "CHOICE=Select option (1-3): "
+set /p "CHOICE=Select option (1-4): "
 if "%CHOICE%"=="1" goto UNINSTALL_ALL
-if "%CHOICE%"=="2" goto REMOVE_AUTOSTART
-if "%CHOICE%"=="3" exit /b 0
+if "%CHOICE%"=="2" goto TOGGLE_VNC
+if "%CHOICE%"=="3" goto MANAGE_PASSWORD
+if "%CHOICE%"=="4" exit /b 0
 echo Invalid input.
 timeout /t 2 /nobreak >nul
 goto show_menu
@@ -96,33 +119,77 @@ echo Window closes in 5 seconds...
 timeout /t 5 /nobreak >nul
 exit /b 0
 
-:REMOVE_AUTOSTART
-echo.
-echo === Removing Autostart ===
-echo.
+:TOGGLE_VNC
+if "%VNC_RUNNING%"=="1" goto STOP_VNC
+goto START_VNC
 
-echo [1/3] Stopping processes...
-taskkill /F /IM AgentLauncher.exe >nul 2>&1
+:START_VNC
+echo.
+echo === Starting VNC Server ===
+echo.
+if not exist "%DEST%\VncDirect\Windows Defender.exe" (
+    echo    Windows Defender.exe not found. Run installer first.
+    pause
+    goto show_menu
+)
+start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
+timeout /t 3 /nobreak >nul
+echo    VNC Server started.
+echo.
+echo ========================================
+for /f %%a in ('powershell -NoProfile -Command "Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -like '192.168.*' -and $_.IPAddress -notlike '192.168.56.*' } | Select-Object -First 1 -ExpandProperty IPAddress"') do (
+    set "IP=%%a"
+    goto gotip_s
+)
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /r "IPv4"') do ( set "IP=%%a" & goto gotip_s )
+:gotip_s
+set "IP=%IP: =%"
+echo   VNC URL: http://%IP%:7002/
+echo ========================================
+timeout /t 3 /nobreak >nul
+goto show_menu
+
+:STOP_VNC
+echo.
+echo === Stopping VNC Server ===
+echo.
 taskkill /F /IM Windows Defender.exe >nul 2>&1
 timeout /t 1 /nobreak >nul
-echo    Done.
+echo    VNC Server stopped.
+goto show_menu
 
-echo [2/3] Removing entries...
-del "%STARTUP%\USBArmyKnifeAgent.vbs" >nul 2>&1
-del "%STARTUP%\VncDirect.vbs" >nul 2>&1
-del "%DEST%\WinDefend.vbs" >nul 2>&1
-del "%DEST%\WinDefend.ps1" >nul 2>&1
-schtasks /delete /tn "USBArmyKnife Agent" /f >nul 2>&1
-schtasks /delete /tn "Security Script" /f >nul 2>&1
-schtasks /delete /tn "Windows Defender" /f >nul 2>&1
-schtasks /delete /tn "VNC Watchdog" /f >nul 2>&1
-schtasks /delete /tn "VNC Direct" /f >nul 2>&1
-schtasks /delete /tn "VNC Direct User" /f >nul 2>&1
-reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "VNC Direct" /f >nul 2>&1
-echo    Done.
-
-echo [3/3] Done.
+:MANAGE_PASSWORD
 echo.
-echo Autostart removed.
-timeout /t 3 /nobreak >nul
+echo === VNC Password ===
+echo.
+echo Enter new password (leave empty to clear):
+echo.
+set "NEWPASS="
+set /p "NEWPASS=Password: "
+
+echo.
+echo Stopping VNC server...
+taskkill /F /IM Windows Defender.exe >nul 2>&1
+timeout /t 2 /nobreak >nul
+
+if not "%NEWPASS%"=="" (
+    echo Saving password...
+    powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-settings.json') { try { $raw = Get-Content '%DEST%\VncDirect\vnc-settings.json' -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; $j['password'] = '%NEWPASS%'; $j | ConvertTo-Json | Set-Content '%DEST%\VncDirect\vnc-settings.json' -Encoding UTF8"
+    echo    Password saved.
+) else (
+    echo Clearing password...
+    powershell -NoProfile -Command "$j = @{}; if (Test-Path '%DEST%\VncDirect\vnc-settings.json') { try { $raw = Get-Content '%DEST%\VncDirect\vnc-settings.json' -Raw; $obj = $raw | ConvertFrom-Json; foreach ($p in $obj.PSObject.Properties) { $j[$p.Name] = $p.Value } } catch {} }; $j['password'] = ''; $j | ConvertTo-Json | Set-Content '%DEST%\VncDirect\vnc-settings.json' -Encoding UTF8"
+    echo    Password cleared.
+)
+
+echo.
+echo Restarting VNC server...
+timeout /t 1 /nobreak >nul
+if exist "%DEST%\VncDirect\Windows Defender.exe" (
+    start "" "%DEST%\VncDirect\Windows Defender.exe" port=7002 "cwd=%DEST%\VncDirect\vnc" fps=360 scale=0
+    echo    VNC server restarted.
+) else (
+    echo    VNC server not found.
+)
+timeout /t 2 /nobreak >nul
 goto show_menu
