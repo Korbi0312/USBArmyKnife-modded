@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">USB Army Knife project presentation overview</title>
+  <desc id="desc">A dark tactical overview of the thirteen chapters in the USB Army Knife project presentation.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe19a"/>
+      <stop offset="0.48" stop-color="#d4a84f"/>
+      <stop offset="1" stop-color="#8b5d20"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#273039" stroke-width="1" opacity="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="#080b0e"/>
+  <rect x="24" y="24" width="1552" height="852" rx="8" fill="url(#grid)" stroke="#39434a" stroke-width="2"/>
+  <path d="M24 170H1576M24 730H1576" stroke="#303a41" stroke-width="2"/>
+  <path d="M65 92H395M65 106H250" stroke="url(#gold)" stroke-width="4" opacity="0.9"/>
+  <text x="65" y="76" fill="#9da7ae" font-family="Arial, sans-serif" font-size="16" letter-spacing="4">PROJECT BRIEFING / VISUAL INDEX</text>
+  <text x="65" y="142" fill="#f5f1e7" font-family="Arial, sans-serif" font-size="58" font-weight="700" letter-spacing="1">USB ARMY KNIFE</text>
+  <text x="65" y="208" fill="url(#gold)" font-family="Arial, sans-serif" font-size="34" font-weight="700">THE COMPLETE TACTICAL STACK</text>
+  <text x="65" y="248" fill="#b8c0c5" font-family="Arial, sans-serif" font-size="19">A 13-chapter visual deep dive into the hardware, web interface, storage, VncDirect and deployment flow.</text>
+
+  <g transform="translate(1260 78)" filter="url(#glow)">
+    <rect x="0" y="0" width="190" height="70" rx="12" fill="#11171b" stroke="url(#gold)" stroke-width="3"/>
+    <path d="M30 35H160M95 15V55" stroke="#f1c765" stroke-width="3" opacity="0.8"/>
+    <circle cx="30" cy="35" r="7" fill="#f1c765"/><circle cx="160" cy="35" r="7" fill="#f1c765"/><circle cx="95" cy="35" r="11" fill="#080b0e" stroke="#f1c765" stroke-width="3"/>
+    <text x="95" y="92" text-anchor="middle" fill="#9da7ae" font-family="monospace" font-size="13" letter-spacing="2">13 CHAPTERS</text>
+  </g>
+
+  <g font-family="Arial, sans-serif">
+    <g transform="translate(65 305)">
+      <rect width="350" height="96" rx="5" fill="#11171b" stroke="#6f552b" stroke-width="2"/>
+      <rect width="8" height="96" fill="#d4a84f"/>
+      <text x="28" y="34" fill="#f4cc75" font-size="16" font-weight="700">01-03  THE THESIS</text>
+      <text x="28" y="61" fill="#f5f1e7" font-size="20" font-weight="700">Overview / dilemma / solution</text>
+      <text x="28" y="82" fill="#9da7ae" font-size="14">Why a unified physical-access platform exists</text>
+    </g>
+    <g transform="translate(435 305)">
+      <rect width="350" height="96" rx="5" fill="#11171b" stroke="#6f552b" stroke-width="2"/>
+      <rect width="8" height="96" fill="#d4a84f"/>
+      <text x="28" y="34" fill="#f4cc75" font-size="16" font-weight="700">04-06  THE PLATFORM</text>
+      <text x="28" y="61" fill="#f5f1e7" font-size="20" font-weight="700">Hardware / arsenal / evolution</text>
+      <text x="28" y="82" fill="#9da7ae" font-size="14">T-Dongle S3 and the modded capability set</text>
+    </g>
+    <g transform="translate(805 305)">
+      <rect width="350" height="96" rx="5" fill="#11171b" stroke="#6f552b" stroke-width="2"/>
+      <rect width="8" height="96" fill="#d4a84f"/>
+      <text x="28" y="34" fill="#f4cc75" font-size="16" font-weight="700">07-08  THE CONTROL PLANE</text>
+      <text x="28" y="61" fill="#f5f1e7" font-size="20" font-weight="700">Dashboard / reliable storage</text>
+      <text x="28" y="82" fill="#9da7ae" font-size="14">Web UI, i18n, SD visibility and safe file handling</text>
+    </g>
+    <g transform="translate(1175 305)">
+      <rect width="350" height="96" rx="5" fill="#11171b" stroke="#6f552b" stroke-width="2"/>
+      <rect width="8" height="96" fill="#d4a84f"/>
+      <text x="28" y="34" fill="#f4cc75" font-size="16" font-weight="700">09-10  THE EXTENSION</text>
+      <text x="28" y="61" fill="#f5f1e7" font-size="20" font-weight="700">VncDirect / feedback / decoys</text>
+      <text x="28" y="82" fill="#9da7ae" font-size="14">Remote viewing, diagnostics and device output</text>
+    </g>
+
+    <g transform="translate(65 435)">
+      <rect width="720" height="220" rx="7" fill="#0e1418" stroke="#a87c32" stroke-width="3"/>
+      <text x="36" y="48" fill="#f4cc75" font-size="17" font-weight="700" letter-spacing="2">THE DEVICE CORE</text>
+      <path d="M245 82h230l52 45-52 45H245l-52-45z" fill="#202a30" stroke="#e6bd63" stroke-width="3"/>
+      <rect x="276" y="104" width="168" height="48" rx="8" fill="#0a0e11" stroke="#e6bd63" stroke-width="2"/>
+      <path d="M305 128h110M360 95v66" stroke="#e6bd63" stroke-width="3" opacity="0.85"/>
+      <circle cx="305" cy="128" r="6" fill="#e6bd63"/><circle cx="415" cy="128" r="6" fill="#e6bd63"/>
+      <text x="360" y="200" text-anchor="middle" fill="#f5f1e7" font-size="22" font-weight="700">LILYGO T-DONGLE S3</text>
+    </g>
+
+    <g transform="translate(805 435)">
+      <rect width="720" height="220" rx="7" fill="#0e1418" stroke="#a87c32" stroke-width="3"/>
+      <text x="36" y="48" fill="#f4cc75" font-size="17" font-weight="700" letter-spacing="2">THE DELIVERY PATH</text>
+      <path d="M78 130H642" stroke="#6d7880" stroke-width="3"/>
+      <g fill="#11171b" stroke="#e6bd63" stroke-width="3">
+        <circle cx="120" cy="130" r="34"/><circle cx="300" cy="130" r="34"/><circle cx="480" cy="130" r="34"/><circle cx="660" cy="130" r="34"/>
+      </g>
+      <g fill="#e6bd63" font-family="monospace" font-size="14" text-anchor="middle">
+        <text x="120" y="126">FLASH</text><text x="120" y="145">FIRMWARE</text>
+        <text x="300" y="126">DEPLOY</text><text x="300" y="145">AGENT</text>
+        <text x="480" y="126">ACCESS</text><text x="480" y="145">UI</text>
+        <text x="660" y="126">RUN</text><text x="660" y="145">TESTS</text>
+      </g>
+      <path d="M160 130h100M340 130h100M520 130h100" stroke="#f4cc75" stroke-width="4"/>
+      <text x="360" y="200" text-anchor="middle" fill="#f5f1e7" font-size="22" font-weight="700">FROM HARDWARE TO OPERATOR HUD</text>
+    </g>
+
+    <g transform="translate(65 700)">
+      <text x="0" y="0" fill="#9da7ae" font-family="monospace" font-size="14" letter-spacing="2">RELATED SECTIONS</text>
+      <text x="0" y="35" fill="#f5f1e7" font-size="18">Intro</text>
+      <text x="190" y="35" fill="#f5f1e7" font-size="18">Features</text>
+      <text x="385" y="35" fill="#f5f1e7" font-size="18">Supported hardware</text>
+      <text x="660" y="35" fill="#f5f1e7" font-size="18">Getting started</text>
+      <text x="890" y="35" fill="#f5f1e7" font-size="18">VncDirect</text>
+      <text x="1085" y="35" fill="#f5f1e7" font-size="18">Agent lifecycle</text>
+    </g>
+  </g>
+  <path d="M65 820H1535" stroke="url(#gold)" stroke-width="2"/>
+  <text x="65" y="850" fill="#89949b" font-family="monospace" font-size="13" letter-spacing="2">USBARMYKNIFE-MODDED / VISUAL PROJECT PRESENTATION</text>
+  <text x="1535" y="850" text-anchor="end" fill="#d4a84f" font-family="monospace" font-size="13" letter-spacing="2">MASTER / DOCUMENTATION</text>
+</svg>
