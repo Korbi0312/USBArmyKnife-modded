@@ -35,15 +35,15 @@ This is why I decided to create the USB Army Knife.
 
 This video shows how the ultimate rick roll works (now with emergency reset WiFi fix):
 
-rickroll.mp4
+https://github.com/user-attachments/assets/f373e18e-5cad-4871-9f2a-17523fa33398
 
 This video shows how the USB PCAP functionality and has a brief peak at the web interface:
 
-USBPcapExample.mp4
+https://github.com/user-attachments/assets/0d5b1485-b808-46c6-aaf7-7cf016088b8f
 
 This video shows how to pull the victims machine once the agent has been installed:
 
-VNCExample.mp4
+https://github.com/user-attachments/assets/3c866d29-ef26-4eaf-943b-1206b8c40101
 
 ## Features
 
