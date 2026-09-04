@@ -9,28 +9,35 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 ## Project Presentation
 
 <p align="center">
-  <a href="./docs/media/project-presentation-overview.svg">
-    <img src="./docs/media/project-presentation-overview.svg" alt="USB Army Knife modded project presentation overview" width="100%">
-  </a>
+  <video controls preload="metadata" width="100%" src="https://github.com/Korbi0312/USBArmyKnife-modded/raw/refs/heads/master/docs/media/usb-army-knife-project-explainer.mp4">
+    Your browser does not support embedded video. <a href="https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4">Open the project explainer video directly</a>.
+  </video>
 </p>
 
-The project presentation is shown directly on this README start page. Open the overview image for the full-size version.
+<p align="center">
+  <a href="https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4">▶ Open the project explainer video</a>
+</p>
 
-- [Open the presentation overview](./docs/media/project-presentation-overview.svg)
+The project explainer video is shown directly on this README start page. The presentation chapters below identify where the individual presentation slides belong in the project documentation.
+
+- [View the uploaded project explainer video](https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4)
 - [View the presentation media index](./docs/media/README.md)
-- Planned binary asset name: `docs/media/usb-army-knife-project-presentation.pdf`
-- Planned binary asset name: `docs/media/usb-army-knife-project-explainer.mp4`
+- Presentation PDF: upload as `docs/media/usb-army-knife-project-presentation.pdf` when available
 
 ### Presentation chapters
 
 | Slides | README section |
 | --- | --- |
 | 1–3 | Intro and the physical-access problem |
-| 4–6 | Core Features and attack examples |
-| 7–9 | Modded Features, dashboard and settings UI |
-| 10–11 | VNC, remote screen viewing and Tailscale |
-| 12 | Supported Hardware: LILYGO T-Dongle S3 |
-| 13 | Getting Started, deployment and project outlook |
+| 4 | Supported Hardware: LILYGO T-Dongle S3 |
+| 5 | Features and the multi-vector capability set |
+| 6 | Modded Features and the evolution from upstream |
+| 7–8 | Web UI, SD dashboard, file browser and reliable storage |
+| 9 | VNC / remote screen viewing and Tailscale |
+| 10 | Crash LED, microphone support and PNG display |
+| 11 | Agent Installation and the PC agent lifecycle |
+| 12 | Getting Started and the deployment pipeline |
+| 13 | Complete project architecture and tactical stack |
 
 ## Testimonials
 
@@ -59,23 +66,9 @@ This is why I decided to create the USB Army Knife.
 
 ## Video
 
-This video shows how the ultimate rick roll works (now with emergency reset WiFi fix):
+The project explainer video is embedded at the top of this README. It is also available as a direct MP4 link:
 
-rickroll.mp4
-
-This video shows how the USB PCAP functionality and has a brief peak at the web interface:
-
-USBPcapExample.mp4
-
-This video shows how to pull the victims machine once the agent has been installed:
-
-VNCExample.mp4
-
-The project explainer video is prepared for the repository as:
-
-`docs/media/usb-army-knife-project-explainer.mp4`
-
-Upload that file as a binary asset to enable a direct video link from this README.
+[Open `usb-army-knife-project-explainer.mp4`](https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4)
 
 ## Features
 
