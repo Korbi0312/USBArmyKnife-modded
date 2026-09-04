@@ -6,39 +6,6 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 
 > 🚀 **v1.1.8-pre** — PC-based VNC (VncDirect), PC Installer/Uninstaller, Dark Theme VNC UI with FPS/quality/scaling, VNC password protection, remote access via Tailscale, pre-built firmware.
 
-## Project Presentation
-
-<p align="center">
-  <video controls preload="metadata" width="100%" src="https://github.com/Korbi0312/USBArmyKnife-modded/raw/refs/heads/master/docs/media/usb-army-knife-project-explainer.mp4">
-    Your browser does not support embedded video. <a href="https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4">Open the project explainer video directly</a>.
-  </video>
-</p>
-
-<p align="center">
-  <a href="https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4">▶ Open the project explainer video</a>
-</p>
-
-The project explainer video is shown directly on this README start page. The presentation chapters below identify where the individual presentation slides belong in the project documentation.
-
-- [View the uploaded project explainer video](https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4)
-- [View the presentation media index](./docs/media/README.md)
-- Presentation PDF: upload as `docs/media/usb-army-knife-project-presentation.pdf` when available
-
-### Presentation chapters
-
-| Slides | README section |
-| --- | --- |
-| 1–3 | Intro and the physical-access problem |
-| 4 | Supported Hardware: LILYGO T-Dongle S3 |
-| 5 | Features and the multi-vector capability set |
-| 6 | Modded Features and the evolution from upstream |
-| 7–8 | Web UI, SD dashboard, file browser and reliable storage |
-| 9 | VNC / remote screen viewing and Tailscale |
-| 10 | Crash LED, microphone support and PNG display |
-| 11 | Agent Installation and the PC agent lifecycle |
-| 12 | Getting Started and the deployment pipeline |
-| 13 | Complete project architecture and tactical stack |
-
 ## Testimonials
 
 "Your device is evil. You are doing evil." - Mr. Peoples via X
@@ -66,9 +33,17 @@ This is why I decided to create the USB Army Knife.
 
 ## Video
 
-The project explainer video is embedded at the top of this README. It is also available as a direct MP4 link:
+This video shows how the ultimate rick roll works (now with emergency reset WiFi fix):
 
-[Open `usb-army-knife-project-explainer.mp4`](https://github.com/Korbi0312/USBArmyKnife-modded/blob/master/docs/media/usb-army-knife-project-explainer.mp4)
+rickroll.mp4
+
+This video shows how the USB PCAP functionality and has a brief peak at the web interface:
+
+USBPcapExample.mp4
+
+This video shows how to pull the victims machine once the agent has been installed:
+
+VNCExample.mp4
 
 ## Features
 
@@ -249,7 +224,7 @@ To access the VNC from outside your local network (e.g. from another country):
   - [DuckyScript quick reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/DuckyScript-Quick-Reference)
   - [The USB Army Knife command reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/Command-Reference)
 - **Problem getting started?**
-  - Check out the [examples](https://github.com/Korbi0312/USBArmyKnife/tree/master/examples)
+  - Check out the [examples](https://github.com/i-am-shodan/USBArmyKnife/tree/master/examples)
   - The [discussions pages](https://github.com/i-am-shodan/USBArmyKnife/discussions)
 - **Found a bug?**
   - Create an [issue](https://github.com/Korbi0312/USBArmyKnife-modded/issues)
