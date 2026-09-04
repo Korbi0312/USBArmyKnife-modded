@@ -6,6 +6,32 @@ Fork of [i-am-shodan/USBArmyKnife](https://github.com/i-am-shodan/USBArmyKnife),
 
 > 🚀 **v1.1.8-pre** — PC-based VNC (VncDirect), PC Installer/Uninstaller, Dark Theme VNC UI with FPS/quality/scaling, VNC password protection, remote access via Tailscale, pre-built firmware.
 
+## Project Presentation
+
+<p align="center">
+  <a href="./docs/media/project-presentation-overview.svg">
+    <img src="./docs/media/project-presentation-overview.svg" alt="USB Army Knife modded project presentation overview" width="100%">
+  </a>
+</p>
+
+The project presentation is shown directly on this README start page. Open the overview image for the full-size version.
+
+- [Open the presentation overview](./docs/media/project-presentation-overview.svg)
+- [View the presentation media index](./docs/media/README.md)
+- Planned binary asset name: `docs/media/usb-army-knife-project-presentation.pdf`
+- Planned binary asset name: `docs/media/usb-army-knife-project-explainer.mp4`
+
+### Presentation chapters
+
+| Slides | README section |
+| --- | --- |
+| 1–3 | Intro and the physical-access problem |
+| 4–6 | Core Features and attack examples |
+| 7–9 | Modded Features, dashboard and settings UI |
+| 10–11 | VNC, remote screen viewing and Tailscale |
+| 12 | Supported Hardware: LILYGO T-Dongle S3 |
+| 13 | Getting Started, deployment and project outlook |
+
 ## Testimonials
 
 "Your device is evil. You are doing evil." - Mr. Peoples via X
@@ -44,6 +70,12 @@ USBPcapExample.mp4
 This video shows how to pull the victims machine once the agent has been installed:
 
 VNCExample.mp4
+
+The project explainer video is prepared for the repository as:
+
+`docs/media/usb-army-knife-project-explainer.mp4`
+
+Upload that file as a binary asset to enable a direct video link from this README.
 
 ## Features
 
@@ -224,7 +256,7 @@ To access the VNC from outside your local network (e.g. from another country):
   - [DuckyScript quick reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/DuckyScript-Quick-Reference)
   - [The USB Army Knife command reference](https://github.com/i-am-shodan/USBArmyKnife/wiki/Command-Reference)
 - **Problem getting started?**
-  - Check out the [examples](https://github.com/i-am-shodan/USBArmyKnife/tree/master/examples)
+  - Check out the [examples](https://github.com/Korbi0312/USBArmyKnife/tree/master/examples)
   - The [discussions pages](https://github.com/i-am-shodan/USBArmyKnife/discussions)
 - **Found a bug?**
   - Create an [issue](https://github.com/Korbi0312/USBArmyKnife-modded/issues)
